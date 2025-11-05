@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Student {
+  id                    String             @id @default(uuid())
+  name                  String
+  studentNumber         String
+  course                String
+  academicYear          Int
+  socialSecurityNumber  String
+  contact               String
+  email                 String
+  donationRequests      DonationRequest[]
+}
+
+model Schedule {
+  id                String             @id @default(uuid())
+  scheduledDate     DateTime
+  notificationSent  Boolean            @default(false)
+  donationRequests  DonationRequest[]
+}
+
+model DonationRequest {
+  id              String         @id @default(uuid())
+  deliveryDate    DateTime?
+  status          String
+  notes           String?
+  donationId      String?
+  donation        Donation?      @relation(fields: [donationId], references: [id])
+  userId          String?
+  user            User?          @relation(fields: [userId], references: [id])
+  scheduleId      String?        // Pickup info
+  schedule        Schedule?      @relation(fields: [scheduleId], references: [id])
+  studentId       String         // FK to Student
+  student         Student        @relation(fields: [studentId], references: [id])
+  deliveryProducts DeliveryProduct[]
+}
+
+model Campaign {
+  id           String      @id @default(uuid())
+  title        String
+  description  String
+  publishedAt  DateTime
+  eventDate    DateTime
+  donations    Donation[]
+}
+
+model DonationProduct {
+  donationId  String
+  productId   String
+  donation    Donation @relation(fields: [donationId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+  @@id([donationId, productId])
+}
+
+model DonationRequest {
+  id              String        @id @default(uuid())
+  deliveryDate    DateTime
+  status          String
+  notes           String?
+  donationId      String?
+  donation        Donation?     @relation(fields: [donationId], references: [id])
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id])
+  scheduleId      String?
+  schedule        Schedule?     @relation(fields: [scheduleId], references: [id])
+  deliveryProducts DeliveryProduct[]
+}
+
+model DeliveryProduct {
+  id                  String           @id @default(uuid())
+  deliveredQuantity   Int
+  donationRequestId   String
+  productId           String
+  donationRequest     DonationRequest  @relation(fields: [donationRequestId], references: [id])
+  product             Product          @relation(fields: [productId], references: [id])
+}
+
+model User {
+  id            String           @id @default(uuid())
+  name          String
+  userType      String
+  contact       String
+  email         String
+  stocks        Stock[]
+  donationRequests DonationRequest[]
+}
+
+model Product {
+  id            String            @id @default(uuid())
+  name          String
+  productTypeId String
+  productType   ProductType       @relation(fields: [productTypeId], references: [id])
+  donationProducts DonationProduct[]
+  deliveryProducts DeliveryProduct[]
+  stocks        Stock[]
+}
+
+model ProductType {
+  id          String    @id @default(uuid())
+  description String
+  products    Product[]
+}
+
+model Stock {
+  id            String          @id @default(uuid())
+  quantity      Int
+  movementDate  DateTime
+  expiryDate    DateTime
+  notes         String?
+  productId     String
+  product       Product         @relation(fields: [productId], references: [id])
+  history       StockHistory[]
+}
+
+model StockHistory {
+  id                String      @id @default(uuid())
+  previousQuantity  Int
+  movementQuantity  Int
+  currentQuantity   Int
+  movementDate      DateTime
+  notes             String?
+  stockId           String
+  stock             Stock       @relation(fields: [stockId], references: [id])
+}
