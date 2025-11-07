@@ -19,6 +19,10 @@ export class  StudentSignUpDto {
 
     @IsString()
     @IsNotEmpty()
+    socialSecurityNumber: string;
+
+    @IsString()
+    @IsNotEmpty()
     contact: string;
 
     @IsString()
