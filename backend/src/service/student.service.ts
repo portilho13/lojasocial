@@ -5,7 +5,7 @@ import * as bcrypt from "bcrypt";
 import { StudentResponseDto } from "src/dto/student.response.dto";
 
 @Injectable()
-export class AuthService {
+export class StudentService {
     constructor(
         private readonly studentRepository: StudentRepository,
     ) {}

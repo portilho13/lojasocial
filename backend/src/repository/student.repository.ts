@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, Student } from "generated/prisma/client";
+import { Prisma, Student } from "@prisma/client";
 import { PrismaService } from "prisma/prisma.service";
 
 @Injectable()
@@ -8,12 +8,12 @@ export class StudentRepository {
 
     public async getStudentByEmail(email: Student["email"]) {
         return this.prisma.student.findUnique({
-            where: {email}
+            where: { email }
         })
     }
 
     public async createStudent(data: Prisma.StudentCreateInput) {
-        return this.prisma.create({
+        return this.prisma.student.create({
             data
         })
     }

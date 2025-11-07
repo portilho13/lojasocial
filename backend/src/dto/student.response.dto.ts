@@ -1,4 +1,4 @@
-import { Student } from "generated/prisma/client";
+import { Student } from "@prisma/client";
 
 export class StudentResponseDto {
   id: Student['id'];
