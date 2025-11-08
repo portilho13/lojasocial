@@ -44,7 +44,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
+    (0, common_1.Controller)('api/v1/auth'),
     __metadata("design:paramtypes", [student_service_1.StudentService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
