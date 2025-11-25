@@ -12,6 +12,7 @@ const auth_controller_1 = require("./controller/auth.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
 const student_repository_1 = require("./repository/student.repository");
 const student_service_1 = require("./service/student.service");
+const jwt_1 = require("@nestjs/jwt");
 const repositorioes = [
     student_repository_1.StudentRepository
 ];
@@ -23,7 +24,14 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [
+            prisma_module_1.PrismaModule,
+            jwt_1.JwtModule.register({
+                global: true,
+                secret: process.env.JWT_SECRET || 'secret',
+                signOptions: { expiresIn: '15m' },
+            }),
+        ],
         controllers: [auth_controller_1.AuthController],
         providers: [...repositorioes, ...services],
     })

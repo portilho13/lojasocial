@@ -44,13 +44,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentService = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const student_repository_1 = require("../repository/student.repository");
 const bcrypt = __importStar(require("bcrypt"));
 const student_response_dto_1 = require("../dto/student.response.dto");
 let StudentService = class StudentService {
     studentRepository;
-    constructor(studentRepository) {
+    jwtService;
+    constructor(studentRepository, jwtService) {
         this.studentRepository = studentRepository;
+        this.jwtService = jwtService;
     }
     async signUp(dto) {
         const studentByEmail = await this.studentRepository.getStudentByEmail(dto.email);
@@ -70,12 +73,36 @@ let StudentService = class StudentService {
         const isPasswordValid = await bcrypt.compare(dto.password, student.password);
         if (!isPasswordValid)
             throw new common_1.UnauthorizedException("Invalid credentials");
-        return new student_response_dto_1.StudentResponseDto(student);
+        const tokens = await this.getTokens(student.id, student.email);
+        return tokens;
+    }
+    async getTokens(userId, email) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync({
+                sub: userId,
+                email,
+            }, {
+                secret: process.env.JWT_SECRET || 'secret',
+                expiresIn: '15m',
+            }),
+            this.jwtService.signAsync({
+                sub: userId,
+                email,
+            }, {
+                secret: process.env.JWT_SECRET || 'secret',
+                expiresIn: '7d',
+            }),
+        ]);
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 };
 exports.StudentService = StudentService;
 exports.StudentService = StudentService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [student_repository_1.StudentRepository])
+    __metadata("design:paramtypes", [student_repository_1.StudentRepository,
+        jwt_1.JwtService])
 ], StudentService);
 //# sourceMappingURL=student.service.js.map

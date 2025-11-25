@@ -24,8 +24,8 @@ export class AuthController {
     @Post('student/sign-in')
     async signIn(@Body(ValidationPipe) body: StudentSignInDto, @Res() res: Response) {
         try {
-            const user = await this.authService.signIn(body);
-            return res.status(HttpStatus.OK).json(user);
+            const tokens = await this.authService.signIn(body);
+            return res.status(HttpStatus.OK).json(tokens);
         } catch (e) {
             if (e instanceof HttpException) {
                 return res.status(e.getStatus()).json(e.getResponse());
@@ -33,5 +33,4 @@ export class AuthController {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
-
 }

@@ -36,8 +36,8 @@ let AuthController = class AuthController {
     }
     async signIn(body, res) {
         try {
-            const user = await this.authService.signIn(body);
-            return res.status(common_1.HttpStatus.OK).json(user);
+            const tokens = await this.authService.signIn(body);
+            return res.status(common_1.HttpStatus.OK).json(tokens);
         }
         catch (e) {
             if (e instanceof common_1.HttpException) {

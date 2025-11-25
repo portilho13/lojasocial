@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
 import { StudentSignInDto } from "src/dto/student.sign-in.dto";
 import { StudentRepository } from "src/repository/student.repository";
@@ -9,6 +10,7 @@ import { StudentResponseDto } from "src/dto/student.response.dto";
 export class StudentService {
     constructor(
         private readonly studentRepository: StudentRepository,
+        private readonly jwtService: JwtService,
     ) { }
 
     public async signUp(dto: StudentSignUpDto) {
@@ -36,6 +38,37 @@ export class StudentService {
 
         if (!isPasswordValid) throw new UnauthorizedException("Invalid credentials");
 
-        return new StudentResponseDto(student);
+        const tokens = await this.getTokens(student.id, student.email);
+        return tokens;
+    }
+
+    private async getTokens(userId: string, email: string) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                    email,
+                },
+                {
+                    secret: process.env.JWT_SECRET || 'secret',
+                    expiresIn: '15m',
+                },
+            ),
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                    email,
+                },
+                {
+                    secret: process.env.JWT_SECRET || 'secret',
+                    expiresIn: '7d',
+                },
+            ),
+        ]);
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 }
