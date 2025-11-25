@@ -6,27 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.InventoryModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_controller_1 = require("./controller/auth.controller");
+const inventory_controller_1 = require("./controller/inventory.controller");
+const inventory_service_1 = require("./service/inventory.service");
+const inventory_repository_1 = require("./repository/inventory.repository");
 const prisma_module_1 = require("../prisma/prisma.module");
-const student_repository_1 = require("./repository/student.repository");
-const student_service_1 = require("./service/student.service");
-const inventory_module_1 = require("./inventory.module");
-const repositorioes = [
-    student_repository_1.StudentRepository
-];
-const services = [
-    student_service_1.StudentService
-];
-let AppModule = class AppModule {
+let InventoryModule = class InventoryModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.InventoryModule = InventoryModule;
+exports.InventoryModule = InventoryModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, inventory_module_1.InventoryModule],
-        controllers: [auth_controller_1.AuthController],
-        providers: [...repositorioes, ...services],
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [inventory_controller_1.InventoryController],
+        providers: [inventory_service_1.InventoryService, inventory_repository_1.InventoryRepository],
     })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+], InventoryModule);
+//# sourceMappingURL=inventory.module.js.map
