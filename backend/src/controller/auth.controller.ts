@@ -1,11 +1,12 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Res, ValidationPipe } from "@nestjs/common";
 import type { Response } from "express";
 import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
+import { StudentSignInDto } from "src/dto/student.sign-in.dto";
 import { StudentService } from "src/service/student.service";
 
 @Controller('api/v1/auth')
 export class AuthController {
-    constructor(private readonly authService: StudentService) {}
+    constructor(private readonly authService: StudentService) { }
 
     @Post('student/sign-up')
     async signUp(@Body(ValidationPipe) body: StudentSignUpDto, @Res() res: Response) {
@@ -19,4 +20,18 @@ export class AuthController {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
+
+    @Post('student/sign-in')
+    async signIn(@Body(ValidationPipe) body: StudentSignInDto, @Res() res: Response) {
+        try {
+            const user = await this.authService.signIn(body);
+            return res.status(HttpStatus.OK).json(user);
+        } catch (e) {
+            if (e instanceof HttpException) {
+                return res.status(e.getStatus()).json(e.getResponse());
+            }
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+        }
+    }
+
 }

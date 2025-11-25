@@ -63,6 +63,15 @@ let StudentService = class StudentService {
         });
         return new student_response_dto_1.StudentResponseDto(userData);
     }
+    async signIn(dto) {
+        const student = await this.studentRepository.getStudentByEmail(dto.email);
+        if (!student)
+            throw new common_1.UnauthorizedException("Invalid credentials");
+        const isPasswordValid = await bcrypt.compare(dto.password, student.password);
+        if (!isPasswordValid)
+            throw new common_1.UnauthorizedException("Invalid credentials");
+        return new student_response_dto_1.StudentResponseDto(student);
+    }
 };
 exports.StudentService = StudentService;
 exports.StudentService = StudentService = __decorate([

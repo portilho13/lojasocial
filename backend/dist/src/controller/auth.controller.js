@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const student_sign_up_dto_1 = require("../dto/student.sign-up.dto");
+const student_sign_in_dto_1 = require("../dto/student.sign-in.dto");
 const student_service_1 = require("../service/student.service");
 let AuthController = class AuthController {
     authService;
@@ -33,6 +34,18 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
+    async signIn(body, res) {
+        try {
+            const user = await this.authService.signIn(body);
+            return res.status(common_1.HttpStatus.OK).json(user);
+        }
+        catch (e) {
+            if (e instanceof common_1.HttpException) {
+                return res.status(e.getStatus()).json(e.getResponse());
+            }
+            return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -43,6 +56,14 @@ __decorate([
     __metadata("design:paramtypes", [student_sign_up_dto_1.StudentSignUpDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
+__decorate([
+    (0, common_1.Post)('student/sign-in'),
+    __param(0, (0, common_1.Body)(common_1.ValidationPipe)),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [student_sign_in_dto_1.StudentSignInDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "signIn", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('api/v1/auth'),
     __metadata("design:paramtypes", [student_service_1.StudentService])
