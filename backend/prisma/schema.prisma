@@ -17,6 +17,7 @@ model Student {
   contact               String
   email                 String             @unique
   password              String
+  hashedRefreshToken    String?
   donationRequests      DonationRequest[]
 }
 

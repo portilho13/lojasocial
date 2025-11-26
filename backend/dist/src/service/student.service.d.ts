@@ -12,5 +12,18 @@ export declare class StudentService {
         accessToken: string;
         refreshToken: string;
     }>;
+    logout(userId: string): Promise<{
+        name: string;
+        studentNumber: string;
+        course: string;
+        academicYear: number;
+        socialSecurityNumber: string;
+        contact: string;
+        email: string;
+        password: string;
+        id: string;
+        hashedRefreshToken: string | null;
+    }>;
+    private updateRefreshToken;
     private getTokens;
 }

@@ -39,7 +39,21 @@ export class StudentService {
         if (!isPasswordValid) throw new UnauthorizedException("Invalid credentials");
 
         const tokens = await this.getTokens(student.id, student.email);
+        await this.updateRefreshToken(student.id, tokens.refreshToken);
         return tokens;
+    }
+
+    public async logout(userId: string) {
+        return this.studentRepository.updateStudent(userId, {
+            hashedRefreshToken: null,
+        });
+    }
+
+    private async updateRefreshToken(userId: string, refreshToken: string) {
+        const hash = await bcrypt.hash(refreshToken, 10);
+        await this.studentRepository.updateStudent(userId, {
+            hashedRefreshToken: hash,
+        });
     }
 
     private async getTokens(userId: string, email: string) {

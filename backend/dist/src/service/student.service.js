@@ -74,7 +74,19 @@ let StudentService = class StudentService {
         if (!isPasswordValid)
             throw new common_1.UnauthorizedException("Invalid credentials");
         const tokens = await this.getTokens(student.id, student.email);
+        await this.updateRefreshToken(student.id, tokens.refreshToken);
         return tokens;
+    }
+    async logout(userId) {
+        return this.studentRepository.updateStudent(userId, {
+            hashedRefreshToken: null,
+        });
+    }
+    async updateRefreshToken(userId, refreshToken) {
+        const hash = await bcrypt.hash(refreshToken, 10);
+        await this.studentRepository.updateStudent(userId, {
+            hashedRefreshToken: hash,
+        });
     }
     async getTokens(userId, email) {
         const [accessToken, refreshToken] = await Promise.all([

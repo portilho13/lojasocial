@@ -9,34 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StudentRepository = void 0;
+exports.AccessTokenStrategy = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../../prisma/prisma.service");
-let StudentRepository = class StudentRepository {
-    prisma;
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async getStudentByEmail(email) {
-        return this.prisma.student.findUnique({
-            where: { email }
+const passport_1 = require("@nestjs/passport");
+const passport_jwt_1 = require("passport-jwt");
+let AccessTokenStrategy = class AccessTokenStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt') {
+    constructor() {
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            secretOrKey: process.env.JWT_SECRET || 'secret',
         });
     }
-    async createStudent(data) {
-        return this.prisma.student.create({
-            data
-        });
-    }
-    async updateStudent(id, data) {
-        return this.prisma.student.update({
-            where: { id },
-            data
-        });
+    validate(payload) {
+        return payload;
     }
 };
-exports.StudentRepository = StudentRepository;
-exports.StudentRepository = StudentRepository = __decorate([
+exports.AccessTokenStrategy = AccessTokenStrategy;
+exports.AccessTokenStrategy = AccessTokenStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
-], StudentRepository);
-//# sourceMappingURL=student.repository.js.map
+    __metadata("design:paramtypes", [])
+], AccessTokenStrategy);
+//# sourceMappingURL=access-token.strategy.js.map

@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const access_token_guard_1 = require("../common/guards/access-token.guard");
 const student_sign_up_dto_1 = require("../dto/student.sign-up.dto");
 const student_sign_in_dto_1 = require("../dto/student.sign-in.dto");
 const student_service_1 = require("../service/student.service");
@@ -46,6 +47,16 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
+    async logout(req, res) {
+        try {
+            const userId = req.user.sub;
+            await this.authService.logout(userId);
+            return res.status(common_1.HttpStatus.OK).json({ message: 'Logged out successfully' });
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -64,6 +75,15 @@ __decorate([
     __metadata("design:paramtypes", [student_sign_in_dto_1.StudentSignInDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signIn", null);
+__decorate([
+    (0, common_1.UseGuards)(access_token_guard_1.AccessTokenGuard),
+    (0, common_1.Post)('logout'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('api/v1/auth'),
     __metadata("design:paramtypes", [student_service_1.StudentService])

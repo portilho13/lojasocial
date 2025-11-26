@@ -4,7 +4,7 @@ import { PrismaService } from "prisma/prisma.service";
 
 @Injectable()
 export class StudentRepository {
-    constructor (private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) { }
 
     public async getStudentByEmail(email: Student["email"]) {
         return this.prisma.student.findUnique({
@@ -14,6 +14,13 @@ export class StudentRepository {
 
     public async createStudent(data: Prisma.StudentCreateInput) {
         return this.prisma.student.create({
+            data
+        })
+    }
+
+    public async updateStudent(id: string, data: Prisma.StudentUpdateInput) {
+        return this.prisma.student.update({
+            where: { id },
             data
         })
     }

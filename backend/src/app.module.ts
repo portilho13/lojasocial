@@ -4,13 +4,15 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { StudentRepository } from './repository/student.repository';
 import { StudentService } from './service/student.service';
 import { JwtModule } from '@nestjs/jwt';
+import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
 
 const repositorioes = [
   StudentRepository
 ]
 
 const services = [
-  StudentService
+  StudentService,
+  AccessTokenStrategy,
 ]
 
 @Module({

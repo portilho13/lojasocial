@@ -13,11 +13,13 @@ const prisma_module_1 = require("../prisma/prisma.module");
 const student_repository_1 = require("./repository/student.repository");
 const student_service_1 = require("./service/student.service");
 const jwt_1 = require("@nestjs/jwt");
+const access_token_strategy_1 = require("./auth/strategies/access-token.strategy");
 const repositorioes = [
     student_repository_1.StudentRepository
 ];
 const services = [
-    student_service_1.StudentService
+    student_service_1.StudentService,
+    access_token_strategy_1.AccessTokenStrategy,
 ];
 let AppModule = class AppModule {
 };
