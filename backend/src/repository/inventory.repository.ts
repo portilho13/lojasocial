@@ -6,17 +6,31 @@ import { PrismaService } from "prisma/prisma.service";
 export class InventoryRepository {
     constructor (private readonly prisma: PrismaService) {}
 
+    // Get product by name
+    public async getProductByName(name: Product["name"]) {
+        return this.prisma.product.findFirst({
+            where: { name }
+        });
+    }
+
     //Register new type of product
-    public async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+    public async createProduct(data: Prisma.ProductCreateInput) {
         return this.prisma.product.create({
             data,
+            include: { productType: true } 
         });
     }
 
     //Register stock entry
-    public async createStock(data: Prisma.StockCreateInput): Promise<Stock> {
+    public async createStock(data: Prisma.StockCreateInput) {
         return this.prisma.stock.create({
             data,
+            include: { 
+                product: true,
+                user: { 
+                    select: { id: true, name: true } 
+                }
+            }
         });
     }
 
@@ -46,3 +60,4 @@ export class InventoryRepository {
 }
 
 }
+
