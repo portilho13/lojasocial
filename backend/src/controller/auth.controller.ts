@@ -1,6 +1,7 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Res, ValidationPipe, UseGuards, Req } from "@nestjs/common";
 import type { Request, Response } from "express";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { RefreshTokenGuard } from "src/common/guards/refresh-token.guard";
 import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
 import { StudentSignInDto } from "src/dto/student.sign-in.dto";
 import { StudentService } from "src/service/student.service";
@@ -42,6 +43,19 @@ export class AuthController {
             const userId = (req.user as any).sub;
             await this.authService.logout(userId);
             return res.status(HttpStatus.OK).json({ message: 'Logged out successfully' });
+        } catch (e) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+        }
+    }
+
+    @UseGuards(RefreshTokenGuard)
+    @Post('refresh')
+    async refreshTokens(@Req() req: Request, @Res() res: Response) {
+        try {
+            const userId = (req.user as any).sub;
+            const refreshToken = (req.user as any).refreshToken;
+            const tokens = await this.authService.refreshTokens(userId, refreshToken);
+            return res.status(HttpStatus.OK).json(tokens);
         } catch (e) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }

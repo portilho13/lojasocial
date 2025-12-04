@@ -8,4 +8,5 @@ export declare class AuthController {
     signUp(body: StudentSignUpDto, res: Response): Promise<Response<any, Record<string, any>>>;
     signIn(body: StudentSignInDto, res: Response): Promise<Response<any, Record<string, any>>>;
     logout(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    refreshTokens(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
 }

@@ -24,6 +24,10 @@ export declare class StudentService {
         id: string;
         hashedRefreshToken: string | null;
     }>;
+    refreshTokens(userId: string, refreshToken: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+    }>;
     private updateRefreshToken;
     private getTokens;
 }

@@ -49,6 +49,18 @@ export class StudentService {
         });
     }
 
+    public async refreshTokens(userId: string, refreshToken: string) {
+        const student = await this.studentRepository.getStudentById(userId);
+        if (!student || !student.hashedRefreshToken) throw new UnauthorizedException("Access Denied");
+
+        const refreshTokenMatches = await bcrypt.compare(refreshToken, student.hashedRefreshToken);
+        if (!refreshTokenMatches) throw new UnauthorizedException("Access Denied");
+
+        const tokens = await this.getTokens(student.id, student.email);
+        await this.updateRefreshToken(student.id, tokens.refreshToken);
+        return tokens;
+    }
+
     private async updateRefreshToken(userId: string, refreshToken: string) {
         const hash = await bcrypt.hash(refreshToken, 10);
         await this.studentRepository.updateStudent(userId, {

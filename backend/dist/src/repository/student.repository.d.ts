@@ -15,6 +15,18 @@ export declare class StudentRepository {
         id: string;
         hashedRefreshToken: string | null;
     } | null>;
+    getStudentById(id: string): Promise<{
+        name: string;
+        studentNumber: string;
+        course: string;
+        academicYear: number;
+        socialSecurityNumber: string;
+        contact: string;
+        email: string;
+        password: string;
+        id: string;
+        hashedRefreshToken: string | null;
+    } | null>;
     createStudent(data: Prisma.StudentCreateInput): Promise<{
         name: string;
         studentNumber: string;

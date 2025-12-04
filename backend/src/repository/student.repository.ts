@@ -12,6 +12,12 @@ export class StudentRepository {
         })
     }
 
+    public async getStudentById(id: string) {
+        return this.prisma.student.findUnique({
+            where: { id }
+        })
+    }
+
     public async createStudent(data: Prisma.StudentCreateInput) {
         return this.prisma.student.create({
             data

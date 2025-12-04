@@ -22,6 +22,11 @@ let StudentRepository = class StudentRepository {
             where: { email }
         });
     }
+    async getStudentById(id) {
+        return this.prisma.student.findUnique({
+            where: { id }
+        });
+    }
     async createStudent(data) {
         return this.prisma.student.create({
             data

@@ -5,6 +5,7 @@ import { StudentRepository } from './repository/student.repository';
 import { StudentService } from './service/student.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 
 const repositorioes = [
   StudentRepository
@@ -13,6 +14,7 @@ const repositorioes = [
 const services = [
   StudentService,
   AccessTokenStrategy,
+  RefreshTokenStrategy,
 ]
 
 @Module({
