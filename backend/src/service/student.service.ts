@@ -43,8 +43,14 @@ export class StudentService {
         return tokens;
     }
 
-    public async logout(userId: string) {
-        return this.studentRepository.updateStudent(userId, {
+    public async logout(userId: string, refreshToken: string) {
+        const student = await this.studentRepository.getStudentById(userId);
+        if (!student || !student.hashedRefreshToken) throw new UnauthorizedException("Access Denied");
+
+        const refreshTokenMatches = await bcrypt.compare(refreshToken, student.hashedRefreshToken);
+        if (!refreshTokenMatches) throw new UnauthorizedException("Access Denied");
+
+        await this.studentRepository.updateStudent(userId, {
             hashedRefreshToken: null,
         });
     }

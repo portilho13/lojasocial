@@ -77,8 +77,14 @@ let StudentService = class StudentService {
         await this.updateRefreshToken(student.id, tokens.refreshToken);
         return tokens;
     }
-    async logout(userId) {
-        return this.studentRepository.updateStudent(userId, {
+    async logout(userId, refreshToken) {
+        const student = await this.studentRepository.getStudentById(userId);
+        if (!student || !student.hashedRefreshToken)
+            throw new common_1.UnauthorizedException("Access Denied");
+        const refreshTokenMatches = await bcrypt.compare(refreshToken, student.hashedRefreshToken);
+        if (!refreshTokenMatches)
+            throw new common_1.UnauthorizedException("Access Denied");
+        await this.studentRepository.updateStudent(userId, {
             hashedRefreshToken: null,
         });
     }

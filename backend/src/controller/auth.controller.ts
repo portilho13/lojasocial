@@ -36,14 +36,18 @@ export class AuthController {
         }
     }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(RefreshTokenGuard)
     @Post('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
         try {
             const userId = (req.user as any).sub;
-            await this.authService.logout(userId);
+            const refreshToken = (req.user as any).refreshToken;
+            await this.authService.logout(userId, refreshToken);
             return res.status(HttpStatus.OK).json({ message: 'Logged out successfully' });
         } catch (e) {
+            if (e instanceof HttpException) {
+                return res.status(e.getStatus()).json(e.getResponse());
+            }
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
