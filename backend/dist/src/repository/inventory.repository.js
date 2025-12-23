@@ -17,36 +17,82 @@ let InventoryRepository = class InventoryRepository {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async getProductByName(name) {
+        return this.prisma.product.findFirst({
+            where: { name },
+        });
+    }
     async createProduct(data) {
         return this.prisma.product.create({
             data,
+            include: { productType: true },
         });
     }
     async createStock(data) {
         return this.prisma.stock.create({
             data,
-        });
-    }
-    async findAllProducts() {
-        return this.prisma.product.findMany({
-            include: { productType: true }
-        });
-    }
-    async findAllStock() {
-        return this.prisma.stock.findMany({
             include: {
                 product: true,
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        userType: true,
-                        contact: true,
-                        email: true,
-                    }
+                    select: { id: true, name: true },
                 },
             },
-            orderBy: { expiryDate: 'asc' }
+        });
+    }
+    async findAllProducts(skip = 0, take = 50) {
+        return this.prisma.product.findMany({
+            skip,
+            take,
+            include: { productType: true },
+            orderBy: { name: 'asc' },
+        });
+    }
+    async findAllStock(skip = 0, take = 50) {
+        return this.prisma.stock.findMany({
+            skip,
+            take,
+            include: {
+                product: true,
+                user: {
+                    select: { id: true, name: true },
+                },
+            },
+            orderBy: { expiryDate: 'asc' },
+        });
+    }
+    async updateStock(id, data) {
+        return this.prisma.stock.update({
+            where: { id },
+            data,
+            include: { product: true },
+        });
+    }
+    async deleteStock(id) {
+        return this.prisma.stock.delete({
+            where: { id },
+        });
+    }
+    async findExpiringStock(thresholdDate) {
+        return this.prisma.stock.findMany({
+            where: {
+                expiryDate: {
+                    lte: thresholdDate,
+                    gte: new Date(),
+                },
+            },
+            include: { product: true },
+            orderBy: { expiryDate: 'asc' },
+        });
+    }
+    async getStockByCategory() {
+        return this.prisma.productType.findMany({
+            include: {
+                products: {
+                    include: {
+                        stocks: true,
+                    },
+                },
+            },
         });
     }
 };

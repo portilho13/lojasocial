@@ -88,4 +88,17 @@ export class InventoryRepository {
       orderBy: { expiryDate: 'asc' },
     });
   }
+
+  //Get stock grouped by product category
+  public async getStockByCategory() {
+    return this.prisma.productType.findMany({
+      include: {
+        products: {
+          include: {
+            stocks: true,
+          },
+        },
+      },
+    });
+  }
 }

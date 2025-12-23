@@ -6,6 +6,7 @@ import { CreateStockDto } from '../dto/inventory/create-stock.dto';
 import { ProductResponseDto } from '../dto/inventory/product-response.dto';
 import { StockResponseDto } from '../dto/inventory/stock-response.dto';
 import { UpdateStockDto } from '../dto/inventory/update-stock.dto';
+import { StockSummaryDto } from 'src/dto/inventory/stock-summary.dto';
 
 @Injectable()
 export class InventoryService {
@@ -85,5 +86,25 @@ export class InventoryService {
     const stocks =
       await this.inventoryRepository.findExpiringStock(thresholdDate);
     return stocks.map((s) => new StockResponseDto(s));
+  }
+
+  //Get stock summary grouped by product category
+  public async getStockSummary(): Promise<StockSummaryDto[]> {
+    const categories = await this.inventoryRepository.getStockByCategory();
+
+    return categories.map((cat) => {
+      const total = cat.products.reduce((sum, product) => {
+        const productTotal = product.stocks.reduce(
+          (s, stock) => s + stock.quantity,
+          0,
+        );
+        return sum + productTotal;
+      }, 0);
+
+      return {
+        category: cat.description,
+        totalQuantity: total,
+      };
+    });
   }
 }

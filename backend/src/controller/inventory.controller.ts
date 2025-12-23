@@ -171,4 +171,18 @@ export class InventoryController {
         .json({ message: 'Internal server error' });
     }
   }
+
+  //View stock summary by category (for charts)
+  //Route: GET /api/v1/inventory/stocks/summary
+  @Get('stocks/summary')
+  async getStockSummary(@Res() res: Response) {
+    try {
+      const summary = await this.inventoryService.getStockSummary();
+      return res.status(HttpStatus.OK).json(summary);
+    } catch (e) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Internal server error' });
+    }
+  }
 }

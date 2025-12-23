@@ -1,53 +1,19 @@
 import { InventoryRepository } from '../repository/inventory.repository';
 import { CreateProductDto } from '../dto/inventory/create-product.dto';
 import { CreateStockDto } from '../dto/inventory/create-stock.dto';
+import { ProductResponseDto } from '../dto/inventory/product-response.dto';
+import { StockResponseDto } from '../dto/inventory/stock-response.dto';
+import { UpdateStockDto } from '../dto/inventory/update-stock.dto';
+import { StockSummaryDto } from 'src/dto/inventory/stock-summary.dto';
 export declare class InventoryService {
     private readonly inventoryRepository;
     constructor(inventoryRepository: InventoryRepository);
-    createProduct(data: CreateProductDto): Promise<{
-        name: string;
-        id: string;
-        productTypeId: string;
-    }>;
-    createStock(data: CreateStockDto): Promise<{
-        id: string;
-        notes: string | null;
-        userId: string | null;
-        quantity: number;
-        movementDate: Date;
-        expiryDate: Date;
-        productId: string;
-    }>;
-    getAllProducts(): Promise<({
-        productType: {
-            id: string;
-            description: string;
-        };
-    } & {
-        name: string;
-        id: string;
-        productTypeId: string;
-    })[]>;
-    getAllStockRecords(): Promise<({
-        product: {
-            name: string;
-            id: string;
-            productTypeId: string;
-        };
-        user: {
-            name: string;
-            contact: string;
-            email: string;
-            id: string;
-            userType: string;
-        } | null;
-    } & {
-        id: string;
-        notes: string | null;
-        userId: string | null;
-        quantity: number;
-        movementDate: Date;
-        expiryDate: Date;
-        productId: string;
-    })[]>;
+    createProduct(dto: CreateProductDto): Promise<ProductResponseDto>;
+    createStock(dto: CreateStockDto): Promise<StockResponseDto>;
+    getAllProducts(skip?: number, take?: number): Promise<ProductResponseDto[]>;
+    getAllStockRecords(skip?: number, take?: number): Promise<StockResponseDto[]>;
+    updateStock(id: string, dto: UpdateStockDto): Promise<StockResponseDto>;
+    deleteStock(id: string): Promise<void>;
+    getExpiringStock(days?: number): Promise<StockResponseDto[]>;
+    getStockSummary(): Promise<StockSummaryDto[]>;
 }

@@ -1,53 +1,17 @@
+import type { Response } from 'express';
 import { InventoryService } from 'src/service/inventory.service';
 import { CreateProductDto } from 'src/dto/inventory/create-product.dto';
 import { CreateStockDto } from 'src/dto/inventory/create-stock.dto';
+import { UpdateStockDto } from 'src/dto/inventory/update-stock.dto';
 export declare class InventoryController {
     private readonly inventoryService;
     constructor(inventoryService: InventoryService);
-    createProduct(body: CreateProductDto): Promise<{
-        name: string;
-        id: string;
-        productTypeId: string;
-    }>;
-    getAllProducts(): Promise<({
-        productType: {
-            id: string;
-            description: string;
-        };
-    } & {
-        name: string;
-        id: string;
-        productTypeId: string;
-    })[]>;
-    createStock(body: CreateStockDto): Promise<{
-        id: string;
-        notes: string | null;
-        userId: string | null;
-        quantity: number;
-        movementDate: Date;
-        expiryDate: Date;
-        productId: string;
-    }>;
-    getAllStockRecords(): Promise<({
-        product: {
-            name: string;
-            id: string;
-            productTypeId: string;
-        };
-        user: {
-            name: string;
-            contact: string;
-            email: string;
-            id: string;
-            userType: string;
-        } | null;
-    } & {
-        id: string;
-        notes: string | null;
-        userId: string | null;
-        quantity: number;
-        movementDate: Date;
-        expiryDate: Date;
-        productId: string;
-    })[]>;
+    createProduct(body: CreateProductDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    getAllProducts(res: Response, skip?: string, take?: string): Promise<Response<any, Record<string, any>>>;
+    createStock(body: CreateStockDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    getAllStockRecords(res: Response, skip?: string, take?: string): Promise<Response<any, Record<string, any>>>;
+    updateStock(id: string, body: UpdateStockDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    deleteStock(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    getExpiringStock(days: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    getStockSummary(res: Response): Promise<Response<any, Record<string, any>>>;
 }
