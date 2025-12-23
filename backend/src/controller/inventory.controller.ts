@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   ValidationPipe,
   Query,
@@ -126,6 +127,23 @@ export class InventoryController {
     try {
       const stock = await this.inventoryService.updateStock(id, body);
       return res.status(HttpStatus.OK).json(stock);
+    } catch (e) {
+      if (e instanceof HttpException) {
+        return res.status(e.getStatus()).json(e.getResponse());
+      }
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Internal server error' });
+    }
+  }
+
+  // Delete stock entry
+  //Route: DELETE /api/v1/inventory/stocks/:id
+  @Delete('stocks/:id')
+  async deleteStock(@Param('id') id: string, @Res() res: Response) {
+    try {
+      await this.inventoryService.deleteStock(id);
+      return res.status(HttpStatus.NO_CONTENT).send();
     } catch (e) {
       if (e instanceof HttpException) {
         return res.status(e.getStatus()).json(e.getResponse());
