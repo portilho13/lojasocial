@@ -5,6 +5,7 @@ import { CreateProductDto } from '../dto/inventory/create-product.dto';
 import { CreateStockDto } from '../dto/inventory/create-stock.dto';
 import { ProductResponseDto } from '../dto/inventory/product-response.dto';
 import { StockResponseDto } from '../dto/inventory/stock-response.dto';
+import { UpdateStockDto } from "../dto/inventory/update-stock.dto";
 
 @Injectable()
 export class InventoryService {
@@ -74,4 +75,10 @@ export class InventoryService {
         const stocks = await this.inventoryRepository.findAllStock(skip, take);
         return stocks.map(s => new StockResponseDto(s));
     }
+
+    //Update stock entry
+    public async updateStock(id: string, dto: UpdateStockDto) {
+    const updatedStock = await this.inventoryRepository.updateStock(id, dto);
+    return new StockResponseDto(updatedStock);
+}
 }
