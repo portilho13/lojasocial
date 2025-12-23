@@ -77,4 +77,13 @@ export class InventoryService {
   public async deleteStock(id: string) {
     await this.inventoryRepository.deleteStock(id);
   }
+
+  //Get stock entries that are about to expire within a given number of days (default 30)
+  public async getExpiringStock(days: number = 30) {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() + days);
+    const stocks =
+      await this.inventoryRepository.findExpiringStock(thresholdDate);
+    return stocks.map((s) => new StockResponseDto(s));
+  }
 }

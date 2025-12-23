@@ -115,7 +115,7 @@ export class InventoryController {
     }
   }
 
-  // Update stock entry
+  //Update stock entry
   //Route: PATCH /api/v1/inventory/stocks/:id
 
   @Patch('stocks/:id')
@@ -137,13 +137,31 @@ export class InventoryController {
     }
   }
 
-  // Delete stock entry
+  //Delete stock entry
   //Route: DELETE /api/v1/inventory/stocks/:id
   @Delete('stocks/:id')
   async deleteStock(@Param('id') id: string, @Res() res: Response) {
     try {
       await this.inventoryService.deleteStock(id);
       return res.status(HttpStatus.NO_CONTENT).send();
+    } catch (e) {
+      if (e instanceof HttpException) {
+        return res.status(e.getStatus()).json(e.getResponse());
+      }
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Internal server error' });
+    }
+  }
+
+  //Get stock entries that are about to expire within a given number of days (default 30)
+  //Route: GET /api/v1/inventory/stocks/expiring?days=30
+  @Get('stocks/expiring')
+  async getExpiringStock(@Query('days') days: string, @Res() res: Response) {
+    try {
+      const threshold = days ? parseInt(days) : 30;
+      const stocks = await this.inventoryService.getExpiringStock(threshold);
+      return res.status(HttpStatus.OK).json(stocks);
     } catch (e) {
       if (e instanceof HttpException) {
         return res.status(e.getStatus()).json(e.getResponse());

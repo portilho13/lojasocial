@@ -58,7 +58,7 @@ export class InventoryRepository {
       orderBy: { expiryDate: 'asc' },
     });
   }
-  
+
   //Update stock entry
   public async updateStock(id: string, data: Prisma.StockUpdateInput) {
     return this.prisma.stock.update({
@@ -72,6 +72,20 @@ export class InventoryRepository {
   public async deleteStock(id: string) {
     return this.prisma.stock.delete({
       where: { id },
+    });
+  }
+
+  //Find stock entries that are expiring soon
+  public async findExpiringStock(thresholdDate: Date) {
+    return this.prisma.stock.findMany({
+      where: {
+        expiryDate: {
+          lte: thresholdDate,
+          gte: new Date(),
+        },
+      },
+      include: { product: true },
+      orderBy: { expiryDate: 'asc' },
     });
   }
 }
