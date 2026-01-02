@@ -8,7 +8,7 @@ import { StudentService } from "src/service/student.service";
 
 @Controller('api/v1/auth')
 export class AuthController {
-    constructor(private readonly authService: StudentService) { }
+    constructor(private readonly authService: StudentService) {}
 
     @Post('student/sign-up')
     async signUp(@Body(ValidationPipe) body: StudentSignUpDto, @Res() res: Response) {
