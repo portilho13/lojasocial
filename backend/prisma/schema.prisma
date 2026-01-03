@@ -127,6 +127,7 @@ model User {
   contact          String
   email            String           @unique
   password         String
+  hashedRefreshToken String?
   stocks           Stock[]
   donationRequests DonationRequest[]
 }
