@@ -38,19 +38,27 @@ model Donation {
   donationRequests DonationRequest[]
 }
 
+enum DonationStatus {
+  PENDING
+  SCHEDULED
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
 model DonationRequest {
-  id              String         @id @default(uuid())
+  id              String           @id @default(uuid())
   deliveryDate    DateTime?
-  status          String
+  status          DonationStatus   @default(PENDING)
   notes           String?
   donationId      String?
-  donation        Donation?      @relation(fields: [donationId], references: [id])
+  donation        Donation?        @relation(fields: [donationId], references: [id])
   userId          String?
-  user            User?          @relation(fields: [userId], references: [id])
-  scheduleId      String?        // Pickup info
-  schedule        Schedule?      @relation(fields: [scheduleId], references: [id])
-  studentId       String         // FK to Student
-  student         Student        @relation(fields: [studentId], references: [id])
+  user            User?            @relation(fields: [userId], references: [id])
+  scheduleId      String?          // Pickup info
+  schedule        Schedule?        @relation(fields: [scheduleId], references: [id])
+  studentId       String           // FK to Student
+  student         Student          @relation(fields: [studentId], references: [id])
   deliveryProducts DeliveryProduct[]
 }
 
