@@ -69,6 +69,7 @@ export class DonationRepository {
     return this.prisma.donationRequest.findMany({
       where: { studentId },
       include: {
+        student: true,
         donation: true,
         schedule: true,
         deliveryProducts: {
@@ -109,6 +110,11 @@ export class DonationRepository {
       data: { status },
       include: {
         student: true,
+        deliveryProducts: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   }
