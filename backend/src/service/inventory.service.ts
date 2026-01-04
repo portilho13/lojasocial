@@ -10,7 +10,7 @@ import { StockSummaryDto } from 'src/dto/inventory/stock-summary.dto';
 
 @Injectable()
 export class InventoryService {
-  constructor(private readonly inventoryRepository: InventoryRepository) {}
+  constructor(private readonly inventoryRepository: InventoryRepository) { }
 
   //Register new product type
   public async createProduct(dto: CreateProductDto) {
@@ -21,12 +21,12 @@ export class InventoryService {
     if (productByName)
       throw new ConflictException('There is already a product with this name.');
 
-    const { productTypeId, ...productData } = dto;
+    const { typeId, ...productData } = dto;
 
     const newProduct = await this.inventoryRepository.createProduct({
       ...productData,
-      productType: {
-        connect: { id: productTypeId },
+      type: {
+        connect: { id: typeId },
       },
     });
 
@@ -35,20 +35,20 @@ export class InventoryService {
 
   //Register new stock entry
   public async createStock(dto: CreateStockDto) {
-    const { productId, userId, movementDate, expiryDate, ...rest } = dto;
+    const { productId, expiryDate, ...rest } = dto;
 
     const prismaData: Prisma.StockCreateInput = {
       ...rest,
-      movementDate: new Date(movementDate),
       expiryDate: new Date(expiryDate),
       product: {
         connect: { id: productId },
       },
     };
 
-    if (userId) {
-      prismaData.user = { connect: { id: userId } };
-    }
+    // userId is removed from Stock model
+    // if (userId) {
+    //   prismaData.user = { connect: { id: userId } };
+    // }
 
     const newStock = await this.inventoryRepository.createStock(prismaData);
 
@@ -69,13 +69,13 @@ export class InventoryService {
   }
 
   //Update stock entry
-  public async updateStock(id: string, dto: UpdateStockDto) {
+  public async updateStock(id: number, dto: UpdateStockDto) {
     const updatedStock = await this.inventoryRepository.updateStock(id, dto);
     return new StockResponseDto(updatedStock);
   }
 
   //Delete stock entry
-  public async deleteStock(id: string) {
+  public async deleteStock(id: number) {
     await this.inventoryRepository.deleteStock(id);
   }
 
@@ -94,7 +94,7 @@ export class InventoryService {
 
     return categories.map((cat) => {
       const total = cat.products.reduce((sum, product) => {
-        const productTotal = product.stocks.reduce(
+        const productTotal = product.stockBatches.reduce(
           (s, stock) => s + stock.quantity,
           0,
         );

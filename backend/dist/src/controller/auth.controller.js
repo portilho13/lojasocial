@@ -75,6 +75,11 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
     async userSignUp(body, res) {
         try {
             const user = await this.userService.signUp(body);
@@ -102,7 +107,12 @@ let AuthController = class AuthController {
     async userLogout(req, res) {
         try {
             const userId = req.user.sub;
+<<<<<<< Updated upstream
             await this.userService.logout(userId);
+=======
+            const refreshToken = req.user.refreshToken;
+            await this.userService.logout(userId, refreshToken);
+>>>>>>> Stashed changes
             return res.status(common_1.HttpStatus.OK).json({ message: 'Logged out successfully' });
         }
         catch (e) {
@@ -120,6 +130,10 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 };
 exports.AuthController = AuthController;
 __decorate([

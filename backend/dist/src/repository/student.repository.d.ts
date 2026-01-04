@@ -8,11 +8,12 @@ export declare class StudentRepository {
         studentNumber: string;
         course: string;
         academicYear: number;
-        socialSecurityNumber: string;
-        contact: string;
+        socialSecurityNumber: string | null;
+        contact: string | null;
         email: string;
         password: string;
         id: string;
+        status: import("@prisma/client").$Enums.StudentStatus;
         hashedRefreshToken: string | null;
     } | null>;
     getStudentById(id: string): Promise<{
@@ -20,11 +21,12 @@ export declare class StudentRepository {
         studentNumber: string;
         course: string;
         academicYear: number;
-        socialSecurityNumber: string;
-        contact: string;
+        socialSecurityNumber: string | null;
+        contact: string | null;
         email: string;
         password: string;
         id: string;
+        status: import("@prisma/client").$Enums.StudentStatus;
         hashedRefreshToken: string | null;
     } | null>;
     createStudent(data: Prisma.StudentCreateInput): Promise<{
@@ -32,11 +34,12 @@ export declare class StudentRepository {
         studentNumber: string;
         course: string;
         academicYear: number;
-        socialSecurityNumber: string;
-        contact: string;
+        socialSecurityNumber: string | null;
+        contact: string | null;
         email: string;
         password: string;
         id: string;
+        status: import("@prisma/client").$Enums.StudentStatus;
         hashedRefreshToken: string | null;
     }>;
     updateStudent(id: string, data: Prisma.StudentUpdateInput): Promise<{
@@ -44,11 +47,12 @@ export declare class StudentRepository {
         studentNumber: string;
         course: string;
         academicYear: number;
-        socialSecurityNumber: string;
-        contact: string;
+        socialSecurityNumber: string | null;
+        contact: string | null;
         email: string;
         password: string;
         id: string;
+        status: import("@prisma/client").$Enums.StudentStatus;
         hashedRefreshToken: string | null;
     }>;
 }

@@ -21,7 +21,7 @@ import { UpdateStockDto } from 'src/dto/inventory/update-stock.dto';
 // Add auth later
 @Controller('api/v1/inventory')
 export class InventoryController {
-  constructor(private readonly inventoryService: InventoryService) {}
+  constructor(private readonly inventoryService: InventoryService) { }
 
   //Register a new type of product
   //Route: POST /api/v1/inventory/products
@@ -125,7 +125,7 @@ export class InventoryController {
     @Res() res: Response,
   ) {
     try {
-      const stock = await this.inventoryService.updateStock(id, body);
+      const stock = await this.inventoryService.updateStock(parseInt(id), body);
       return res.status(HttpStatus.OK).json(stock);
     } catch (e) {
       if (e instanceof HttpException) {
@@ -142,7 +142,7 @@ export class InventoryController {
   @Delete('stocks/:id')
   async deleteStock(@Param('id') id: string, @Res() res: Response) {
     try {
-      await this.inventoryService.deleteStock(id);
+      await this.inventoryService.deleteStock(parseInt(id));
       return res.status(HttpStatus.NO_CONTENT).send();
     } catch (e) {
       if (e instanceof HttpException) {

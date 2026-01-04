@@ -1,28 +1,24 @@
-import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreateStockDto {
   @IsInt()
   @Min(1)
   @IsNotEmpty()
-  quantity: number; 
+  quantity: number;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
 
   @IsDateString()
   @IsNotEmpty()
-  movementDate: string; 
-
-  @IsDateString()
-  @IsNotEmpty()
-  expiryDate: string; 
+  expiryDate: string;
 
   @IsString()
   @IsOptional()
   notes?: string;
 
-  @IsUUID()
+  @IsInt()
   @IsNotEmpty()
-  productId: string; 
-
-  @IsUUID()
-  @IsOptional()
-  userId?: string; 
+  productId: number;
 }

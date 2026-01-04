@@ -4,7 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class InventoryRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // Get product by name
   public async getProductByName(name: Product['name']) {
@@ -17,7 +17,7 @@ export class InventoryRepository {
   public async createProduct(data: Prisma.ProductCreateInput) {
     return this.prisma.product.create({
       data,
-      include: { productType: true },
+      include: { type: true },
     });
   }
 
@@ -27,9 +27,6 @@ export class InventoryRepository {
       data,
       include: {
         product: true,
-        user: {
-          select: { id: true, name: true },
-        },
       },
     });
   }
@@ -39,7 +36,7 @@ export class InventoryRepository {
     return this.prisma.product.findMany({
       skip,
       take,
-      include: { productType: true },
+      include: { type: true },
       orderBy: { name: 'asc' },
     });
   }
@@ -51,16 +48,13 @@ export class InventoryRepository {
       take,
       include: {
         product: true,
-        user: {
-          select: { id: true, name: true },
-        },
       },
       orderBy: { expiryDate: 'asc' },
     });
   }
 
   //Update stock entry
-  public async updateStock(id: string, data: Prisma.StockUpdateInput) {
+  public async updateStock(id: number, data: Prisma.StockUpdateInput) {
     return this.prisma.stock.update({
       where: { id },
       data,
@@ -69,7 +63,7 @@ export class InventoryRepository {
   }
 
   //Delete stock entry
-  public async deleteStock(id: string) {
+  public async deleteStock(id: number) {
     return this.prisma.stock.delete({
       where: { id },
     });
@@ -95,7 +89,7 @@ export class InventoryRepository {
       include: {
         products: {
           include: {
-            stocks: true,
+            stockBatches: true,
           },
         },
       },
