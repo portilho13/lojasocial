@@ -36,16 +36,18 @@ enum RequestStatus {
 // --- MODELS ---
 
 model Student {
-  id              Int             @id @default(autoincrement())
-  name            String          @map("nome")
-  studentNumber   String          @unique @map("numero_estudante")
-  course          String          @map("curso")
-  curricularYear  Int             @map("ano_curricular")
-  socialSecNumber String?         @map("numero_seguranca_social")
-  contact         String?         @map("contacto")
-  email           String          @unique @map("email")
-  status          StudentStatus   @default(ATIVO) @map("status")
-  
+  id                    String          @id @default(uuid())
+  name                  String          @map("nome")
+  studentNumber         String          @unique @map("numero_estudante")
+  course                String          @map("curso")
+  academicYear          Int             @map("ano_curricular")
+  socialSecurityNumber  String?         @map("numero_seguranca_social")
+  contact               String?         @map("contacto")
+  email                 String          @unique @map("email")
+  status                StudentStatus   @default(ATIVO) @map("status")
+  password              String
+  hashedRefreshToken    String?
+
   appointments    Appointment[]
   requests        SupportRequest[]
 
@@ -53,11 +55,13 @@ model Student {
 }
 
 model User {
-  id              Int             @id @default(autoincrement())
-  name            String          @map("nome")
-  role            UserRole        @default(VOLUNTARIO) @map("tipo_utilizador")
-  contact         String?         @map("contacto")
-  email           String          @unique @map("email")
+  id                    String          @id @default(uuid())
+  name                  String          @map("nome")
+  userType              UserRole        @default(VOLUNTARIO) @map("tipo_utilizador")
+  contact               String?         @map("contacto")
+  email                 String          @unique @map("email")
+  password              String
+  hashedRefreshToken    String?
 
   processedRequests SupportRequest[]
 
@@ -65,12 +69,12 @@ model User {
 }
 
 model Appointment {
-  id              Int       @id @default(autoincrement())
-  date            DateTime  @map("data_agendada")
-  notificationSent Boolean  @default(false) @map("notificacao_enviada")
+  id                    String       @id @default(uuid())
+  date                  DateTime  @map("data_agendada")
+  notificationSent      Boolean  @default(false) @map("notificacao_enviada")
   
-  studentId       Int       @map("id_estudante")
-  student         Student   @relation(fields: [studentId], references: [id])
+  studentId             String       @map("id_estudante")
+  student               Student   @relation(fields: [studentId], references: [id])
 
   // An appointment might be linked to a specific delivery request
   request         SupportRequest?
@@ -170,13 +174,13 @@ model SupportRequest {
   status      RequestStatus @default(PENDENTE) @map("estado")
   observation String?       @map("observacao")
 
-  studentId   Int           @map("id_estudante")
+  studentId   String           @map("id_estudante")
   student     Student       @relation(fields: [studentId], references: [id])
 
-  userId      Int?          @map("id_utilizador") // Staff who approved/processed it
+  userId      String?          @map("id_utilizador") // Staff who approved/processed it
   user        User?         @relation(fields: [userId], references: [id])
 
-  appointmentId Int?        @unique @map("id_agendamento") // Linked Appointment
+  appointmentId String?        @unique @map("id_agendamento") // Linked Appointment
   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
 
   items       RequestItem[]
