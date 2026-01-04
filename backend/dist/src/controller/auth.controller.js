@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
-const access_token_guard_1 = require("../common/guards/access-token.guard");
 const refresh_token_guard_1 = require("../common/guards/refresh-token.guard");
 const student_sign_up_dto_1 = require("../dto/student.sign-up.dto");
 const student_sign_in_dto_1 = require("../dto/student.sign-in.dto");
@@ -75,11 +74,6 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
     async userSignUp(body, res) {
         try {
             const user = await this.userService.signUp(body);
@@ -107,12 +101,8 @@ let AuthController = class AuthController {
     async userLogout(req, res) {
         try {
             const userId = req.user.sub;
-<<<<<<< Updated upstream
-            await this.userService.logout(userId);
-=======
             const refreshToken = req.user.refreshToken;
             await this.userService.logout(userId, refreshToken);
->>>>>>> Stashed changes
             return res.status(common_1.HttpStatus.OK).json({ message: 'Logged out successfully' });
         }
         catch (e) {
@@ -130,10 +120,6 @@ let AuthController = class AuthController {
             return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -187,7 +173,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "userSignIn", null);
 __decorate([
-    (0, common_1.UseGuards)(access_token_guard_1.AccessTokenGuard),
+    (0, common_1.UseGuards)(refresh_token_guard_1.RefreshTokenGuard),
     (0, common_1.Post)('user/logout'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),

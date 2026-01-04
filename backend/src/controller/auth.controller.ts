@@ -96,7 +96,7 @@ export class AuthController {
         }
     }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(RefreshTokenGuard)
     @Post('user/logout')
     async userLogout(@Req() req: Request, @Res() res: Response) {
         try {

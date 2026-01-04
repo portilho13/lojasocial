@@ -13,6 +13,16 @@ export class InventoryRepository {
     });
   }
 
+  //Register new product type
+  public async createProductType(data: Prisma.ProductTypeCreateInput) {
+    return this.prisma.productType.create({ data });
+  }
+
+  //List all product types
+  public async findAllProductTypes() {
+    return this.prisma.productType.findMany();
+  }
+
   //Register new type of product
   public async createProduct(data: Prisma.ProductCreateInput) {
     return this.prisma.product.create({

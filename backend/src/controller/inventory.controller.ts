@@ -11,17 +11,44 @@ import {
   Res,
   HttpStatus,
   HttpException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { InventoryService } from 'src/service/inventory.service';
 import { CreateProductDto } from 'src/dto/inventory/create-product.dto';
+import { CreateProductTypeDto } from 'src/dto/inventory/create-product-type.dto';
 import { CreateStockDto } from 'src/dto/inventory/create-stock.dto';
 import { UpdateStockDto } from 'src/dto/inventory/update-stock.dto';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 
 // Add auth later
 @Controller('api/v1/inventory')
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) { }
+
+  //Register a new product type
+  //Route: POST /api/v1/inventory/types
+  @Post('types')
+  async createProductType(@Body(ValidationPipe) body: CreateProductTypeDto, @Res() res: Response) {
+    try {
+      const type = await this.inventoryService.createProductType(body);
+      return res.status(HttpStatus.CREATED).json(type);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+  }
+
+  //List all product types
+  //Route: GET /api/v1/inventory/types
+  @Get('types')
+  async getAllProductTypes(@Res() res: Response) {
+    try {
+      const types = await this.inventoryService.getAllProductTypes();
+      return res.status(HttpStatus.OK).json(types);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+  }
 
   //Register a new type of product
   //Route: POST /api/v1/inventory/products

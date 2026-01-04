@@ -14,10 +14,6 @@ export class CreateStockDto {
   @IsNotEmpty()
   expiryDate: string;
 
-  @IsString()
-  @IsOptional()
-  notes?: string;
-
   @IsInt()
   @IsNotEmpty()
   productId: number;

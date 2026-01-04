@@ -4,10 +4,7 @@ import { UserSignUpDto } from "src/dto/user.sign-up.dto";
 import { UserSignInDto } from "src/dto/user.sign-in.dto";
 import { UserRepository } from "src/repository/user.repository";
 import * as bcrypt from "bcrypt";
-<<<<<<< Updated upstream
-=======
 import { UserRole } from "@prisma/client";
->>>>>>> Stashed changes
 
 @Injectable()
 export class UserService {
@@ -25,10 +22,7 @@ export class UserService {
 
         const userData = await this.userRepository.createUser({
             ...dto,
-<<<<<<< Updated upstream
-=======
             userType: dto.userType as UserRole,
->>>>>>> Stashed changes
             password: encryptedPassword
         });
 
@@ -55,16 +49,6 @@ export class UserService {
         //     hashedRefreshToken: null,
         // });
         const user = await this.userRepository.getUserById(userId);
-<<<<<<< Updated upstream
-                if (!user || !user.hashedRefreshToken) throw new UnauthorizedException("Access Denied");
-        
-                const refreshTokenMatches = await bcrypt.compare(refreshToken, user.hashedRefreshToken);
-                if (!refreshTokenMatches) throw new UnauthorizedException("Access Denied");
-        
-                await this.userRepository.updateUser(userId, {
-                    hashedRefreshToken: null,
-                });
-=======
         if (!user || !user.hashedRefreshToken) throw new UnauthorizedException("Access Denied");
 
         const refreshTokenMatches = await bcrypt.compare(refreshToken, user.hashedRefreshToken);
@@ -73,7 +57,6 @@ export class UserService {
         await this.userRepository.updateUser(userId, {
             hashedRefreshToken: null,
         });
->>>>>>> Stashed changes
     }
 
     public async refreshTokens(userId: string, refreshToken: string) {
