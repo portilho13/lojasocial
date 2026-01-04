@@ -3,13 +3,13 @@ import { Product, ProductType } from "@prisma/client";
 export class ProductResponseDto {
   id: Product['id'];
   name: Product['name'];
-  productTypeId: Product['productTypeId'];
-  productTypeDescription: ProductType['description'];
+  typeId: Product['typeId'];
+  typeDescription: ProductType['description'];
 
-  constructor(product: Product & { productType: ProductType }) {
+  constructor(product: Product & { type: ProductType }) {
     this.id = product.id;
     this.name = product.name;
-    this.productTypeId = product.productTypeId;
-    this.productTypeDescription = product.productType.description;
+    this.typeId = product.typeId;
+    this.typeDescription = product.type.description;
   }
 }

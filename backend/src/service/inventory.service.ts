@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InventoryRepository } from '../repository/inventory.repository';
 import { CreateProductDto } from '../dto/inventory/create-product.dto';
+import { CreateProductTypeDto } from '../dto/inventory/create-product-type.dto';
 import { CreateStockDto } from '../dto/inventory/create-stock.dto';
 import { ProductResponseDto } from '../dto/inventory/product-response.dto';
 import { StockResponseDto } from '../dto/inventory/stock-response.dto';
@@ -10,7 +11,17 @@ import { StockSummaryDto } from 'src/dto/inventory/stock-summary.dto';
 
 @Injectable()
 export class InventoryService {
-  constructor(private readonly inventoryRepository: InventoryRepository) {}
+  constructor(private readonly inventoryRepository: InventoryRepository) { }
+
+  //Register new product type
+  public async createProductType(dto: CreateProductTypeDto) {
+    return this.inventoryRepository.createProductType(dto);
+  }
+
+  //List all product types
+  public async getAllProductTypes() {
+    return this.inventoryRepository.findAllProductTypes();
+  }
 
   //Register new product type
   public async createProduct(dto: CreateProductDto) {
@@ -21,12 +32,12 @@ export class InventoryService {
     if (productByName)
       throw new ConflictException('There is already a product with this name.');
 
-    const { productTypeId, ...productData } = dto;
+    const { typeId, ...productData } = dto;
 
     const newProduct = await this.inventoryRepository.createProduct({
       ...productData,
-      productType: {
-        connect: { id: productTypeId },
+      type: {
+        connect: { id: typeId },
       },
     });
 
@@ -35,20 +46,14 @@ export class InventoryService {
 
   //Register new stock entry
   public async createStock(dto: CreateStockDto) {
-    const { productId, userId, movementDate, expiryDate, ...rest } = dto;
-
     const prismaData: Prisma.StockCreateInput = {
-      ...rest,
-      movementDate: new Date(movementDate),
-      expiryDate: new Date(expiryDate),
+      quantity: dto.quantity,
+      location: dto.location,
+      expiryDate: new Date(dto.expiryDate),
       product: {
-        connect: { id: productId },
+        connect: { id: dto.productId },
       },
     };
-
-    if (userId) {
-      prismaData.user = { connect: { id: userId } };
-    }
 
     const newStock = await this.inventoryRepository.createStock(prismaData);
 
@@ -69,13 +74,15 @@ export class InventoryService {
   }
 
   //Update stock entry
-  public async updateStock(id: string, dto: UpdateStockDto) {
-    const updatedStock = await this.inventoryRepository.updateStock(id, dto);
+  public async updateStock(id: number, dto: UpdateStockDto) {
+    const updatedStock = await this.inventoryRepository.updateStock(id, {
+      quantity: dto.quantity,
+    });
     return new StockResponseDto(updatedStock);
   }
 
   //Delete stock entry
-  public async deleteStock(id: string) {
+  public async deleteStock(id: number) {
     await this.inventoryRepository.deleteStock(id);
   }
 
@@ -94,7 +101,7 @@ export class InventoryService {
 
     return categories.map((cat) => {
       const total = cat.products.reduce((sum, product) => {
-        const productTotal = product.stocks.reduce(
+        const productTotal = product.stockBatches.reduce(
           (s, stock) => s + stock.quantity,
           0,
         );
