@@ -7,127 +7,194 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- ENUMS (Dropdown options) ---
+enum UserRole {
+  ADMIN
+  VOLUNTARIO
+  STAFF
+}
+
+enum StudentStatus {
+  ATIVO
+  SUSPENSO
+  GRADUADO
+}
+
+enum DonorType {
+  EMPRESA
+  INDIVIDUAL
+  ANONIMO
+}
+
+enum RequestStatus {
+  PENDENTE
+  APROVADO
+  ENTREGUE
+  CANCELADO
+}
+
+// --- MODELS ---
+
 model Student {
-  id                    String             @id @default(uuid())
-  name                  String
-  studentNumber         String             @unique
-  course                String
-  academicYear          Int
-  socialSecurityNumber  String             @unique
-  contact               String
-  email                 String             @unique
-  password              String
-  hashedRefreshToken    String?
-  donationRequests      DonationRequest[]
-}
+  id              Int             @id @default(autoincrement())
+  name            String          @map("nome")
+  studentNumber   String          @unique @map("numero_estudante")
+  course          String          @map("curso")
+  curricularYear  Int             @map("ano_curricular")
+  socialSecNumber String?         @map("numero_seguranca_social")
+  contact         String?         @map("contacto")
+  email           String          @unique @map("email")
+  status          StudentStatus   @default(ATIVO) @map("status")
+  
+  appointments    Appointment[]
+  requests        SupportRequest[]
 
-model Schedule {
-  id                String             @id @default(uuid())
-  scheduledDate     DateTime
-  notificationSent  Boolean            @default(false)
-  donationRequests  DonationRequest[]
-}
-
-model Donation {
-  id               String             @id @default(uuid())
-  quantity         Int
-  donationDate     DateTime
-  campaignId       String
-  campaign         Campaign           @relation(fields: [campaignId], references: [id])
-  donationProducts DonationProduct[]
-  donationRequests DonationRequest[]
-}
-
-model DonationRequest {
-  id              String         @id @default(uuid())
-  deliveryDate    DateTime?
-  status          String
-  notes           String?
-  donationId      String?
-  donation        Donation?      @relation(fields: [donationId], references: [id])
-  userId          String?
-  user            User?          @relation(fields: [userId], references: [id])
-  scheduleId      String?        // Pickup info
-  schedule        Schedule?      @relation(fields: [scheduleId], references: [id])
-  studentId       String         // FK to Student
-  student         Student        @relation(fields: [studentId], references: [id])
-  deliveryProducts DeliveryProduct[]
-}
-
-model Campaign {
-  id           String      @id @default(uuid())
-  title        String
-  description  String
-  publishedAt  DateTime
-  eventDate    DateTime
-  donations    Donation[]
-}
-
-model DonationProduct {
-  donationId  String
-  productId   String
-  donation    Donation @relation(fields: [donationId], references: [id])
-  product     Product  @relation(fields: [productId], references: [id])
-  @@id([donationId, productId])
-}
-
-model DeliveryProduct {
-  id                  String           @id @default(uuid())
-  deliveredQuantity   Int
-  donationRequestId   String
-  productId           String
-  donationRequest     DonationRequest  @relation(fields: [donationRequestId], references: [id])
-  product             Product          @relation(fields: [productId], references: [id])
-}
-
-model Product {
-  id              String            @id @default(uuid())
-  name            String
-  productTypeId   String
-  productType     ProductType       @relation(fields: [productTypeId], references: [id])
-  donationProducts DonationProduct[]
-  deliveryProducts DeliveryProduct[]
-  stocks          Stock[]
-}
-
-model ProductType {
-  id          String    @id @default(uuid())
-  description String
-  products    Product[]
-}
-
-model Stock {
-  id            String          @id @default(uuid())
-  quantity      Int
-  movementDate  DateTime
-  expiryDate    DateTime
-  notes         String?
-  productId     String
-  userId        String?
-  product       Product         @relation(fields: [productId], references: [id])
-  user          User?           @relation(fields: [userId], references: [id])
-  history       StockHistory[]
-}
-
-model StockHistory {
-  id                String      @id @default(uuid())
-  previousQuantity  Int
-  movementQuantity  Int
-  currentQuantity   Int
-  movementDate      DateTime
-  notes             String?
-  stockId           String
-  stock             Stock       @relation(fields: [stockId], references: [id])
+  @@map("estudante")
 }
 
 model User {
-  id               String           @id @default(uuid())
-  name             String
-  userType         String
-  contact          String
-  email            String           @unique
-  password         String
-  hashedRefreshToken String?
-  stocks           Stock[]
-  donationRequests DonationRequest[]
+  id              Int             @id @default(autoincrement())
+  name            String          @map("nome")
+  role            UserRole        @default(VOLUNTARIO) @map("tipo_utilizador")
+  contact         String?         @map("contacto")
+  email           String          @unique @map("email")
+
+  processedRequests SupportRequest[]
+
+  @@map("utilizadores")
+}
+
+model Appointment {
+  id              Int       @id @default(autoincrement())
+  date            DateTime  @map("data_agendada")
+  notificationSent Boolean  @default(false) @map("notificacao_enviada")
+  
+  studentId       Int       @map("id_estudante")
+  student         Student   @relation(fields: [studentId], references: [id])
+
+  // An appointment might be linked to a specific delivery request
+  request         SupportRequest?
+
+  @@map("agendamento")
+}
+
+model ProductType {
+  id          Int       @id @default(autoincrement())
+  description String    @map("descricao")
+  products    Product[]
+
+  @@map("tipo_produto")
+}
+
+model Product {
+  id            Int            @id @default(autoincrement())
+  name          String         @map("nome_produto")
+  
+  typeId        Int            @map("id_tipo_produto")
+  type          ProductType    @relation(fields: [typeId], references: [id])
+
+  stockBatches  Stock[]
+  donationItems DonationItem[]
+  requestItems  RequestItem[]
+
+  @@map("produto")
+}
+
+model Stock {
+  id          Int       @id @default(autoincrement())
+  quantity    Int       @map("quantidade")
+  expiryDate  DateTime? @map("data_validade")
+  location    String?   @map("localizacao") // e.g. Shelf A
+
+  productId   Int       @map("id_produto")
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("stock")
+}
+
+model Donor {
+  id          Int       @id @default(autoincrement())
+  name        String?   @map("nome") // Nullable if anonymous
+  nif         String?   @map("nif")
+  type        DonorType @default(INDIVIDUAL) @map("tipo")
+  contact     String?   @map("contacto")
+  
+  donations   Donation[]
+
+  @@map("doador")
+}
+
+model Campaign {
+  id          Int       @id @default(autoincrement())
+  title       String    @map("titulo")
+  description String?   @map("descricao")
+  startDate   DateTime  @map("data_inicio")
+  endDate     DateTime? @map("data_fim")
+
+  donations   Donation[]
+
+  @@map("campanha")
+}
+
+model Donation {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  @default(now()) @map("data_doacao")
+  
+  donorId     Int       @map("id_doador")
+  donor       Donor     @relation(fields: [donorId], references: [id])
+
+  campaignId  Int?      @map("id_campanha")
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+
+  items       DonationItem[]
+
+  @@map("doacao")
+}
+
+model DonationItem {
+  id          Int       @id @default(autoincrement())
+  quantity    Int       @map("quantidade")
+  
+  donationId  Int       @map("id_doacao")
+  donation    Donation  @relation(fields: [donationId], references: [id])
+
+  productId   Int       @map("id_produto")
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("itens_doacao")
+}
+
+model SupportRequest {
+  id          Int           @id @default(autoincrement())
+  date        DateTime      @default(now()) @map("data_pedido")
+  status      RequestStatus @default(PENDENTE) @map("estado")
+  observation String?       @map("observacao")
+
+  studentId   Int           @map("id_estudante")
+  student     Student       @relation(fields: [studentId], references: [id])
+
+  userId      Int?          @map("id_utilizador") // Staff who approved/processed it
+  user        User?         @relation(fields: [userId], references: [id])
+
+  appointmentId Int?        @unique @map("id_agendamento") // Linked Appointment
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  items       RequestItem[]
+
+  @@map("pedido_apoio")
+}
+
+model RequestItem {
+  id          Int       @id @default(autoincrement())
+  qtyRequested Int      @map("qtd_solicitada")
+  qtyDelivered Int?     @default(0) @map("qtd_entregue")
+  observation  String?  @map("observacao")
+
+  requestId   Int       @map("id_pedido")
+  request     SupportRequest @relation(fields: [requestId], references: [id])
+
+  productId   Int       @map("id_produto")
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("itens_pedido")
 }
