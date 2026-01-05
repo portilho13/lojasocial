@@ -18,6 +18,7 @@ const jwt_1 = require("@nestjs/jwt");
 const access_token_strategy_1 = require("./auth/strategies/access-token.strategy");
 const refresh_token_strategy_1 = require("./auth/strategies/refresh-token.strategy");
 const inventory_module_1 = require("./inventory.module");
+const support_request_module_1 = require("./support-request.module");
 const repositorioes = [
     student_repository_1.StudentRepository,
     user_repository_1.UserRepository,
@@ -39,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
                 global: true,
                 secret: process.env.JWT_SECRET || 'secret',
                 signOptions: { expiresIn: '15m' },
-            }), prisma_module_1.PrismaModule, inventory_module_1.InventoryModule
+            }), prisma_module_1.PrismaModule, inventory_module_1.InventoryModule, support_request_module_1.SupportRequestModule
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [...repositorioes, ...services],
