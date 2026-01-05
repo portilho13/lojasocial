@@ -1,4 +1,4 @@
-# Testing with Endpoints
+# Testing the Endpoints
 
 
 ## 1. Sign Up (Create a User)
