@@ -47,7 +47,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const student_repository_1 = require("../repository/student.repository");
 const bcrypt = __importStar(require("bcrypt"));
-const student_response_dto_1 = require("../dto/student.response.dto");
+const student_response_dto_1 = require("../dto/auth/student.response.dto");
 let StudentService = class StudentService {
     studentRepository;
     jwtService;

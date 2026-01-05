@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
-import { StudentSignInDto } from "src/dto/student.sign-in.dto";
+import { StudentSignUpDto } from "src/dto/auth/student.sign-up.dto";
+import { StudentSignInDto } from "src/dto/auth/student.sign-in.dto";
 import { StudentService } from "src/service/student.service";
 import { UserService } from "src/service/user.service";
-import { UserSignUpDto } from "src/dto/user.sign-up.dto";
-import { UserSignInDto } from "src/dto/user.sign-in.dto";
+import { UserSignUpDto } from "src/dto/auth/user.sign-up.dto";
+import { UserSignInDto } from "src/dto/auth/user.sign-in.dto";
 export declare class AuthController {
     private readonly authService;
     private readonly userService;

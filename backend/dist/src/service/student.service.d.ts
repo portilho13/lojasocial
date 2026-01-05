@@ -1,8 +1,8 @@
 import { JwtService } from "@nestjs/jwt";
-import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
-import { StudentSignInDto } from "src/dto/student.sign-in.dto";
+import { StudentSignUpDto } from "src/dto/auth/student.sign-up.dto";
+import { StudentSignInDto } from "src/dto/auth/student.sign-in.dto";
 import { StudentRepository } from "src/repository/student.repository";
-import { StudentResponseDto } from "src/dto/student.response.dto";
+import { StudentResponseDto } from "src/dto/auth/student.response.dto";
 export declare class StudentService {
     private readonly studentRepository;
     private readonly jwtService;

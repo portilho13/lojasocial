@@ -2,12 +2,12 @@ import { Body, Controller, HttpException, HttpStatus, Post, Res, ValidationPipe,
 import type { Request, Response } from "express";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { RefreshTokenGuard } from "src/common/guards/refresh-token.guard";
-import { StudentSignUpDto } from "src/dto/student.sign-up.dto";
-import { StudentSignInDto } from "src/dto/student.sign-in.dto";
+import { StudentSignUpDto } from "src/dto/auth/student.sign-up.dto";
+import { StudentSignInDto } from "src/dto/auth/student.sign-in.dto";
 import { StudentService } from "src/service/student.service";
 import { UserService } from "src/service/user.service";
-import { UserSignUpDto } from "src/dto/user.sign-up.dto";
-import { UserSignInDto } from "src/dto/user.sign-in.dto";
+import { UserSignUpDto } from "src/dto/auth/user.sign-up.dto";
+import { UserSignInDto } from "src/dto/auth/user.sign-in.dto";
 
 @Controller('api/v1/auth')
 export class AuthController {

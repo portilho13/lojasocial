@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const refresh_token_guard_1 = require("../common/guards/refresh-token.guard");
-const student_sign_up_dto_1 = require("../dto/student.sign-up.dto");
-const student_sign_in_dto_1 = require("../dto/student.sign-in.dto");
+const student_sign_up_dto_1 = require("../dto/auth/student.sign-up.dto");
+const student_sign_in_dto_1 = require("../dto/auth/student.sign-in.dto");
 const student_service_1 = require("../service/student.service");
 const user_service_1 = require("../service/user.service");
-const user_sign_up_dto_1 = require("../dto/user.sign-up.dto");
-const user_sign_in_dto_1 = require("../dto/user.sign-in.dto");
+const user_sign_up_dto_1 = require("../dto/auth/user.sign-up.dto");
+const user_sign_in_dto_1 = require("../dto/auth/user.sign-in.dto");
 let AuthController = class AuthController {
     authService;
     userService;
