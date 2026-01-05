@@ -8,25 +8,32 @@ import * as bcrypt from 'bcrypt';
 export class BeneficiaryService {
   constructor(private readonly repository: BeneficiaryRepository) {}
 
-  async create(dto: CreateBeneficiaryDto) {
+  // Create a new beneficiary and hash their password
+  public async create(dto: CreateBeneficiaryDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
+
     const created = await this.repository.create({ ...dto, password: hashedPassword });
     const beneficiary = await this.repository.findById(created.id);
+
     if (!beneficiary) throw new NotFoundException('Beneficiary not found');
+
     return beneficiary;
   }
 
-  async findAll(skip?: number, take?: number) {
+  // List all beneficiaries with optional pagination
+  public async findAll(skip?: number, take?: number) {
     return this.repository.findAll(skip ?? 0, take ?? 50);
   }
 
-  async findOne(id: string) {
+  // Find a beneficiary by ID
+  public async findOne(id: string) {
     const beneficiary = await this.repository.findById(id);
     if (!beneficiary) throw new NotFoundException('Beneficiary not found');
     return beneficiary;
   }
 
-  async update(id: string, dto: UpdateBeneficiaryDto) {
+  // Update a beneficiary by ID
+  public async update(id: string, dto: UpdateBeneficiaryDto) {
     const beneficiary = await this.repository.findById(id);
     if (!beneficiary) throw new NotFoundException('Beneficiary not found');
 
@@ -38,7 +45,8 @@ export class BeneficiaryService {
     return this.findOne(id);
   }
 
-  async delete(id: string) {
+  // Delete a beneficiary by ID
+  public async delete(id: string) {
     const beneficiary = await this.repository.findById(id);
     if (!beneficiary) throw new NotFoundException('Beneficiary not found');
     return this.repository.delete(id);

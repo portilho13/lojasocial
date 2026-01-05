@@ -9,6 +9,8 @@ import type { Response } from 'express';
 export class BeneficiaryController {
   constructor(private readonly service: BeneficiaryService) {}
 
+  // Register a new beneficiary
+  // Route: POST /api/v1/beneficiaries
   @Post()
   async create(@Body(ValidationPipe) body: CreateBeneficiaryDto, @Res() res: Response) {
     try {
@@ -19,6 +21,8 @@ export class BeneficiaryController {
     }
   }
 
+  // List all beneficiaries with optional pagination
+  // Route: GET /api/v1/beneficiaries?skip=0&take=50
   @Get()
   async findAll(@Res() res: Response, @Query('skip') skip?: string, @Query('take') take?: string) {
     try {
@@ -33,6 +37,8 @@ export class BeneficiaryController {
     }
   }
 
+  // Get a single beneficiary by ID
+  // Route: GET /api/v1/beneficiaries/:id
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
     try {
@@ -43,6 +49,8 @@ export class BeneficiaryController {
     }
   }
 
+  // Update a beneficiary by ID
+  // Route: PATCH /api/v1/beneficiaries/:id
   @Patch(':id')
   async update(@Param('id') id: string, @Body(ValidationPipe) body: UpdateBeneficiaryDto, @Res() res: Response) {
     try {
@@ -54,6 +62,8 @@ export class BeneficiaryController {
     }
   }
 
+  // Delete a beneficiary by ID
+  // Route: DELETE /api/v1/beneficiaries/:id
   @Delete(':id')
   async delete(@Param('id') id: string, @Res() res: Response) {
     try {
