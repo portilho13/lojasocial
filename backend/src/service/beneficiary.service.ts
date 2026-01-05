@@ -11,9 +11,9 @@ export class BeneficiaryService {
   async create(dto: CreateBeneficiaryDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const created = await this.repository.create({ ...dto, password: hashedPassword });
-    const student = await this.repository.findById(created.id);
-    if (!student) throw new NotFoundException('Beneficiário não encontrado');
-    return student;
+    const beneficiary = await this.repository.findById(created.id);
+    if (!beneficiary) throw new NotFoundException('Beneficiary not found');
+    return beneficiary;
   }
 
   async findAll(skip?: number, take?: number) {
@@ -21,14 +21,14 @@ export class BeneficiaryService {
   }
 
   async findOne(id: string) {
-    const student = await this.repository.findById(id);
-    if (!student) throw new NotFoundException('Beneficiário não encontrado');
-    return student;
+    const beneficiary = await this.repository.findById(id);
+    if (!beneficiary) throw new NotFoundException('Beneficiary not found');
+    return beneficiary;
   }
 
   async update(id: string, dto: UpdateBeneficiaryDto) {
-    const student = await this.repository.findById(id);
-    if (!student) throw new NotFoundException('Beneficiário não encontrado');
+    const beneficiary = await this.repository.findById(id);
+    if (!beneficiary) throw new NotFoundException('Beneficiary not found');
 
     if (dto.password) {
       dto.password = await bcrypt.hash(dto.password, 10);
@@ -39,8 +39,8 @@ export class BeneficiaryService {
   }
 
   async delete(id: string) {
-    const student = await this.repository.findById(id);
-    if (!student) throw new NotFoundException('Beneficiário não encontrado');
+    const beneficiary = await this.repository.findById(id);
+    if (!beneficiary) throw new NotFoundException('Beneficiary not found');
     return this.repository.delete(id);
   }
 }

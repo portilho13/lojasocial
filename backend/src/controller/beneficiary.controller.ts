@@ -39,7 +39,7 @@ export class BeneficiaryController {
       const beneficiary = await this.service.findOne(id);
       return res.status(HttpStatus.OK).json(new BeneficiaryResponseDto(beneficiary));
     } catch (e) {
-      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiário não encontrado' });
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiary not found' });
     }
   }
 
@@ -49,7 +49,7 @@ export class BeneficiaryController {
       const beneficiary = await this.service.update(id, body);
       return res.status(HttpStatus.OK).json(new BeneficiaryResponseDto(beneficiary));
     } catch (e) {
-      if (e.status === 404) return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiário não encontrado' });
+      if (e.status === 404) return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiary not found' });
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
@@ -60,7 +60,7 @@ export class BeneficiaryController {
       await this.service.delete(id);
       return res.status(HttpStatus.NO_CONTENT).send();
     } catch (e) {
-      if (e.status === 404) return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiário não encontrado' });
+      if (e.status === 404) return res.status(HttpStatus.NOT_FOUND).json({ message: 'Beneficiary not found' });
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
