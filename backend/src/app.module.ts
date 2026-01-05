@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 import { InventoryModule } from './inventory.module';
+import { SupportRequestModule } from './support-request.module';
 
 
 const repositorioes = [
@@ -30,7 +31,7 @@ const services = [
       global: true,
       secret: process.env.JWT_SECRET || 'secret',
       signOptions: { expiresIn: '15m' },
-    }), PrismaModule, InventoryModule
+    }), PrismaModule, InventoryModule, SupportRequestModule
   ],
   controllers: [AuthController],
   providers: [...repositorioes, ...services],
