@@ -1,15 +1,15 @@
 import { Student } from '@prisma/client';
 
 export class BeneficiaryResponseDto {
-  id: string;
-  name: string;
-  studentNumber: string;
-  course: string;
-  academicYear: number;
-  socialSecurityNumber?: string | null;
-  contact?: string | null;
-  email: string;
-  status?: string | null;
+  id: Student['id'];
+  name: Student['name'];
+  studentNumber: Student['studentNumber'];
+  course: Student['course'];
+  academicYear: Student['academicYear'];
+  socialSecurityNumber: Student['socialSecurityNumber'];
+  contact: Student['contact'];
+  email: Student['email'];
+  status: Student['status'];
 
   constructor(student: Student) {
     this.id = student.id;
@@ -20,6 +20,6 @@ export class BeneficiaryResponseDto {
     this.socialSecurityNumber = student.socialSecurityNumber ?? null;
     this.contact = student.contact ?? null;
     this.email = student.email;
-    this.status = student.status ?? null;
+    this.status = student.status;
   }
 }
