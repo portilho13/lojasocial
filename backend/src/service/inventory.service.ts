@@ -74,7 +74,7 @@ export class InventoryService {
   }
 
   //Update stock entry
-  public async updateStock(id: number, dto: UpdateStockDto) {
+  public async updateStock(id: string, dto: UpdateStockDto) {
     const updatedStock = await this.inventoryRepository.updateStock(id, {
       quantity: dto.quantity,
     });
@@ -82,7 +82,7 @@ export class InventoryService {
   }
 
   //Delete stock entry
-  public async deleteStock(id: number) {
+  public async deleteStock(id: string) {
     await this.inventoryRepository.deleteStock(id);
   }
 
