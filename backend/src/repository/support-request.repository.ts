@@ -35,7 +35,7 @@ export class SupportRequestRepository {
         });
     }
 
-    public async findById(id: number) {
+    public async findById(id: string) {
         return this.prisma.supportRequest.findUnique({
             where: { id },
             include: {
@@ -48,7 +48,7 @@ export class SupportRequestRepository {
         });
     }
 
-    public async updateStatus(id: number, status: RequestStatus, userId: string) {
+    public async updateStatus(id: string, status: RequestStatus, userId: string) {
         return this.prisma.supportRequest.update({
             where: { id },
             data: {

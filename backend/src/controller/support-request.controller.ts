@@ -54,6 +54,6 @@ export class SupportRequestController {
     ) {
         const user = req.user as any;
         // Ideally restrict to STAFF/ADMIN
-        return this.service.updateStatus(parseInt(id), body, user.sub);
+        return this.service.updateStatus(id, body, user.sub);
     }
 }

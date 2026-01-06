@@ -69,11 +69,11 @@ model User {
 }
 
 model Appointment {
-  id                    String       @id @default(uuid())
+  id                    String    @id @default(uuid())
   date                  DateTime  @map("data_agendada")
-  notificationSent      Boolean  @default(false) @map("notificacao_enviada")
+  notificationSent      Boolean   @default(false) @map("notificacao_enviada")
   
-  studentId             String       @map("id_estudante")
+  studentId             String    @map("id_estudante")
   student               Student   @relation(fields: [studentId], references: [id])
 
   // An appointment might be linked to a specific delivery request
@@ -83,7 +83,7 @@ model Appointment {
 }
 
 model ProductType {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   description String    @map("descricao")
   products    Product[]
 
@@ -91,11 +91,11 @@ model ProductType {
 }
 
 model Product {
-  id            Int            @id @default(autoincrement())
-  name          String         @map("nome_produto")
+  id            String       @id @default(uuid())
+  name          String       @map("nome_produto")
   
-  typeId        Int            @map("id_tipo_produto")
-  type          ProductType    @relation(fields: [typeId], references: [id])
+  typeId        String       @map("id_tipo_produto")
+  type          ProductType  @relation(fields: [typeId], references: [id])
 
   stockBatches  Stock[]
   donationItems DonationItem[]
@@ -105,19 +105,19 @@ model Product {
 }
 
 model Stock {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   quantity    Int       @map("quantidade")
   expiryDate  DateTime? @map("data_validade")
   location    String?   @map("localizacao") // e.g. Shelf A
 
-  productId   Int       @map("id_produto")
+  productId   String    @map("id_produto")
   product     Product   @relation(fields: [productId], references: [id])
 
   @@map("stock")
 }
 
 model Donor {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   name        String?   @map("nome") // Nullable if anonymous
   nif         String?   @map("nif")
   type        DonorType @default(INDIVIDUAL) @map("tipo")
@@ -129,7 +129,7 @@ model Donor {
 }
 
 model Campaign {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   title       String    @map("titulo")
   description String?   @map("descricao")
   startDate   DateTime  @map("data_inicio")
@@ -141,13 +141,13 @@ model Campaign {
 }
 
 model Donation {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   date        DateTime  @default(now()) @map("data_doacao")
   
-  donorId     Int       @map("id_doador")
+  donorId     String    @map("id_doador")
   donor       Donor     @relation(fields: [donorId], references: [id])
 
-  campaignId  Int?      @map("id_campanha")
+  campaignId  String?      @map("id_campanha")
   campaign    Campaign? @relation(fields: [campaignId], references: [id])
 
   items       DonationItem[]
@@ -156,31 +156,31 @@ model Donation {
 }
 
 model DonationItem {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   quantity    Int       @map("quantidade")
   
-  donationId  Int       @map("id_doacao")
+  donationId  String    @map("id_doacao")
   donation    Donation  @relation(fields: [donationId], references: [id])
 
-  productId   Int       @map("id_produto")
+  productId   String       @map("id_produto")
   product     Product   @relation(fields: [productId], references: [id])
 
   @@map("itens_doacao")
 }
 
 model SupportRequest {
-  id          Int           @id @default(autoincrement())
+  id          String        @id @default(uuid())
   date        DateTime      @default(now()) @map("data_pedido")
   status      RequestStatus @default(PENDENTE) @map("estado")
   observation String?       @map("observacao")
 
-  studentId   String           @map("id_estudante")
+  studentId   String        @map("id_estudante")
   student     Student       @relation(fields: [studentId], references: [id])
 
-  userId      String?          @map("id_utilizador") // Staff who approved/processed it
+  userId      String?       @map("id_utilizador") // Staff who approved/processed it
   user        User?         @relation(fields: [userId], references: [id])
 
-  appointmentId String?        @unique @map("id_agendamento") // Linked Appointment
+  appointmentId String?      @unique @map("id_agendamento") // Linked Appointment
   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
 
   items       RequestItem[]
@@ -189,15 +189,15 @@ model SupportRequest {
 }
 
 model RequestItem {
-  id          Int       @id @default(autoincrement())
-  qtyRequested Int      @map("qtd_solicitada")
-  qtyDelivered Int?     @default(0) @map("qtd_entregue")
-  observation  String?  @map("observacao")
+  id            String    @id @default(uuid())
+  qtyRequested  Int       @map("qtd_solicitada")
+  qtyDelivered  Int?      @default(0) @map("qtd_entregue")
+  observation   String?   @map("observacao")
 
-  requestId   Int       @map("id_pedido")
+  requestId     String    @map("id_pedido")
   request     SupportRequest @relation(fields: [requestId], references: [id])
 
-  productId   Int       @map("id_produto")
+  productId    String   @map("id_produto")
   product     Product   @relation(fields: [productId], references: [id])
 
   @@map("itens_pedido")

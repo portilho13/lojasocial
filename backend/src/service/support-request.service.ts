@@ -38,7 +38,7 @@ export class SupportRequestService {
         return requests.map((r) => new SupportRequestResponseDto(r));
     }
 
-    public async updateStatus(id: number, dto: UpdateSupportRequestStatusDto, userId: string) {
+    public async updateStatus(id: string, dto: UpdateSupportRequestStatusDto, userId: string) {
         const request = await this.repository.findById(id);
         if (!request) {
             throw new NotFoundException('Support request not found');

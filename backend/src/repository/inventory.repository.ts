@@ -64,7 +64,7 @@ export class InventoryRepository {
   }
 
   //Update stock entry
-  public async updateStock(id: number, data: Prisma.StockUpdateInput) {
+  public async updateStock(id: string, data: Prisma.StockUpdateInput) {
     return this.prisma.stock.update({
       where: { id },
       data,
@@ -73,7 +73,7 @@ export class InventoryRepository {
   }
 
   //Delete stock entry
-  public async deleteStock(id: number) {
+  public async deleteStock(id: string) {
     return this.prisma.stock.delete({
       where: { id },
     });
