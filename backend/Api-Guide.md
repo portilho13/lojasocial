@@ -199,3 +199,56 @@
 *   **Expected Result**: `200 OK` with new tokens.
 
 
+# Support Requests
+
+## 1. Create Support Request (Student)
+*   **Method**: `POST`
+*   **URL**: `http://localhost:3000/api/v1/support-requests`
+*   **Headers**:
+    *   `Authorization`: `Bearer <STUDENT_ACCESS_TOKEN>`
+*   **Body (JSON)**:
+    ```json
+    {
+      "studentId": "uuid-of-student",
+      "observation": "Need food for the week",
+      "items": [
+        {
+          "productId": 1,
+          "qtyRequested": 2,
+          "observation": "Rice"
+        }
+      ]
+    }
+    ```
+    *Replace `uuid-of-student` with the actual Student ID (from login or profile).*
+    *Replace `1` with a valid Product ID.*
+*   **Expected Result**: `201 Created`.
+
+## 2. Get My Requests (Student)
+*   **Method**: `GET`
+*   **URL**: `http://localhost:3000/api/v1/support-requests/me`
+*   **Headers**:
+    *   `Authorization`: `Bearer <STUDENT_ACCESS_TOKEN>`
+*   **Expected Result**: `200 OK`.
+
+## 3. List All Requests (Staff)
+*   **Method**: `GET`
+*   **URL**: `http://localhost:3000/api/v1/support-requests`
+*   **Headers**:
+    *   `Authorization`: `Bearer <STAFF_ACCESS_TOKEN>`
+*   **Expected Result**: `200 OK`.
+
+## 4. Update Request Status (Staff)
+*   **Method**: `PATCH`
+*   **URL**: `http://localhost:3000/api/v1/support-requests/1/status`
+    *Replace `1` with the Request ID.*
+*   **Headers**:
+    *   `Authorization`: `Bearer <STAFF_ACCESS_TOKEN>`
+*   **Body (JSON)**:
+    ```json
+    {
+      "status": "APROVADO"
+    }
+    ```
+    *Valid statuses: `PENDENTE`, `APROVADO`, `ENTREGUE`, `CANCELADO`.*
+*   **Expected Result**: `200 OK`.
