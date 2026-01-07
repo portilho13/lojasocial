@@ -10,9 +10,12 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val IPCA_Green_Dark = Color(0xFF004E36) // Main Background
+val IPCA_Green_Dark = Color(0xFF005133) // Main Background
 val IPCA_Green_Light = Color(0xFF1F634C) // Input Field Background
 val IPCA_Border = Color(0xFF408068)      // Input Field Border
 val IPCA_Gold = Color(0xFF8D764F)        // Button Color
 val Text_White = Color.White
-val Text_Grey = Color(0xFFA0C4B5)        // Placeholder/Subtext
+val Text_Grey = Color(0xFFA0C4B5)
+
+val Text_Black = Color(0xFF333333)
+val Background_Light = Color(0xFFF8F9FA)

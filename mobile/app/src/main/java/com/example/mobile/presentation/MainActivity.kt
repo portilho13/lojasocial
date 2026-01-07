@@ -14,8 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.mobile.presentation.home.HomeView
 import com.example.mobile.presentation.login.LoginView
 import com.example.mobile.presentation.register.RegisterView
+import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.SASTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,6 +46,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.RegisterScreen.route) {
                             RegisterView(navController)
+                        }
+                        composable(route = Screen.StudentsScreen.route) {
+                            StudentsView()
+                        }
+                        composable(route = Screen.HomeScreen.route) {
+                            HomeView()
                         }
 
                     }
