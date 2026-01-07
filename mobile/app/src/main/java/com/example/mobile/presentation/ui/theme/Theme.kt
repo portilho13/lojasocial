@@ -4,6 +4,7 @@ package com.example.mobile.presentation.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -49,6 +50,7 @@ fun SASTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    ipcaInputColors()
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -56,3 +58,15 @@ fun SASTheme(
         content = content
     )
 }
+@Composable
+fun ipcaInputColors() = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = IPCA_Green_Light,
+    unfocusedContainerColor = IPCA_Green_Light,
+    focusedBorderColor = Text_Grey,
+    unfocusedBorderColor = IPCA_Border,
+    cursorColor = Text_White,
+    focusedTextColor = Text_White,
+    unfocusedTextColor = Text_White,
+    focusedTrailingIconColor = Text_Grey,
+    unfocusedTrailingIconColor = Text_Grey
+)

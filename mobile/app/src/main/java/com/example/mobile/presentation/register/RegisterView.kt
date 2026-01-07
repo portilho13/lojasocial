@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,12 +51,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
 import com.example.mobile.presentation.Screen
+import com.example.mobile.presentation.components.CustomLabel
+import com.example.mobile.presentation.components.IPCATextField
 import com.example.mobile.presentation.ui.theme.IPCA_Border
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Light
 import com.example.mobile.presentation.ui.theme.Text_Grey
 import com.example.mobile.presentation.ui.theme.Text_White
+import com.example.mobile.presentation.ui.theme.ipcaInputColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +67,6 @@ fun RegisterView(
 //    onNavigateToLogin: () -> Unit,
 //    onRegisterSubmission: (String, String, String, String, String) -> Unit
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     // Form States
     var name by remember { mutableStateOf("") }
@@ -264,60 +265,6 @@ fun RegisterView(
         }
     }
 }
-
-// --- Helper Composables to reduce code duplication ---
-
-@Composable
-fun CustomLabel(text: String) {
-    Text(
-        text = text,
-        color = Text_White,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    )
-}
-
-// Reusable standard text field wrapper
-@Composable
-fun IPCATextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text
-) {
-    CustomLabel(text = label)
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        placeholder = { Text(placeholder, color = Text_Grey) },
-        shape = RoundedCornerShape(8.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        colors = ipcaInputColors(),
-        singleLine = true
-    )
-}
-
-// Centralized definition of the input field colors
-@Composable
-fun ipcaInputColors() = OutlinedTextFieldDefaults.colors(
-    focusedContainerColor = IPCA_Green_Light,
-    unfocusedContainerColor = IPCA_Green_Light,
-    focusedBorderColor = Text_Grey,
-    unfocusedBorderColor = IPCA_Border,
-    cursorColor = Text_White,
-    focusedTextColor = Text_White,
-    unfocusedTextColor = Text_White,
-    focusedTrailingIconColor = Text_Grey,
-    unfocusedTrailingIconColor = Text_Grey
-)
-
 
 @Preview(showBackground = true, device = "id:pixel_6a")
 @Composable

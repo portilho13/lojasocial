@@ -25,7 +25,6 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,12 +48,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
 import com.example.mobile.presentation.Screen
-import com.example.mobile.presentation.ui.theme.IPCA_Border
+import com.example.mobile.presentation.components.CustomLabel
+import com.example.mobile.presentation.components.IPCATextField
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-import com.example.mobile.presentation.ui.theme.IPCA_Green_Light
 import com.example.mobile.presentation.ui.theme.Text_Grey
 import com.example.mobile.presentation.ui.theme.Text_White
+import com.example.mobile.presentation.ui.theme.ipcaInputColors
 
 // --- Color Definitions based on the Image ---
 
@@ -62,7 +62,6 @@ import com.example.mobile.presentation.ui.theme.Text_White
 @Composable
 fun LoginView(
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     // State management
     var email by remember { mutableStateOf("") }
@@ -109,24 +108,13 @@ fun LoginView(
                 modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
             )
 
-            // 3. Email Input
-            CustomLabel(text = "Email")
-            OutlinedTextField(
+            // Email Input
+            IPCATextField(
+                label = "Email",
                 value = email,
                 onValueChange = { email = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("seu.email@exemplo.com", color = Text_Grey) },
-                shape = RoundedCornerShape(8.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = IPCA_Green_Light,
-                    unfocusedContainerColor = IPCA_Green_Light,
-                    focusedBorderColor = Text_Grey,
-                    unfocusedBorderColor = IPCA_Border,
-                    cursorColor = Text_White,
-                    focusedTextColor = Text_White,
-                    unfocusedTextColor = Text_White
-                ),
-                singleLine = true
+                placeholder = "seu.email@ipca.pt",
+                keyboardType = KeyboardType.Email
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -159,15 +147,7 @@ fun LoginView(
                         )
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = IPCA_Green_Light,
-                    unfocusedContainerColor = IPCA_Green_Light,
-                    focusedBorderColor = Text_Grey,
-                    unfocusedBorderColor = IPCA_Border,
-                    cursorColor = Text_White,
-                    focusedTextColor = Text_White,
-                    unfocusedTextColor = Text_White
-                ),
+                colors = ipcaInputColors(),
                 singleLine = true
             )
 
@@ -255,18 +235,7 @@ fun LoginView(
 }
 
 // Helper composable for labels above text fields
-@Composable
-fun CustomLabel(text: String) {
-    Text(
-        text = text,
-        color = Text_White,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable

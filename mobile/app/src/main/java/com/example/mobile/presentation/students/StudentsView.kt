@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.R
 import com.example.mobile.presentation.components.NavigationDrawer
+import com.example.mobile.presentation.students.components.StudentTable
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 import kotlinx.coroutines.launch
@@ -218,83 +219,7 @@ fun StudentManagementScreen(onMenuClick: () -> Unit) {
 }
 
 
-@Composable
-fun StudentTable(students: List<Student>) {
-    Card(
-        shape = RoundedCornerShape(
-            topStart = 12.dp,
-            topEnd = 12.dp
-        ), // Cantos arredondados apenas no topo como na imagem
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column {
-            // Cabeçalho da Tabela
-            Row(
-                modifier = Modifier
-                    .background(IPCA_Green_Dark)
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Nome",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = "Nº Estudante",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = "Ano Curricular",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-            }
 
-            // Linhas da Tabela
-            students.forEachIndexed { index, student ->
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = student.name,
-                            color = Text_Black,
-                            fontSize = 14.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = student.studentNumber,
-                            color = Text_Black,
-                            fontSize = 14.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = student.curricularYear,
-                            color = Text_Black,
-                            fontSize = 14.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    // Separador (Divider) exceto após o último item
-                    if (index < students.size - 1) {
-                        HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

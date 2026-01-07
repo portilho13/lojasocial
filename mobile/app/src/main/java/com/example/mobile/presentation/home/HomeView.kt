@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.R
 import com.example.mobile.presentation.components.NavigationDrawer
+import com.example.mobile.presentation.home.components.DashboardCard
+import com.example.mobile.presentation.home.components.ExpiringItemRow
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
@@ -264,102 +266,6 @@ fun Dashboard(onMenuClick: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(40.dp)) // Bottom spacing
-        }
-    }
-}
-
-@Composable
-fun DashboardCard(
-    title: String,
-    value: String,
-    icon: ImageVector,
-    iconColor: Color
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .width(150.dp) // Fixed width for consistent look in scroll
-            .height(110.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = value,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Text_Black
-                )
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Text(
-                text = title,
-                fontSize = 12.sp,
-                color = Color.Gray,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
-
-@Composable
-fun ExpiringItemRow(item: ExpiringItem) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(2f)) {
-            Text(
-                text = item.productName,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                color = Text_Black
-            )
-            Text(text = item.location, fontSize = 11.sp, color = Color.Gray)
-        }
-
-        Text(
-            text = "${item.quantity} un",
-            modifier = Modifier.weight(1f),
-            fontSize = 14.sp,
-            color = Text_Black
-        )
-
-        // Highlight urgencies in Red
-        val daysColor = if (item.daysLeft <= 2) Alert_Red else Warning_Orange
-        Row(
-            modifier = Modifier.weight(1.5f),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Default.WarningAmber,
-                null,
-                tint = daysColor,
-                modifier = Modifier.size(14.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "${item.daysLeft} dias",
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = daysColor
-            )
         }
     }
 }
