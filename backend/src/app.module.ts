@@ -10,11 +10,16 @@ import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 import { InventoryModule } from './inventory.module';
 import { SupportRequestModule } from './support-request.module';
+import { EmailService } from './service/email.service';
+import { AppointmentsRepository } from './repository/appointments.repository';
+import { AppointmentService } from './service/appointment.service';
+import { AppointmentController } from './controller/appointment.controller';
 
 
 const repositorioes = [
   StudentRepository,
   UserRepository,
+  AppointmentsRepository
 ]
 
 const services = [
@@ -22,6 +27,13 @@ const services = [
   UserService,
   AccessTokenStrategy,
   RefreshTokenStrategy,
+  EmailService,
+  AppointmentService
+]
+
+const controllers = [
+  AuthController,
+  AppointmentController
 ]
 
 @Module({
@@ -33,7 +45,7 @@ const services = [
       signOptions: { expiresIn: '15m' },
     }), PrismaModule, InventoryModule, SupportRequestModule
   ],
-  controllers: [AuthController],
+  controllers: [...controllers],
   providers: [...repositorioes, ...services],
 })
 export class AppModule { }
