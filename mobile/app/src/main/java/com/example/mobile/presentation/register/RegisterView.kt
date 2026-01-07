@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -131,21 +130,27 @@ fun RegisterView(
             ExposedDropdownMenuBox(
                 expanded = expandedUserType,
                 onExpandedChange = { expandedUserType = !expandedUserType },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
             ) {
                 OutlinedTextField(
                     value = selectedUserType.ifEmpty { "Selecione o tipo" },
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedUserType) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ipcaInputColors()
                 )
                 ExposedDropdownMenu(
                     expanded = expandedUserType,
                     onDismissRequest = { expandedUserType = false },
-                    modifier = Modifier.background(IPCA_Green_Light).border(1.dp, IPCA_Border, RoundedCornerShape(4.dp))
+                    modifier = Modifier
+                        .background(IPCA_Green_Light)
+                        .border(1.dp, IPCA_Border, RoundedCornerShape(4.dp))
                 ) {
                     userTypes.forEach { selectionOption ->
                         DropdownMenuItem(
@@ -155,7 +160,11 @@ fun RegisterView(
                                 expandedUserType = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            colors = MenuDefaults.itemColors(textColor = Text_White, leadingIconColor = Text_White, trailingIconColor = Text_White)
+                            colors = MenuDefaults.itemColors(
+                                textColor = Text_White,
+                                leadingIconColor = Text_White,
+                                trailingIconColor = Text_White
+                            )
                         )
                     }
                 }
@@ -185,15 +194,29 @@ fun RegisterView(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-                placeholder = { Text("........", color = Text_Grey, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                placeholder = {
+                    Text(
+                        "........",
+                        color = Text_Grey,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                },
                 shape = RoundedCornerShape(8.dp),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val image =
+                        if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(imageVector = image, contentDescription = "Toggle Password", tint = Text_Grey)
+                        Icon(
+                            imageVector = image,
+                            contentDescription = "Toggle Password",
+                            tint = Text_Grey
+                        )
                     }
                 },
                 colors = ipcaInputColors(),

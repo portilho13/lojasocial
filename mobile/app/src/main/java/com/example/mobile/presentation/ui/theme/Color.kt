@@ -19,3 +19,5 @@ val Text_Grey = Color(0xFFA0C4B5)
 
 val Text_Black = Color(0xFF333333)
 val Background_Light = Color(0xFFF8F9FA)
+val Alert_Red = Color(0xFFB00020)
+val Warning_Orange = Color(0xFFE65100)
