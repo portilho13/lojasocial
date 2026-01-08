@@ -67,7 +67,7 @@ data class StockItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StockListScreen(
+fun StockView(
     onMenuClick: () -> Unit,
     onAddStockClick: () -> Unit // Navigate to Create Page
 ) {
@@ -223,5 +223,5 @@ fun StockListScreen(
 @Preview
 @Composable
 fun StockListPreview() {
-    StockListScreen(onMenuClick = {}, onAddStockClick = {})
+    StockView(onMenuClick = {}, onAddStockClick = {})
 }

@@ -35,7 +35,7 @@ data class ProductType(
 )
 
 @Composable
-fun ProductTypesScreen(onMenuClick: () -> Unit) {
+fun ProductTypeView(onMenuClick: () -> Unit) {
     // --- State ---
     // Mock Data
     val initialTypes = listOf(
@@ -191,5 +191,5 @@ fun ProductTypesScreen(onMenuClick: () -> Unit) {
 @Preview
 @Composable
 fun ProductTypePreview() {
-    ProductTypesScreen(onMenuClick = {})
+    ProductTypeView(onMenuClick = {})
 }
