@@ -2,9 +2,10 @@ import { AppointmentsRepository } from "src/repository/appointments.repository";
 import { EmailService } from "./email.service";
 import { AppointmentRequestDto } from "src/dto/appointments/appointment.request.dto";
 import { StudentRepository } from "src/repository/student.repository";
-import { NotFoundException, ServiceUnavailableException } from "@nestjs/common";
+import { Injectable, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 import { AppointmentResponseDto } from "src/dto/appointments/appointment.response.dto";
 
+@Injectable()
 export class AppointmentService {
     constructor(
         private readonly appointmentRepository: AppointmentsRepository,
@@ -53,6 +54,15 @@ export class AppointmentService {
 
         if (!student) {
             throw new NotFoundException("Student Not Found")
+        }
+
+        await this.appointmentRepository.markNotificationAsSent(id);
+
+        const sendEmail = await this.emailService.sendRememberEmail(student.email, student.name)
+        if (!sendEmail) {
+            throw new ServiceUnavailableException(
+                "Unavailable to send confirmation email"
+            )
         }
 
     }

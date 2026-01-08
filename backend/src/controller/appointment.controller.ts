@@ -17,8 +17,6 @@ import { AppointmentRequestDto } from 'src/dto/appointments/appointment.request.
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  // Create a new appointment
-  // Route: POST /api/v1/appointments
   @Post()
   async createAppointment(
     @Body(ValidationPipe) dto: AppointmentRequestDto,
@@ -28,6 +26,7 @@ export class AppointmentController {
       const appointment = await this.appointmentService.createAppointment(dto);
       return res.status(HttpStatus.CREATED).json(appointment);
     } catch (e) {
+      console.log(e)
       if (e instanceof HttpException) {
         return res.status(e.getStatus()).json(e.getResponse());
       }
@@ -37,8 +36,7 @@ export class AppointmentController {
     }
   }
 
-  // List all appointments
-  // Route: GET /api/v1/appointments
+
   @Get()
   async getAllAppointments(@Res() res: Response) {
     try {

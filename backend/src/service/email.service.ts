@@ -59,7 +59,6 @@ export class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email sent successfully: ${info.messageId}`);
       return true;
     } catch (error) {
       this.logger.error(`Failed to send email: ${error.message}`, error.stack);
