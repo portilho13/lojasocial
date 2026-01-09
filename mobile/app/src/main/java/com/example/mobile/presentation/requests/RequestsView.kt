@@ -1,319 +1,347 @@
 package com.example.mobile.presentation.requests
-
-import androidx.compose.foundation.BorderStroke
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.R
-import com.example.mobile.presentation.ui.theme.Background_Light
-import com.example.mobile.presentation.ui.theme.IPCA_Gold
+import com.example.mobile.R // SUBSTITUA pelo seu pacote
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-import com.example.mobile.presentation.ui.theme.Text_Black
+import com.example.mobile.presentation.ui.theme.Text_Grey
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-// Reusing Status Enum from previous answer
- enum class TicketStatus { PENDING, IN_PROGRESS, RESOLVED }
-// --- Models ---
-data class SupportTicket(
+// --- Cores do Tema ---
+val IPCA_Green_Dark = Color(0xFF004E36)
+val IPCA_Gold = Color(0xFF8D764F)
+val Background_Light = Color(0xFFF8F9FA)
+val Text_Black = Color(0xFF333333)
+val Warning_Orange = Color(0xFFE65100)
+val Alert_Red = Color(0xFFB00020)
+
+// --- NOVOS Modelos baseados no JSON ---
+
+data class ApiRequestItem(
     val id: String,
-    val studentName: String,
-    val studentNumber: String,
-    val category: String, // e.g., "Bolsas", "Alojamento", "Alimentação"
-    val subject: String,
-    val date: String,
-    val status: TicketStatus
+    val productId: String,
+    val productName: String,
+    val qtyRequested: Int,
+    val qtyDelivered: Int,
+    val observation: String
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class ApiRequest(
+    val id: String,
+    val date: String, // ISO String: "2026-01-08T18:21:31.087Z"
+    val status: String, // "PENDENTE", "CANCELADO", "ENTREGUE"
+    val observation: String,
+    val studentId: String,
+    val items: List<ApiRequestItem>
+)
+
+
+
+@RequiresApi(Build.VERSION_CODES.O) // Necessário para formatação de data
 @Composable
-fun RequestDetailScreen(
-    requestId: String,
-    onNavigateBack: () -> Unit,
-    onUpdateStatus: (String, TicketStatus, String) -> Unit // ID, New Status, Admin Notes
+fun RequestsView(
+    onMenuClick: () -> Unit,
+    onTicketClick: (String) -> Unit
 ) {
-    // --- Mock Data (Ideally fetched via API using requestId) ---
-    val ticket = remember {
-        SupportTicket(
-            id = requestId,
-            studentName = "Ana Silva",
-            studentNumber = "2021001",
-            category = "Alimentação",
-            subject = "Necessidade de Cabaz Alimentar",
-            date = "10/05/2025",
-            status = TicketStatus.PENDING
+    // --- Mock Data baseado no seu JSON ---
+    val requests = listOf(
+        ApiRequest(
+            id = "83dc5ece-e885-4e66-8408-78e8018ad408",
+            date = "2026-01-08T18:21:31.087Z",
+            status = "PENDENTE",
+            observation = "Need food for the week",
+            studentId = "f5f101e6-6951-4270-8b0b-8d5a0c0913aa",
+            items = listOf(
+                ApiRequestItem("1", "p1", "Rice 1kg", 2, 0, "Rice"),
+                ApiRequestItem("2", "p2", "Pasta 1kg", 2, 0, "Pasta")
+            )
+        ),
+        ApiRequest(
+            id = "e0d359e1-fefc-49fb-b593-9f7e26e5fad4",
+            date = "2026-01-06T23:43:55.590Z",
+            status = "CANCELADO",
+            observation = "Need food for the week",
+            studentId = "f5f101e6-6951-4270-8b0b-8d5a0c0913aa",
+            items = listOf(
+                ApiRequestItem("3", "p1", "Rice 1kg", 2, 0, "Rice")
+            )
         )
-    }
-    val studentEmail = "a2021001@alunos.ipca.pt"
-    val studentPhone = "912 345 678"
-    val fullDescription = "Sou estudante deslocada e perdi a minha bolsa de estudo este mês. Necessito de apoio alimentar urgente pois não tenho meios para comprar bens essenciais para esta semana."
+    )
+
+    // Mapa simulado de StudentID -> Nome (Na API real, você faria um fetch do user)
+    val mockStudentNames = mapOf(
+        "f5f101e6-6951-4270-8b0b-8d5a0c0913aa" to "Ana Silva (2021001)"
+    )
 
     // --- State ---
-    var currentStatus by remember { mutableStateOf(ticket.status) }
-    var adminNotes by remember { mutableStateOf("") } // Record what product was given
-    var statusExpanded by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) } // 0 = Pendentes, 1 = Histórico
 
-    val statusOptions = TicketStatus.entries.toTypedArray()
+    // Lógica de Filtro Atualizada
+    val filteredList = requests.filter { request ->
+        if (selectedTab == 0) {
+            request.status == "PENDENTE"
+        } else {
+            request.status == "CANCELADO" || request.status == "ENTREGUE"
+        }
+    }
 
     Scaffold(
-        containerColor = Background_Light,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("Detalhe do Pedido", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text("#${ticket.id}", fontSize = 12.sp, color = Color.Gray)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = IPCA_Green_Dark)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = IPCA_Green_Dark
-                )
-            )
-        },
-        bottomBar = {
-            Surface(
-                color = Color.White,
-                shadowElevation = 8.dp,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = { onUpdateStatus(requestId, currentStatus, adminNotes) },
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .height(50.dp)
-                        .fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = IPCA_Gold),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(Icons.Default.Check, null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Atualizar Processo", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
-            }
-        }
+        containerColor = Background_Light
     ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-
-            // 1. Student Card
-            Text("Estudante", color = IPCA_Green_Dark, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
+            // 1. Header (Standard IPCA Admin Header)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(IPCA_Green_Dark)
+                    .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Avatar
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(IPCA_Green_Dark.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Person, null, tint = IPCA_Green_Dark, modifier = Modifier.size(30.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onMenuClick) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                     }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_logo_ipca),
+                        contentDescription = "Logo",
+                        tint = Color.White,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                     Column {
-                        Text(ticket.studentName, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Text_Black)
-                        Text("Nº ${ticket.studentNumber}", fontSize = 13.sp, color = Color.Gray)
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Contact Info
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Email, null, tint = IPCA_Gold, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(studentEmail, fontSize = 12.sp, color = Text_Black)
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Phone, null, tint = IPCA_Gold, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(studentPhone, fontSize = 12.sp, color = Text_Black)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 2. Request Content
-            Text("Pedido de Apoio", color = IPCA_Green_Dark, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // Category Badge
-                    Surface(
-                        color = IPCA_Gold,
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
                         Text(
-                            text = ticket.category.uppercase(),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = "Pedidos de Apoio",
                             color = Color.White,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Bens Alimentares",
+                            color = Color(0xFFA0C4B5), // Light Green text
+                            fontSize = 12.sp
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("Assunto:", fontSize = 12.sp, color = Color.Gray)
-                    Text(ticket.subject, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Text_Black)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("Descrição:", fontSize = 12.sp, color = Color.Gray)
-                    Text(
-                        text = fullDescription,
-                        fontSize = 14.sp,
-                        color = Text_Black,
-                        lineHeight = 20.sp,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 3. Admin Action Area (Fulfillment)
-            Text("Gestão do Processo", color = IPCA_Green_Dark, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, IPCA_Gold.copy(alpha = 0.5f)),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-
-                    // Status Dropdown
-                    Text("Estado do Pedido", fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    ExposedDropdownMenuBox(
-                        expanded = statusExpanded,
-                        onExpandedChange = { statusExpanded = !statusExpanded }
-                    ) {
-                        OutlinedTextField(
-                            value = getStatusLabel(currentStatus),
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusExpanded) },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = IPCA_Green_Dark,
-                                unfocusedBorderColor = Color.LightGray
-                            ),
-                            modifier = Modifier.menuAnchor().fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = statusExpanded,
-                            onDismissRequest = { statusExpanded = false },
-                            modifier = Modifier.background(Color.White)
-                        ) {
-                            statusOptions.forEach { status ->
-                                DropdownMenuItem(
-                                    text = { Text(getStatusLabel(status)) },
-                                    onClick = {
-                                        currentStatus = status
-                                        statusExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Admin Notes / Product Assignment
-                    Text("Produtos Atribuídos / Notas", fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = adminNotes,
-                        onValueChange = { adminNotes = it },
-                        placeholder = { Text("Ex: Entregue Cabaz Alimentar Tipo A; Laptop #402...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = IPCA_Green_Dark,
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        leadingIcon = {
-                            Icon(Icons.Default.Inventory, null, tint = Color.Gray) // Inventory icon hints at product assignment
-                        }
-                    )
-                    Text(
-                        text = "Registe aqui os bens doados que foram entregues ao aluno.",
-                        fontSize = 11.sp,
+            // 2. Tabs
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = IPCA_Green_Dark,
+                contentColor = Color.White,
+                indicator = { tabPositions ->
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                         color = IPCA_Gold,
-                        modifier = Modifier.padding(top = 4.dp)
+                        height = 3.dp
                     )
                 }
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = { Text("Pendentes", fontWeight = if(selectedTab==0) FontWeight.Bold else FontWeight.Normal) },
+                    selectedContentColor = IPCA_Gold,
+                    unselectedContentColor = Text_Grey
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = { Text("Histórico", fontWeight = if(selectedTab==1) FontWeight.Bold else FontWeight.Normal) },
+                    selectedContentColor = IPCA_Gold,
+                    unselectedContentColor = Text_Grey
+                )
             }
 
-            // Space for Bottom Bar
-            Spacer(modifier = Modifier.height(20.dp))
+            // 3. Lista
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (filteredList.isEmpty()) {
+                    item {
+                        Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Nenhum pedido encontrado.", color = Color.Gray)
+                        }
+                    }
+                } else {
+                    items(filteredList) { request ->
+                        val studentName = mockStudentNames[request.studentId] ?: "Estudante Desconhecido"
+                        RequestCard(
+                            request = request,
+                            studentName = studentName,
+                            onClick = { onTicketClick(request.id) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
-// Helper to map Enum to Portuguese Text
-fun getStatusLabel(status: TicketStatus): String {
-    return when (status) {
-        TicketStatus.PENDING -> "Pendente"
-        TicketStatus.IN_PROGRESS -> "Em Análise / A preparar"
-        TicketStatus.RESOLVED -> "Resolvido / Entregue"
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun RequestCard(request: ApiRequest, studentName: String, onClick: () -> Unit) {
+
+    // Formatador de data
+    val formattedDate = remember(request.date) {
+        try {
+            val instant = Instant.parse(request.date)
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault())
+            formatter.format(instant)
+        } catch (e: Exception) {
+            request.date
+        }
+    }
+
+    // Resumo dos itens (Ex: "2x Rice 1kg, 1x Pasta")
+    val itemsSummary = remember(request.items) {
+        if (request.items.isEmpty()) "Sem itens especificados"
+        else request.items.joinToString(", ") { "${it.qtyRequested}x ${it.productName}" }
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Linha 1: Status e Data
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StatusBadge(status = request.status)
+                Text(text = formattedDate, fontSize = 12.sp, color = Color.Gray)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Linha 2: Observação (Motivo)
+            Text(
+                text = request.observation,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Text_Black,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Linha 3: Resumo dos Itens (Novo)
+            Row(verticalAlignment = Alignment.Top) {
+                Icon(Icons.Default.ShoppingBasket, null, tint = IPCA_Green_Dark, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = itemsSummary,
+                    fontSize = 13.sp,
+                    color = Text_Black,
+                    lineHeight = 18.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Linha 4: Nome do Estudante e Seta
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Person, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = studentName,
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = IPCA_Gold,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }
 
+@Composable
+fun StatusBadge(status: String) {
+    val (color, text, icon) = when (status) {
+        "PENDENTE" -> Triple(Warning_Orange, "Pendente", Icons.Default.WarningAmber)
+        "ENTREGUE" -> Triple(IPCA_Green_Dark, "Entregue", Icons.Default.CheckCircle)
+        "CANCELADO" -> Triple(Alert_Red, "Cancelado", Icons.Default.Block)
+        else -> Triple(Color.Gray, status, Icons.Default.History)
+    }
+
+    Surface(
+        color = color.copy(alpha = 0.1f),
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, null, tint = color, modifier = Modifier.size(14.dp))
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = text.uppercase(),
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun RequestDetailPreview() {
-    RequestDetailScreen(requestId = "T001", onNavigateBack = {}, onUpdateStatus = { _,_,_ -> })
+fun AdminListPreview() {
+    RequestsView(onMenuClick = {}, onTicketClick = {})
 }

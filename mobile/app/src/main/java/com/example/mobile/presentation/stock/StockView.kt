@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,6 +52,7 @@ import com.example.mobile.R
 import com.example.mobile.presentation.stock.components.StockItemCard
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
+import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 
 
@@ -102,7 +104,7 @@ fun StockView(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onAddStockClick,
-                containerColor = IPCA_Green_Dark,
+                containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.Add, "Add Stock") },
                 text = { Text("Entrada de Stock") }
@@ -113,15 +115,14 @@ fun StockView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. Header
+            // 1. Header (Standard IPCA Admin Header)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(IPCA_Green_Dark)
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(top = 16.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
+                    .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onMenuClick) {
@@ -132,19 +133,19 @@ fun StockView(
                         painter = painterResource(id = R.drawable.ic_logo_ipca),
                         contentDescription = "Logo",
                         tint = Color.White,
-                        modifier = Modifier.size(45.dp)
+                        modifier = Modifier.size(50.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Gestão de Inventário",
+                            text = "Inventário",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Controlo de Lotes e Validades",
-                            color = Color(0xFFA0C4B5),
+                            text = "Visão Geral de Stocks",
+                            color = Color(0xFFA0C4B5), // Light Green text
                             fontSize = 12.sp
                         )
                     }

@@ -25,8 +25,8 @@ import com.example.mobile.presentation.ui.theme.Text_Black
 fun StudentTable(students: List<Student>) {
     Card(
         shape = RoundedCornerShape(
-            topStart = 12.dp,
-            topEnd = 12.dp
+            topStart = 8.dp,
+            topEnd = 8.dp
         ), // Cantos arredondados apenas no topo como na imagem
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),

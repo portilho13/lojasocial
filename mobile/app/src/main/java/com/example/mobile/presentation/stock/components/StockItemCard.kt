@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.presentation.stock.StockItem
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
+import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 import com.example.mobile.presentation.ui.theme.Warning_Orange
@@ -90,7 +91,7 @@ fun StockItemCard(item: StockItem) {
                         text = "${item.quantity} ${item.unit}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = IPCA_Green_Dark,
+                        color = IPCA_Gold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                 }

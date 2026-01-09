@@ -83,9 +83,6 @@ fun LoginView(
             verticalArrangement = Arrangement.Center
         ) {
 
-            // 1. Logo Section
-            // Note: Replace 'R.drawable.your_logo' with your actual image resource
-            // Using a placeholder Icon here for demonstration
             Icon(
                 painter = painterResource(id = R.drawable.ic_logo_ipca), // Placeholder
                 contentDescription = "Logo",

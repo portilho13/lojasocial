@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.R
 import com.example.mobile.presentation.components.NavigationDrawer
 import com.example.mobile.presentation.students.components.StudentTable
+import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 import kotlinx.coroutines.launch
@@ -38,131 +39,106 @@ data class Student(
 )
 
 @Composable
-fun StudentsView() {
-
-
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    var currentScreen by remember { mutableStateOf("beneficiarios") }
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            NavigationDrawer(
-                currentScreen = currentScreen,
-                onItemSelected = { id ->
-                    currentScreen = id
-                    scope.launch { drawerState.close() }
-                },
-                onLogout = { /* Handle Logout */ }
-            )
-        }
-    ) {
-        // Here we render the screen content.
-        // We pass the 'onMenuClick' event to the screen so it can open the drawer.
-        StudentManagementScreen(
-            onMenuClick = {
-                scope.launch { drawerState.open() }
-            }
-        )
-    }
-}
-
-@Composable
-fun StudentManagementScreen(onMenuClick: () -> Unit) {
+fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
     // Dados de exemplo baseados na imagem
     val studentsList = listOf(
         Student("Ana Silva", "2021001", "3º Ano"),
         Student("João Santos", "2022045", "2º Ano"),
         Student("Maria Oliveira", "2020123", "Mestrado 1º Ano")
     )
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFFF8F9FA))) {
-
-        // MODIFIED HEADER
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(IPCA_Green_Dark)
-                .padding(top = 24.dp, bottom = 24.dp, start = 16.dp, end = 20.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // 1. Menu Icon Button (New)
-                IconButton(onClick = onMenuClick) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // 2. Logo (Existing)
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_logo_ipca),
-                    contentDescription = "Logo",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // 3. Text (Existing)
-                Column {
-                    Text(
-                        text = "Gestão de Estudantes",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 20.sp
-                    )
-                }
-            }
+    Scaffold(
+        containerColor = Background_Light,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onAddStudent,
+                containerColor = IPCA_Green_Dark,
+                contentColor = Color.White,
+                icon = { Icon(Icons.Default.Add, "Add Student") },
+                text = { Text("Adicionar Estudante") }
+            )
         }
+    ) { paddingValues ->
 
-        // 2. Corpo da Página
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
-
+                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-
-            // Card de Resumo (Total de Estudantes)
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
+            // 1. Header (Standard IPCA Admin Header)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(IPCA_Green_Dark)
+                    .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onMenuClick) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_logo_ipca),
+                        contentDescription = "Logo",
+                        tint = Color.White,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = "Gestão de Estudantes",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Visão Geral dos Estudantes",
+                            color = Color(0xFFA0C4B5), // Light Green text
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
+
+            // 2. Corpo da Página
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+
+            ) {
+
+                // Card de Resumo (Total de Estudantes)
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column {
-                        Text(
-                            text = "Total de Estudantes Beneficiários",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
+                    Row(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Total de Estudantes Beneficiados",
+                                color = Color.Gray,
+                                fontSize = 14.sp
+                            )
 
-                    }
-                    Column {
-                        Text(
-                            text = "${studentsList.size}", // Dinâmico
-                            color = IPCA_Green_Dark,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                        }
+                        Column {
+                            Text(
+                                text = "${studentsList.size}", // Dinâmico
+                                color = IPCA_Green_Dark,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
 
-                    }
+                        }
 
 //                    // Círculo com o número
 //                    Box(
@@ -179,41 +155,22 @@ fun StudentManagementScreen(onMenuClick: () -> Unit) {
 //                            fontWeight = FontWeight.Bold
 //                        )
 //                    }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
 
-            // Botão Adicionar
-            Button(
-                onClick = { /* Ação de adicionar */ },
-                colors = ButtonDefaults.buttonColors(containerColor = IPCA_Green_Dark),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
+                // Título da Tabela
+                Text(
+                    text = "Lista de Estudantes",
+                    color = IPCA_Green_Dark,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Adicionar Estudante", color = Color.White)
+
+                // Tabela
+                StudentTable(studentsList)
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Título da Tabela
-            Text(
-                text = "Lista de Estudantes",
-                color = IPCA_Green_Dark,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            // Tabela
-            StudentTable(studentsList)
         }
     }
 }
@@ -224,5 +181,5 @@ fun StudentManagementScreen(onMenuClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ManagementPreview() {
-    StudentsView()
+    StudentsView(onMenuClick = {}, onAddStudent = {} )
 }

@@ -65,29 +65,27 @@ fun ProductView(onMenuClick: () -> Unit) {
     Scaffold(
         containerColor = Background_Light,
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { showAddDialog = true },
                 containerColor = IPCA_Gold,
-                contentColor = Text_White,
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Product")
-            }
+                contentColor = Color.White,
+                icon = { Icon(Icons.Default.Add, "Add Product") },
+                text = { Text("Adicionar Produto") }
+            )
         }
     ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. Header
+            // 1. Header (Standard IPCA Admin Header)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(IPCA_Green_Dark)
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(top = 16.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
+                    .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onMenuClick) {
@@ -98,7 +96,7 @@ fun ProductView(onMenuClick: () -> Unit) {
                         painter = painterResource(id = R.drawable.ic_logo_ipca),
                         contentDescription = "Logo",
                         tint = Color.White,
-                        modifier = Modifier.size(45.dp)
+                        modifier = Modifier.size(50.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
@@ -110,7 +108,7 @@ fun ProductView(onMenuClick: () -> Unit) {
                         )
                         Text(
                             text = "Definição de Artigos",
-                            color = Color(0xFFA0C4B5),
+                            color = Color(0xFFA0C4B5), // Light Green text
                             fontSize = 12.sp
                         )
                     }

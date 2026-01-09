@@ -40,11 +40,12 @@ fun NavigationDrawer(
     onLogout: () -> Unit
 ) {
     val menuItems = listOf(
-        DrawerMenuItem("home", "Início", Icons.Default.Home),
-        DrawerMenuItem("beneficiarios", "Beneficiários", Icons.Default.People),
-        DrawerMenuItem("refeicoes", "Refeições", Icons.Default.Restaurant),
-        DrawerMenuItem("alojamento", "Alojamento", Icons.Default.Bed),
-        DrawerMenuItem("perfil", "Meu Perfil", Icons.Default.Person),
+        DrawerMenuItem("dashboard", "Visão Geral", Icons.Default.Dashboard), // Maps to AdminDashboardScreen
+        DrawerMenuItem("requests", "Pedidos de Apoio", Icons.Default.Inbox), // Maps to AdminSupportListScreen
+        DrawerMenuItem("stock", "Inventário", Icons.Default.Inventory),      // Maps to StockListScreen
+        DrawerMenuItem("products", "Produtos", Icons.Default.ShoppingBag),   // Maps to ProductsScreen
+        DrawerMenuItem("types", "Categorias", Icons.Default.Category),
+        DrawerMenuItem("students", "Estudantes", Icons.Default.Person)
     )
 
     ModalDrawerSheet(
