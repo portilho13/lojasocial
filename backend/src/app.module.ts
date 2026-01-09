@@ -1,28 +1,42 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './controller/auth.controller';
-import { PrismaModule } from 'prisma/prisma.module';
-import { StudentRepository } from './repository/student.repository';
-import { StudentService } from './service/student.service';
-import { UserService } from './service/user.service';
-import { UserRepository } from './repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
-import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
-import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
+import { PrismaModule } from 'prisma/prisma.module';
 import { InventoryModule } from './inventory.module';
 import { SupportRequestModule } from './support-request.module';
+import { BeneficiaryModule } from './beneficiary.module';
+import { DonationModule } from './donation.module';
+import { AuthController } from './controller/auth.controller';
+import { AppointmentController } from './controller/appointment.controller';
+import { StudentRepository } from './repository/student.repository';
+import { UserRepository } from './repository/user.repository';
+import { AppointmentsRepository } from './repository/appointments.repository';
+import { StudentService } from './service/student.service';
+import { UserService } from './service/user.service';
+import { EmailService } from './service/email.service';
+import { AppointmentService } from './service/appointment.service';
+import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 
-
-const repositorioes = [
+const repositories = [
   StudentRepository,
   UserRepository,
-]
+  AppointmentsRepository,
+];
+
 
 const services = [
   StudentService,
   UserService,
   AccessTokenStrategy,
   RefreshTokenStrategy,
-]
+  EmailService,
+  AppointmentService,
+];
+
+const controllers = [
+  AuthController,
+  AppointmentController,
+];
 
 @Module({
   imports: [
@@ -31,9 +45,13 @@ const services = [
       global: true,
       secret: process.env.JWT_SECRET || 'secret',
       signOptions: { expiresIn: '15m' },
-    }), PrismaModule, InventoryModule, SupportRequestModule
+    }),
+    InventoryModule,
+    SupportRequestModule,
+    DonationModule,
+    BeneficiaryModule,
   ],
-  controllers: [AuthController],
-  providers: [...repositorioes, ...services],
+  controllers: [...controllers],
+  providers: [...repositories, ...services],
 })
-export class AppModule { }
+export class AppModule {}

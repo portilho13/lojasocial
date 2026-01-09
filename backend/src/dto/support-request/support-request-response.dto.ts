@@ -1,14 +1,14 @@
 import { RequestStatus, SupportRequest, RequestItem, Product } from '@prisma/client';
 
 export class SupportRequestResponseDto {
-    id: number;
+    id: string;
     date: Date;
     status: RequestStatus;
     observation: string | null;
     studentId: string;
     items: {
-        id: number;
-        productId: number;
+        id: string;
+        productId: string;
         productName: string;
         qtyRequested: number;
         qtyDelivered: number | null;
