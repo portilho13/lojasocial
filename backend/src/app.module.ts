@@ -1,26 +1,27 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './controller/auth.controller';
 import { PrismaModule } from 'prisma/prisma.module';
-import { StudentRepository } from './repository/student.repository';
-import { StudentService } from './service/student.service';
-import { UserService } from './service/user.service';
-import { UserRepository } from './repository/user.repository';
-import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
-import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 import { InventoryModule } from './inventory.module';
 import { SupportRequestModule } from './support-request.module';
-import { EmailService } from './service/email.service';
-import { AppointmentsRepository } from './repository/appointments.repository';
-import { AppointmentService } from './service/appointment.service';
-import { AppointmentController } from './controller/appointment.controller';
+import { BeneficiaryModule } from './beneficiary.module';
 import { DonationModule } from './donation.module';
+import { AuthController } from './controller/auth.controller';
+import { AppointmentController } from './controller/appointment.controller';
+import { StudentRepository } from './repository/student.repository';
+import { UserRepository } from './repository/user.repository';
+import { AppointmentsRepository } from './repository/appointments.repository';
+import { StudentService } from './service/student.service';
+import { UserService } from './service/user.service';
+import { EmailService } from './service/email.service';
+import { AppointmentService } from './service/appointment.service';
+import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
 
 const repositories = [
   StudentRepository,
   UserRepository,
   AppointmentsRepository,
-]
+];
 
 
 const services = [
@@ -29,13 +30,13 @@ const services = [
   AccessTokenStrategy,
   RefreshTokenStrategy,
   EmailService,
-  AppointmentService
-]
+  AppointmentService,
+];
 
 const controllers = [
   AuthController,
-  AppointmentController
-]
+  AppointmentController,
+];
 
 @Module({
   imports: [
@@ -48,8 +49,9 @@ const controllers = [
     InventoryModule,
     SupportRequestModule,
     DonationModule,
+    BeneficiaryModule,
   ],
   controllers: [...controllers],
   providers: [...repositories, ...services],
 })
-export class AppModule { }
+export class AppModule {}
