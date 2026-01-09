@@ -22,12 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.presentation.home.components.ExpiringItemRow
 import com.example.mobile.presentation.students.Student
-import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-import com.example.mobile.presentation.ui.theme.Text_Black
 
 
 // Dados de exemplo baseados na imagem
@@ -36,6 +33,7 @@ val studentsList = listOf(
     Student("João Santos", "2022045", "2º Ano"),
     Student("Maria Oliveira", "2020123", "Mestrado 1º Ano")
 )
+
 @Composable
 fun StudentTable(students: List<Student>) {
 
@@ -95,82 +93,6 @@ fun StudentTable(students: List<Student>) {
             }
         }
     }
-
-
-//    Card(
-//        shape = RoundedCornerShape(
-//            topStart = 8.dp,
-//            topEnd = 8.dp
-//        ), // Cantos arredondados apenas no topo como na imagem
-//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-//        colors = CardDefaults.cardColors(containerColor = Color.White),
-//        modifier = Modifier.fillMaxWidth()
-//    ) {
-//        Column {
-//            // Cabeçalho da Tabela
-//            Row(
-//                modifier = Modifier
-//                    .background(IPCA_Green_Dark)
-//                    .padding(16.dp)
-//                    .fillMaxWidth()
-//            ) {
-//                Text(
-//                    text = "Nome",
-//                    color = Color.White,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.weight(1f)
-//                )
-//                Text(
-//                    text = "Nº Estudante",
-//                    color = Color.White,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.weight(1f)
-//                )
-//                Text(
-//                    text = "Ano Curricular",
-//                    color = Color.White,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.weight(1f)
-//                )
-//            }
-//
-//            // Linhas da Tabela
-//            students.forEachIndexed { index, student ->
-//                Column {
-//                    Row(
-//                        modifier = Modifier
-//                            .padding(horizontal = 16.dp, vertical = 12.dp)
-//                            .fillMaxWidth(),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Text(
-//                            text = student.name,
-//                            color = Text_Black,
-//                            fontSize = 14.sp,
-//                            modifier = Modifier.weight(1f)
-//                        )
-//                        Text(
-//                            text = student.studentNumber,
-//                            color = Text_Black,
-//                            fontSize = 14.sp,
-//                            modifier = Modifier.weight(1f)
-//                        )
-//                        Text(
-//                            text = student.curricularYear,
-//                            color = Text_Black,
-//                            fontSize = 14.sp,
-//                            modifier = Modifier.weight(1f)
-//                        )
-//                    }
-//
-//                    // Separador (Divider) exceto após o último item
-//                    if (index < students.size - 1) {
-//                        HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
-//                    }
-//                }
-//            }
-//        }
-//    }
 }
 
 @Preview(showBackground = true)

@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.requests
+package com.example.mobile.presentation.requests.admin
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background

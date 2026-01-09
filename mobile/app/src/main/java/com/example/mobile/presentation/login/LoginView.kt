@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -22,21 +23,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -44,6 +51,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
@@ -56,41 +64,59 @@ import com.example.mobile.presentation.ui.theme.Text_Grey
 import com.example.mobile.presentation.ui.theme.Text_White
 import com.example.mobile.presentation.ui.theme.ipcaInputColors
 
-// --- Color Definitions based on the Image ---
-
-
 @Composable
 fun LoginView(
     navController: NavController,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
-    // State management
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
-    // Main Container
+    // Efeito para navegar após login bem-sucedido
+    LaunchedEffect(state.isLoginSuccessful) {
+        if (state.isLoginSuccessful) {
+            navController.navigate(Screen.HomeScreen.route) {
+                popUpTo(Screen.LoginScreen.route) { inclusive = true }
+            }
+            viewModel.resetLoginSuccess()
+        }
+    }
+
+    // Efeito para mostrar erros
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                actionLabel = "OK"
+            )
+            viewModel.onEvent(LoginEvent.ClearError)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(IPCA_Green_Dark)
-            .padding(24.dp)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
+            // Logo
             Icon(
-                painter = painterResource(id = R.drawable.ic_logo_ipca), // Placeholder
-                contentDescription = "Logo",
+                painter = painterResource(id = R.drawable.ic_logo_ipca),
+                contentDescription = "Logo IPCA",
                 tint = Text_White,
                 modifier = Modifier.size(80.dp)
             )
 
-            // 2. Header Text
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Header
             Text(
                 text = "Bem-vindo",
                 color = Text_White,
@@ -106,21 +132,38 @@ fun LoginView(
             )
 
             // Email Input
-            IPCATextField(
-                label = "Email",
-                value = email,
-                onValueChange = { email = it },
-                placeholder = "seu.email@ipca.pt",
-                keyboardType = KeyboardType.Email
+            CustomLabel(text = "Email")
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text("seu.email@ipca.pt", color = Text_Grey)
+                },
+                shape = RoundedCornerShape(8.dp),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                colors = ipcaInputColors(),
+                singleLine = true,
+                isError = state.emailError != null,
+                supportingText = state.emailError?.let { error ->
+                    { Text(text = error, color = IPCA_Gold) }
+                },
+                enabled = !state.isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 4. Password Input
+            // Password Input
             CustomLabel(text = "Senha")
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = state.password,
+                onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
@@ -131,12 +174,30 @@ fun LoginView(
                     )
                 },
                 shape = RoundedCornerShape(8.dp),
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (state.isPasswordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        viewModel.onEvent(LoginEvent.Login)
+                    }
+                ),
                 trailingIcon = {
-                    val image =
-                        if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                    val image = if (state.isPasswordVisible) {
+                        Icons.Filled.Visibility
+                    } else {
+                        Icons.Filled.VisibilityOff
+                    }
+                    IconButton(
+                        onClick = { viewModel.onEvent(LoginEvent.TogglePasswordVisibility) }
+                    ) {
                         Icon(
                             imageVector = image,
                             contentDescription = "Toggle Password",
@@ -145,10 +206,15 @@ fun LoginView(
                     }
                 },
                 colors = ipcaInputColors(),
-                singleLine = true
+                singleLine = true,
+                isError = state.passwordError != null,
+                supportingText = state.passwordError?.let { error ->
+                    { Text(text = error, color = IPCA_Gold) }
+                },
+                enabled = !state.isLoading
             )
 
-            // 5. Checkbox and Forgot Password
+            // Remember Me & Forgot Password
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -158,14 +224,17 @@ fun LoginView(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it },
+                        checked = state.rememberMe,
+                        onCheckedChange = {
+                            viewModel.onEvent(LoginEvent.RememberMeChanged(it))
+                        },
                         colors = CheckboxDefaults.colors(
                             checkedColor = IPCA_Gold,
                             uncheckedColor = Text_Grey,
                             checkmarkColor = Text_White
                         ),
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        enabled = !state.isLoading
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -180,30 +249,40 @@ fun LoginView(
                     text = "Esqueceu-se da senha?",
                     color = IPCA_Gold,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable { /* Handle click */ }
+                    modifier = Modifier.clickable(enabled = !state.isLoading) {
+                        // TODO: Navegar para recuperação de senha
+                    }
                 )
             }
 
-            // 6. Login Button
+            // Login Button
             Button(
-                onClick = { navController.navigate(Screen.HomeScreen.route) },
+                onClick = { viewModel.onEvent(LoginEvent.Login) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = IPCA_Gold),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                enabled = !state.isLoading
             ) {
-                Text(
-                    text = "Entrar",
-                    color = Text_White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        color = Text_White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Text(
+                        text = "Entrar",
+                        color = Text_White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 7. Footer
+            // Footer
             val footerText = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Text_White)) {
                     append("Não tem uma conta? ")
@@ -217,7 +296,9 @@ fun LoginView(
                 text = footerText,
                 modifier = Modifier
                     .padding(bottom = 24.dp)
-                    .clickable { navController.navigate(Screen.RegisterScreen.route) },
+                    .clickable(enabled = !state.isLoading) {
+                        navController.navigate(Screen.RegisterScreen.route)
+                    },
                 fontSize = 14.sp
             )
 
@@ -228,16 +309,19 @@ fun LoginView(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
+
+        // Snackbar para mostrar erros
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
 
-// Helper composable for labels above text fields
-
-
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview(
-
-) {
+fun LoginPreview() {
     LoginView(navController = rememberNavController())
 }

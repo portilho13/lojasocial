@@ -59,7 +59,7 @@ fun ProductTypeView(onMenuClick: () -> Unit) {
                 containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.Add, "Add Type") },
-                text = { Text("Adicionar Tipo") }
+                text = { Text("Adicionar Categoria") }
             )
         }
     ) { paddingValues ->
@@ -91,13 +91,13 @@ fun ProductTypeView(onMenuClick: () -> Unit) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Tipos de Produto",
+                            text = "Categorias de Produtos",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Configuração de Categorias",
+                            text = "Definição de Categorias",
                             color = Color(0xFFA0C4B5), // Light Green text
                             fontSize = 12.sp
                         )

@@ -53,7 +53,7 @@ import com.example.mobile.presentation.home.components.DashboardCard
 import com.example.mobile.presentation.home.components.ExpiringItemRow
 import com.example.mobile.presentation.product.ProductView
 import com.example.mobile.presentation.product.types.ProductTypeView
-import com.example.mobile.presentation.requests.RequestsView
+import com.example.mobile.presentation.requests.admin.RequestsView
 import com.example.mobile.presentation.stock.StockView
 import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.Alert_Red

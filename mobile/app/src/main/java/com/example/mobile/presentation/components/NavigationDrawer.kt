@@ -1,4 +1,6 @@
 package com.example.mobile.presentation.components
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -139,6 +141,7 @@ fun DrawerPreview(
     NavigationDrawer("Beneficiários", {}, {})
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomePreview(
