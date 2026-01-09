@@ -23,6 +23,7 @@ const repositories = [
   AppointmentsRepository,
 ];
 
+
 const services = [
   StudentService,
   UserService,

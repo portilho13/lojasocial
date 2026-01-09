@@ -152,7 +152,7 @@ export class InventoryController {
     @Res() res: Response,
   ) {
     try {
-      const stock = await this.inventoryService.updateStock(parseInt(id), body);
+      const stock = await this.inventoryService.updateStock(id, body);
       return res.status(HttpStatus.OK).json(stock);
     } catch (e) {
       if (e instanceof HttpException) {
@@ -169,7 +169,7 @@ export class InventoryController {
   @Delete('stocks/:id')
   async deleteStock(@Param('id') id: string, @Res() res: Response) {
     try {
-      await this.inventoryService.deleteStock(parseInt(id));
+      await this.inventoryService.deleteStock(id);
       return res.status(HttpStatus.NO_CONTENT).send();
     } catch (e) {
       if (e instanceof HttpException) {
