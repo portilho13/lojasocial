@@ -54,14 +54,13 @@ fun ProductTypeView(onMenuClick: () -> Unit) {
     Scaffold(
         containerColor = Background_Light,
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { showCreateDialog = true },
                 containerColor = IPCA_Gold,
-                contentColor = Text_White,
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Type")
-            }
+                contentColor = Color.White,
+                icon = { Icon(Icons.Default.Add, "Add Type") },
+                text = { Text("Adicionar Tipo") }
+            )
         }
     ) { paddingValues ->
 

@@ -26,6 +26,7 @@ import com.example.mobile.R
 import com.example.mobile.presentation.components.NavigationDrawer
 import com.example.mobile.presentation.students.components.StudentTable
 import com.example.mobile.presentation.ui.theme.Background_Light
+import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onAddStudent,
-                containerColor = IPCA_Green_Dark,
+                containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.Add, "Add Student") },
                 text = { Text("Adicionar Estudante") }
@@ -139,34 +140,9 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
                             )
 
                         }
-
-//                    // Círculo com o número
-//                    Box(
-//                        contentAlignment = Alignment.Center,
-//                        modifier = Modifier
-//                            .size(50.dp)
-//                            .clip(CircleShape)
-//                            .background(IPCA_Gold)
-//                    ) {
-//                        Text(
-//                            text = "${studentsList.size}",
-//                            color = Color.White,
-//                            fontSize = 18.sp,
-//                            fontWeight = FontWeight.Bold
-//                        )
-//                    }
                     }
                 }
-
-
-                // Título da Tabela
-                Text(
-                    text = "Lista de Estudantes",
-                    color = IPCA_Green_Dark,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Tabela
                 StudentTable(studentsList)
@@ -176,10 +152,8 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
 }
 
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun ManagementPreview() {
-    StudentsView(onMenuClick = {}, onAddStudent = {} )
+    StudentsView(onMenuClick = {}, onAddStudent = {})
 }
