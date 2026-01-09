@@ -1,15 +1,15 @@
-import { IsArray, IsNotEmpty, IsOptional, IsInt, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { DonationItemDto } from './donation-item.dto';
 
 export class CreateDonationDto {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  donorId: number;
+  donorId: string;
 
-  @IsInt()
+  @IsString()
   @IsOptional()
-  campaignId?: number; // (optional) Campaign associated with the donation
+  campaignId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

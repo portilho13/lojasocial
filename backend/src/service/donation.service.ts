@@ -86,7 +86,7 @@ export class DonationService {
   }
 
    // Get donation by id
-  async getDonationById(id: number): Promise<DonationResponseDto> {
+  async getDonationById(id: string): Promise<DonationResponseDto> {
     const donation = await this.donationRepository.findDonationById(id);
     if (!donation) {
       throw new NotFoundException(`Donation with ID ${id} not found`);
@@ -95,13 +95,13 @@ export class DonationService {
   }
 
    // List donations from a specific donor
-  async getDonationsByDonor(donorId: number): Promise<DonationResponseDto[]> {
+  async getDonationsByDonor(donorId: string): Promise<DonationResponseDto[]> {
     const donations = await this.donationRepository.findDonationsByDonor(donorId);
     return donations.map(d => new DonationResponseDto(d));
   }
 
   //List donations from a specific campaign
-  async getDonationsByCampaign(campaignId: number): Promise<DonationResponseDto[]> {
+  async getDonationsByCampaign(campaignId: string): Promise<DonationResponseDto[]> {
     const donations = await this.donationRepository.findDonationsByCampaign(campaignId);
     return donations.map(d => new DonationResponseDto(d));
   }
@@ -126,7 +126,7 @@ export class DonationService {
   }
 
   // Get donor by id
-  async getDonorById(id: number): Promise<DonorResponseDto> {
+  async getDonorById(id: string): Promise<DonorResponseDto> {
     const donor = await this.donationRepository.findDonorById(id);
     if (!donor) {
       throw new NotFoundException(`Donor with ID ${id} not found`);
@@ -135,7 +135,7 @@ export class DonationService {
   }
 
   // Update donor info
-  async updateDonor(id: number, dto: Partial<CreateDonorDto>): Promise<DonorResponseDto> {
+  async updateDonor(id: string, dto: Partial<CreateDonorDto>): Promise<DonorResponseDto> {
     const donor = await this.donationRepository.findDonorById(id);
     if (!donor) {
       throw new NotFoundException(`Donor with ID ${id} not found`);
@@ -146,7 +146,7 @@ export class DonationService {
   }
 
   // Remove donor if they have no donations
-  async deleteDonor(id: number): Promise<void> {
+  async deleteDonor(id: string): Promise<void> {
     const donor = await this.donationRepository.findDonorById(id);
     if (!donor) {
       throw new NotFoundException(`Donor with ID ${id} not found`);

@@ -1,4 +1,4 @@
-import { Donor, DonorType } from '@prisma/client';
+import { Donor } from '@prisma/client';
 
 export class DonorResponseDto {
   id: Donor['id'];

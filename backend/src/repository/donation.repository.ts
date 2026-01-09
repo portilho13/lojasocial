@@ -40,7 +40,7 @@ export class DonationRepository {
   }
 
   // Get donations by donor
-  async findDonationsByDonor(donorId: number) {
+  async findDonationsByDonor(donorId: string) {
     return this.prisma.donation.findMany({
       where: { donorId },
       include: {
@@ -53,7 +53,7 @@ export class DonationRepository {
   }
 
   // Get donations by campaign
-  async findDonationsByCampaign(campaignId: number) {
+  async findDonationsByCampaign(campaignId: string) {
     return this.prisma.donation.findMany({
       where: { campaignId },
       include: {
@@ -66,7 +66,7 @@ export class DonationRepository {
   }
 
   // Get donation by id
-  async findDonationById(id: number) {
+  async findDonationById(id: string) {
     return this.prisma.donation.findUnique({
       where: { id },
       include: {
@@ -94,7 +94,7 @@ export class DonationRepository {
   }
 
   // Get donor by id
-  async findDonorById(id: number) {
+  async findDonorById(id: string) {
     return this.prisma.donor.findUnique({
       where: { id },
       include: {
@@ -108,7 +108,7 @@ export class DonationRepository {
   }
 
   // Update donor
-  async updateDonor(id: number, data: Prisma.DonorUpdateInput) {
+  async updateDonor(id: string, data: Prisma.DonorUpdateInput) {
     return this.prisma.donor.update({
       where: { id },
       data
@@ -116,24 +116,9 @@ export class DonationRepository {
   }
 
   // Delete donor
-  async deleteDonor(id: number) {
+  async deleteDonor(id: string) {
     return this.prisma.donor.delete({
       where: { id }
-    });
-  }
-
-  // Stats
-  async getDonationStats(startDate?: Date, endDate?: Date) {
-    return this.prisma.donation.groupBy({
-      by: ['donorId'],
-      _count: { id: true },
-      _sum: { id: true },
-      where: {
-        date: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
     });
   }
 }

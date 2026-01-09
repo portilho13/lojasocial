@@ -1,9 +1,9 @@
-import { IsInt, IsPositive, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsPositive, IsDateString, IsOptional, IsString, IsNotEmpty } from 'class-validator';
 
 export class DonationItemDto {
-  @IsInt()
-  @IsPositive()
-  productId: number;
+  @IsString()
+  @IsNotEmpty()
+  productId: string;
 
   @IsInt()
   @IsPositive()

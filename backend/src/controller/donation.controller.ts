@@ -1,6 +1,6 @@
 import {
   Controller, Post, Get, Put, Delete, Body, Param, Query, 
-  Res, Req, HttpStatus, HttpException, ValidationPipe, UseGuards, ParseIntPipe
+  Res, Req, HttpStatus, HttpException, ValidationPipe, UseGuards
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
@@ -64,7 +64,7 @@ export class DonationController {
   // GET /api/v1/donations/:id
   @Get(':id')
   async getDonationById(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response
   ): Promise<Response<DonationResponseDto>> {
     try {
@@ -84,7 +84,7 @@ export class DonationController {
   // GET /api/v1/donations/donor/:donorId
   @Get('donor/:donorId')
   async getDonationsByDonor(
-    @Param('donorId', ParseIntPipe) donorId: number,
+    @Param('donorId') donorId: string,
     @Res() res: Response
   ): Promise<Response<DonationResponseDto[]>> {
     try {
@@ -101,7 +101,7 @@ export class DonationController {
   // GET /api/v1/donations/campaign/:campaignId
   @Get('campaign/:campaignId')
   async getDonationsByCampaign(
-    @Param('campaignId', ParseIntPipe) campaignId: number,
+    @Param('campaignId') campaignId: string,
     @Res() res: Response
   ): Promise<Response<DonationResponseDto[]>> {
     try {
@@ -154,7 +154,7 @@ export class DonationController {
   // GET /api/v1/donations/donors/:id
   @Get('donors/:id')
   async getDonorById(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response
   ): Promise<Response<DonorResponseDto>> {
     try {
@@ -174,7 +174,7 @@ export class DonationController {
   // PUT /api/v1/donations/donors/:id
   @Put('donors/:id')
   async updateDonor(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body(ValidationPipe) body: Partial<CreateDonorDto>,
     @Res() res: Response
   ): Promise<Response<DonorResponseDto>> {
@@ -195,7 +195,7 @@ export class DonationController {
   // DELETE /api/v1/donations/donors/:id
   @Delete('donors/:id')
   async deleteDonor(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response
   ): Promise<Response<void>> {
     try {
