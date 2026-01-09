@@ -16,6 +16,8 @@ import { EmailService } from './service/email.service';
 import { AppointmentService } from './service/appointment.service';
 import { AccessTokenStrategy } from './auth/strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './auth/strategies/refresh-token.strategy';
+import { TestController } from './controller/test.controller';
+import { ConfigModule } from '@nestjs/config';
 
 const repositories = [
   StudentRepository,
@@ -36,10 +38,14 @@ const services = [
 const controllers = [
   AuthController,
   AppointmentController,
+  TestController
 ];
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     JwtModule.register({
       global: true,

@@ -84,6 +84,7 @@ export class UserService {
                 {
                     sub: userId,
                     email,
+                    type: 'user',
                 },
                 {
                     secret: process.env.JWT_SECRET || 'secret',
@@ -94,6 +95,7 @@ export class UserService {
                 {
                     sub: userId,
                     email,
+                    type: 'user',
                 },
                 {
                     secret: process.env.JWT_SECRET || 'secret',

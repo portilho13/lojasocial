@@ -80,6 +80,7 @@ export class StudentService {
                 {
                     sub: userId,
                     email,
+                    type: 'student',
                 },
                 {
                     secret: process.env.JWT_SECRET || 'secret',
@@ -90,6 +91,7 @@ export class StudentService {
                 {
                     sub: userId,
                     email,
+                    type: 'student',
                 },
                 {
                     secret: process.env.JWT_SECRET || 'secret',
