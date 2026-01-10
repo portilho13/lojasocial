@@ -12,8 +12,9 @@ export interface ProductType {
 }
 
 export interface StockSummary {
-  typeId: string;
-  typeDescription: string;
+  typeId?: string;
+  typeDescription?: string;
+  category?: string;
   totalQuantity: number;
 }
 
