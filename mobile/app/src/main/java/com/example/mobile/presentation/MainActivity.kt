@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             StudentsView(onMenuClick = {}, onAddStudent = {})
                         }
                         composable(route = Screen.HomeScreen.route) {
-                            HomeView()
+                            HomeView(navController)
                         }
                         composable(route = Screen.RequestsScreen.route) {
                             RequestsView(onMenuClick = {}, onTicketClick = {})

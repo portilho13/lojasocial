@@ -5,6 +5,8 @@ import com.example.mobile.data.local.TokenManager
 import com.example.mobile.data.remote.AuthApiService
 import com.example.mobile.domain.models.LoginRequest
 import com.example.mobile.domain.models.LoginResponse
+import com.example.mobile.domain.models.RegisterRequest
+import com.example.mobile.domain.models.RegisterResponse
 import com.example.mobile.domain.repository.AuthRepository
 import retrofit2.HttpException
 import java.io.IOException
@@ -26,8 +28,10 @@ class AuthRepositoryImpl @Inject constructor(
                 tokenManager.saveAccessToken(loginResponse.accessToken)
                 tokenManager.saveRefreshToken(loginResponse.refreshToken)
 
-                // Guardar user info
-                tokenManager.saveUserInfo(loginResponse.user)
+                // Guardar user info apenas se vier na resposta
+                loginResponse.user?.let { user ->
+                    tokenManager.saveUserInfo(user)
+                }
 
                 // Guardar preferência de remember me
                 if (rememberMe) {
@@ -60,13 +64,84 @@ class AuthRepositoryImpl @Inject constructor(
             Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
         }
     }
+    override suspend fun register(request: RegisterRequest): Resource<RegisterResponse> {
+        return try {
+            val response = apiService.register(request)
+
+            if (response.isSuccessful && response.body() != null) {
+                Resource.Success(response.body()!!)
+            } else {
+                val errorMessage = when (response.code()) {
+                    400 -> "Dados inválidos. Verifique as informações"
+                    409 -> "Email já está registado"
+                    422 -> "Dados fornecidos não são válidos"
+                    else -> "Erro ao criar conta: ${response.message()}"
+                }
+                Resource.Error(message = errorMessage)
+            }
+        } catch (e: HttpException) {
+            Resource.Error(
+                message = when (e.code()) {
+                    400 -> "Dados inválidos. Verifique as informações"
+                    409 -> "Email já está registado"
+                    422 -> "Dados fornecidos não são válidos"
+                    500 -> "Erro no servidor. Tente novamente mais tarde"
+                    else -> "Erro de conexão: ${e.message()}"
+                }
+            )
+        } catch (e: IOException) {
+            Resource.Error(message = "Sem conexão à internet. Verifique a sua rede")
+        } catch (e: Exception) {
+            Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
+        }
+    }
 
     override suspend fun logout(): Resource<Unit> {
         return try {
+            // Obter refresh token antes de limpar
+            val refreshToken = tokenManager.getRefreshToken()
+
+            // Tentar chamar o endpoint de logout na API com refresh token
+            if (!refreshToken.isNullOrEmpty()) {
+                try {
+                    val response = apiService.logout(
+                        mapOf("refreshToken" to refreshToken)
+                    )
+
+                    if (response.isSuccessful) {
+                        // Logout na API foi bem-sucedido
+                        // O servidor invalidou o refresh token
+                    } else {
+                        // API retornou erro mas continua com logout local
+                        println("API logout failed with code: ${response.code()}")
+                    }
+                } catch (e: HttpException) {
+                    // Erro HTTP (401, 403, 500, etc.)
+                    println("API logout HTTP error: ${e.code()}")
+                } catch (e: IOException) {
+                    // Sem conexão à internet
+                    println("API logout network error: ${e.message}")
+                } catch (e: Exception) {
+                    // Outros erros
+                    println("API logout unexpected error: ${e.message}")
+                }
+            }
+
+            // SEMPRE limpar tokens localmente
+            // Isto garante que o utilizador sempre consegue fazer logout
+            // mesmo se a API estiver offline ou retornar erro
             tokenManager.clearTokens()
+
             Resource.Success(Unit)
+
         } catch (e: Exception) {
-            Resource.Error(message = "Erro ao fazer logout")
+            // Erro crítico ao limpar tokens localmente (muito improvável)
+            try {
+                tokenManager.clearTokens()
+                Resource.Success(Unit)
+            } catch (clearError: Exception) {
+                Resource.Error(message = "Erro crítico ao fazer logout")
+            }
         }
     }
 

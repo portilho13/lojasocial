@@ -10,6 +10,40 @@ data class LoginRequest(
     val password: String
 )
 
+data class RegisterRequest(
+    @SerializedName("name")
+    val name: String,
+
+    @SerializedName("userType")
+    val userType: String,
+
+    @SerializedName("contact")
+    val contact: String,
+
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("password")
+    val password: String
+)
+
+data class RegisterResponse(
+    @SerializedName("id")
+    val id: String,
+
+    @SerializedName("name")
+    val name: String,
+
+    @SerializedName("userType")
+    val userType: String,
+
+    @SerializedName("contact")
+    val contact: String,
+
+    @SerializedName("email")
+    val email: String
+)
+
 data class LoginResponse(
     @SerializedName("accessToken")
     val accessToken: String,
@@ -18,7 +52,7 @@ data class LoginResponse(
     val refreshToken: String,
 
     @SerializedName("user")
-    val user: User
+    val user: User? = null  // Tornar opcional
 )
 
 data class User(

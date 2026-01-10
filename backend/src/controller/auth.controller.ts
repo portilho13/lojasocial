@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Res, ValidationPipe, UseGuards, Req } from "@nestjs/common";
+import { Body, Controller, HttpException, HttpStatus, Post, Res, ValidationPipe, UseGuards, Req, Get } from "@nestjs/common";
 import type { Request, Response } from "express";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { RefreshTokenGuard } from "src/common/guards/refresh-token.guard";
@@ -95,7 +95,7 @@ export class AuthController {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
-
+    
     @UseGuards(RefreshTokenGuard)
     @Post('user/logout')
     async userLogout(@Req() req: Request, @Res() res: Response) {

@@ -30,10 +30,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +51,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
+import com.example.mobile.presentation.Screen
+import com.example.mobile.presentation.home.components.LogoutConfirmationDialog
 import com.example.mobile.presentation.components.NavigationDrawer
 import com.example.mobile.presentation.home.components.DashboardCard
 import com.example.mobile.presentation.home.components.ExpiringItemRow
@@ -62,6 +71,7 @@ import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Warning_Orange
 import kotlinx.coroutines.launch
+
 
 // --- Mock Data Models (Matches your API structure) ---
 data class StockSummary(
@@ -79,12 +89,36 @@ data class ExpiringItem(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeView() {
+fun HomeView(navController: NavController,
+             viewModel: HomeViewModel = hiltViewModel()) {
 
-
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var currentScreen by remember { mutableStateOf("dashboard") }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    // Navegação após logout
+    LaunchedEffect(state.isLoggedOut) {
+        if (state.isLoggedOut) {
+            navController.navigate(Screen.LoginScreen.route) {
+                popUpTo(0) { inclusive = true } // Limpa toda a backstack
+            }
+            viewModel.resetLogoutState()
+        }
+    }
+
+    // Mostrar erros
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                actionLabel = "OK"
+            )
+            viewModel.onEvent(HomeEvent.ClearError)
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -95,7 +129,10 @@ fun HomeView() {
                     currentScreen = id
                     scope.launch { drawerState.close() }
                 },
-                onLogout = { /* Handle Logout */ }
+                onLogout = {
+                    showLogoutDialog = true
+                    scope.launch { drawerState.close() }
+                }
             )
         }
     ) {
@@ -130,6 +167,26 @@ fun HomeView() {
 
         }
     }
+    // Dialog de confirmação de logout
+    if (showLogoutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                viewModel.onEvent(HomeEvent.Logout)
+            },
+            onDismiss = {
+                showLogoutDialog = false
+            },
+            isLoading = state.isLoading
+        )
+    }
+
+    // Snackbar para erros
+    SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier
+            //.align(Alignment.BottomCenter)
+            .padding(16.dp)
+    )
 }
     @Composable
     fun Dashboard(onMenuClick: () -> Unit) {
@@ -302,5 +359,5 @@ fun HomeView() {
 @Composable
 fun HomePreview(
 ) {
-    HomeView()
+    HomeView(navController = rememberNavController())
 }

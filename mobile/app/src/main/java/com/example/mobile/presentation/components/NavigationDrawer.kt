@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import com.example.mobile.R
 import com.example.mobile.presentation.home.HomeView
@@ -146,5 +147,5 @@ fun DrawerPreview(
 @Composable
 fun HomePreview(
 ) {
-    HomeView()
+    HomeView(navController = rememberNavController())
 }
