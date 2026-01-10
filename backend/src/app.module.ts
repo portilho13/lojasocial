@@ -5,6 +5,7 @@ import { InventoryModule } from './inventory.module';
 import { SupportRequestModule } from './support-request.module';
 import { BeneficiaryModule } from './beneficiary.module';
 import { DonationModule } from './donation.module';
+import { CampaignModule } from './campaign.module';
 import { AuthController } from './controller/auth.controller';
 import { AppointmentController } from './controller/appointment.controller';
 import { StudentRepository } from './repository/student.repository';
@@ -56,6 +57,7 @@ const controllers = [
     SupportRequestModule,
     DonationModule,
     BeneficiaryModule,
+    CampaignModule,
   ],
   controllers: [...controllers],
   providers: [...repositories, ...services],
