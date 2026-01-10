@@ -18,17 +18,21 @@ interface StockSectionProps {
   stockSummary: StockSummary[];
 }
 
-const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-];
+// Generate colors dynamically based on index using actual hex values
+const getBarColor = (index: number) => {
+  const colors = [
+    "#1a3a2f", // Dark green (primary)
+    "#c4a35a", // Gold (secondary)
+    "#2d5a47", // Medium green
+    "#d4b86a", // Light gold
+    "#3d7a5f", // Light green
+  ];
+  return colors[index % colors.length];
+};
 
 export function StockSection({ stockSummary }: StockSectionProps) {
   const chartData = stockSummary.map((item) => ({
-    name: item.typeDescription,
+    name: item.category || item.typeDescription,
     quantidade: item.totalQuantity,
   }));
 
@@ -111,17 +115,17 @@ export function StockSection({ stockSummary }: StockSectionProps) {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "hsl(var(--background))",
-                        border: "1px solid hsl(var(--border))",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #e4e4e7",
                         borderRadius: "8px",
                       }}
-                      labelStyle={{ color: "hsl(var(--foreground))" }}
+                      labelStyle={{ color: "#1a3a2f" }}
                     />
                     <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
                       {chartData.map((_, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
+                          fill={getBarColor(index)}
                         />
                       ))}
                     </Bar>
