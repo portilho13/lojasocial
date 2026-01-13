@@ -20,6 +20,7 @@ import { CreateProductTypeDto } from 'src/dto/inventory/create-product-type.dto'
 import { CreateStockDto } from 'src/dto/inventory/create-stock.dto';
 import { UpdateStockDto } from 'src/dto/inventory/update-stock.dto';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { UserGuard } from 'src/common/guards/user.guard';
 
 // Add auth later
 @Controller('api/v1/inventory')
@@ -29,6 +30,7 @@ export class InventoryController {
   //Register a new product type
   //Route: POST /api/v1/inventory/types
   @Post('types')
+  @UseGuards(UserGuard)
   async createProductType(@Body(ValidationPipe) body: CreateProductTypeDto, @Res() res: Response) {
     try {
       const type = await this.inventoryService.createProductType(body);
@@ -54,6 +56,7 @@ export class InventoryController {
   //Route: POST /api/v1/inventory/products
 
   @Post('products')
+  @UseGuards(UserGuard)
   async createProduct(
     @Body(ValidationPipe) body: CreateProductDto,
     @Res() res: Response,
@@ -100,6 +103,7 @@ export class InventoryController {
   //Route: POST /api/v1/inventory/stocks
 
   @Post('stocks')
+  @UseGuards(UserGuard)
   async createStock(
     @Body(ValidationPipe) body: CreateStockDto,
     @Res() res: Response,
@@ -121,6 +125,7 @@ export class InventoryController {
   //Route: GET /api/v1/inventory/stocks
 
   @Get('stocks')
+  @UseGuards(UserGuard)
   async getAllStockRecords(
     @Res() res: Response,
     @Query('skip') skip?: string,
@@ -146,6 +151,7 @@ export class InventoryController {
   //Route: PATCH /api/v1/inventory/stocks/:id
 
   @Patch('stocks/:id')
+  @UseGuards(UserGuard)
   async updateStock(
     @Param('id') id: string,
     @Body(ValidationPipe) body: UpdateStockDto,
@@ -167,6 +173,7 @@ export class InventoryController {
   //Delete stock entry
   //Route: DELETE /api/v1/inventory/stocks/:id
   @Delete('stocks/:id')
+  @UseGuards(UserGuard)
   async deleteStock(@Param('id') id: string, @Res() res: Response) {
     try {
       await this.inventoryService.deleteStock(id);
@@ -184,6 +191,7 @@ export class InventoryController {
   //Get stock entries that are about to expire within a given number of days (default 30)
   //Route: GET /api/v1/inventory/stocks/expiring?days=30
   @Get('stocks/expiring')
+  @UseGuards(UserGuard)
   async getExpiringStock(@Query('days') days: string, @Res() res: Response) {
     try {
       const threshold = days ? parseInt(days) : 30;

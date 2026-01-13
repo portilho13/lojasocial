@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, Query, Res, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, Res, HttpStatus, ValidationPipe, UseGuards } from '@nestjs/common';
+import { UserGuard } from 'src/common/guards/user.guard';
 import { BeneficiaryService } from 'src/service/beneficiary.service';
 import { CreateBeneficiaryDto } from 'src/dto/beneficiary/create-beneficiary.dto';
 import { UpdateBeneficiaryDto } from 'src/dto/beneficiary/update-beneficiary.dto';
@@ -6,8 +7,9 @@ import { BeneficiaryResponseDto } from 'src/dto/beneficiary/beneficiary-response
 import type { Response } from 'express';
 
 @Controller('api/v1/beneficiaries')
+@UseGuards(UserGuard)
 export class BeneficiaryController {
-  constructor(private readonly service: BeneficiaryService) {}
+  constructor(private readonly service: BeneficiaryService) { }
 
   // Register a new beneficiary
   // Route: POST /api/v1/beneficiaries
