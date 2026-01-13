@@ -11,7 +11,7 @@ import { CampaignResponseDto } from '../dto/campaigns/campaign-response.dto';
 
 @Controller('api/v1/campaigns')
 export class CampaignController {
-  constructor(private readonly campaignService: CampaignService) {}
+  constructor(private readonly campaignService: CampaignService) { }
 
   // PUBLIC ROUTES
 

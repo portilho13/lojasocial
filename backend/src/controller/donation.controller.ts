@@ -1,9 +1,9 @@
 import {
-  Controller, Post, Get, Put, Delete, Body, Param, Query, 
+  Controller, Post, Get, Put, Delete, Body, Param, Query,
   Res, Req, HttpStatus, HttpException, ValidationPipe, UseGuards
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { UserGuard } from 'src/common/guards/user.guard';
 import { DonationService } from '../service/donation.service';
 import { CreateDonationDto } from '../dto/donations/create-donation.dto';
 import { CreateDonorDto } from '../dto/donations/create-donor.dto';
@@ -11,9 +11,9 @@ import { DonationResponseDto } from '../dto/donations/donation-response.dto';
 import { DonorResponseDto } from '../dto/donations/donor-response.dto';
 
 @Controller('api/v1/donations')
-@UseGuards(AccessTokenGuard) 
+@UseGuards(UserGuard)
 export class DonationController {
-  constructor(private readonly donationService: DonationService) {}
+  constructor(private readonly donationService: DonationService) { }
 
   // DONATION ROUTES
 
@@ -22,11 +22,11 @@ export class DonationController {
   @Post()
   async registerDonation(
     @Body(ValidationPipe) body: CreateDonationDto,
-    @Req() req: Request, 
+    @Req() req: Request,
     @Res() res: Response
   ): Promise<Response<DonationResponseDto>> {
     try {
-      const userId = (req.user as any)?.sub; 
+      const userId = (req.user as any)?.sub;
       const donation: DonationResponseDto = await this.donationService.registerDonation(body, userId);
       return res.status(HttpStatus.CREATED).json(donation);
     } catch (e) {
