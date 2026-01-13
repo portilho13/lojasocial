@@ -13,13 +13,15 @@ import { SupportRequestService } from '../service/support-request.service';
 import { CreateSupportRequestDto } from '../dto/support-request/create-support-request.dto';
 import { UpdateSupportRequestStatusDto } from '../dto/support-request/update-support-request-status.dto';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
+import { StudentGuard } from '../common/guards/student.guard';
+import { UserGuard } from '../common/guards/user.guard';
 import type { Request } from 'express';
 
 @Controller('api/v1/support-requests')
 export class SupportRequestController {
     constructor(private readonly service: SupportRequestService) { }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(StudentGuard)
     @Post()
     async create(@Body(ValidationPipe) body: CreateSupportRequestDto, @Req() req: Request) {
         // Ensure student can only create for themselves if needed, or trust the DTO
@@ -31,21 +33,21 @@ export class SupportRequestController {
         return this.service.createRequest(body);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(UserGuard)
     @Get()
     async getAll(@Req() req: Request) {
         // Ideally restrict to STAFF/ADMIN
         return this.service.getAllRequests();
     }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(StudentGuard)
     @Get('me')
     async getMyRequests(@Req() req: Request) {
         const user = req.user as any;
         return this.service.getRequestsByStudent(user.sub);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(UserGuard)
     @Patch(':id/status')
     async updateStatus(
         @Param('id') id: string,

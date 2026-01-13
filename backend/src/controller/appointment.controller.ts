@@ -8,16 +8,19 @@ import {
   HttpStatus,
   ValidationPipe,
   HttpException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AppointmentService } from 'src/service/appointment.service';
 import { AppointmentRequestDto } from 'src/dto/appointments/appointment.request.dto';
+import { UserGuard } from 'src/common/guards/user.guard';
 
 @Controller('api/v1/appointments')
 export class AppointmentController {
-  constructor(private readonly appointmentService: AppointmentService) {}
+  constructor(private readonly appointmentService: AppointmentService) { }
 
   @Post()
+  @UseGuards(UserGuard)
   async createAppointment(
     @Body(ValidationPipe) dto: AppointmentRequestDto,
     @Res() res: Response,
@@ -38,6 +41,7 @@ export class AppointmentController {
 
 
   @Get()
+  @UseGuards(UserGuard)
   async getAllAppointments(@Res() res: Response) {
     try {
       const appointments = await this.appointmentService.fetchAllAppointments();
@@ -55,6 +59,7 @@ export class AppointmentController {
   // Send confirmation email for a specific appointment
   // Route: POST /api/v1/appointments/:id/send-confirmation
   @Post(':id/send-confirmation')
+  @UseGuards(UserGuard)
   async sendConfirmationEmail(
     @Param('id') id: string,
     @Res() res: Response,
