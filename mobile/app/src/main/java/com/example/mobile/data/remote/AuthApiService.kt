@@ -6,10 +6,15 @@ import com.example.mobile.domain.models.RegisterRequest
 import com.example.mobile.domain.models.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface AuthApiService {
 
+    //AUTH
     @POST("/api/v1/auth/user/sign-in")
     suspend fun login(
         @Body request: LoginRequest
@@ -29,4 +34,116 @@ interface AuthApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<RegisterResponse>
+
+    //Student
+       @POST("api/v1/beneficiaries")
+    suspend fun createBeneficiary(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
+
+    @GET("api/v1/beneficiaries")
+    suspend fun getAllBeneficiaries(
+        @Body request: Map<String, String>
+    ): Response<LoginResponse>
+
+    @GET("/api/v1/beneficiaries/:id")
+    suspend fun getBeneficiaryById(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @PATCH("/api/v1/beneficiaries/:id")
+    suspend fun updateBeneficiary(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    @DELETE("/api/v1/beneficiaries/:id")
+    suspend fun deleteBeneficiary(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    //Campaigns
+    @GET("/api/v1/campaigns/active")
+    suspend fun getActiveCampaigns(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
+
+    @POST("/api/v1/campaigns")
+    suspend fun createCampaign(
+        @Body request: Map<String, String>
+    ): Response<LoginResponse>
+
+    @GET("/api/v1/campaigns?skip=0&take=50")
+    suspend fun getAllCampaigns(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @GET("/api/v1/campaigns/:id")
+    suspend fun getCampaignById(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    @PUT("/api/v1/campaigns/:id")
+    suspend fun updateCampaign(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @DELETE("/api/v1/campaigns/:id")
+    suspend fun updateCampaign(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    //Donations
+    @POST("/api/v1/donations")
+    suspend fun createDonation(
+        @Body request: Map<String, String>
+    ): Response<LoginResponse>
+
+    @GET("/api/v1/donations?skip=0&take=50")
+    suspend fun getAllDonations(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+     @GET("/api/v1/donations/:id")
+    suspend fun getDonationById(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    @GET("/api/v1/donations/donor/:donorId")
+    suspend fun getDonationsByDonor(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @GET("/api/v1/donations/campaign/:campaignId")
+    suspend fun getDonationsByCampaign(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    @POST("/api/v1/donations/donors")
+    suspend fun createDonor(
+        @Body request: Map<String, String>
+    ): Response<LoginResponse>
+
+    @GET("/api/v1/donations/donors")
+    suspend fun getAllDonors(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @GET("/api/v1/donations/donors/:id")
+    suspend fun getDonorById(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    @PUT("/api/v1/donations/donors/:id")
+    suspend fun updateDonor(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @DELETE("/api/v1/donations/donors/:id")
+    suspend fun deleteDonor(
+        @Body request: RegisterRequest
+    ): Response<RegisterResponse>
+
+    
+
+
 }
