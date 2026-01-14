@@ -76,18 +76,17 @@ fun LoginView(
     // Efeito para navegar após login bem-sucedido
     LaunchedEffect(state.isLoginSuccessful) {
         if (state.isLoginSuccessful) {
-            navController.navigate(Screen.HomeScreen.route) {
+            navController.navigate(Screen.StudentReqScreen.route) {
                 popUpTo(Screen.LoginScreen.route) { inclusive = true }
             }
             viewModel.resetLoginSuccess()
         }
     }
 
-    // Efeito para mostrar erros
-    LaunchedEffect(state.error) {
-        state.error?.let { error ->
+    LaunchedEffect(state.error, state.isLoginSuccessful) {
+        if (state.error != null && !state.isLoginSuccessful) {
             snackbarHostState.showSnackbar(
-                message = error,
+                message = state.error!!,
                 actionLabel = "OK"
             )
             viewModel.onEvent(LoginEvent.ClearError)

@@ -10,22 +10,22 @@ import retrofit2.http.POST
 
 interface AuthApiService {
 
-    @POST("auth/user/sign-in")
+    @POST("/api/v1/auth/user/sign-in")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
 
-    @POST("auth/user/refresh")
+    @POST("/api/v1/auth/user/refresh")
     suspend fun refreshToken(
         @Body request: Map<String, String>
     ): Response<LoginResponse>
 
-    @POST("auth/user/logout")
+    @POST("/api/v1/auth/user/logout")
     suspend fun logout(
         @Body request: Map<String, String> // {"refreshToken": "..."}
     ): Response<Unit>
 
-    @POST("auth/user/sign-up")
+    @POST("/api/v1/auth/user/sign-up")
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<RegisterResponse>

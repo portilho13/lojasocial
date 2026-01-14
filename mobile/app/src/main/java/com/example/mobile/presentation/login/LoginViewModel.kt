@@ -69,6 +69,7 @@ class LoginViewModel @Inject constructor(
 
         // Validação local
         if (!validateInput()) return
+        if (currentState.isLoading) return
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

@@ -1,5 +1,6 @@
 package com.example.mobile.di
 
+import com.example.mobile.common.Constants.BASE_URL
 import com.example.mobile.data.local.TokenManager
 import com.example.mobile.data.remote.AuthApiService
 import dagger.Module
@@ -18,8 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "http://10.67.138.149:3000/api/v1/" // Para emulador Android
-    // Para dispositivo físico, use o IP da sua máquina: "http://192.168.x.x:3000/api/"
 
     @Provides
     @Singleton

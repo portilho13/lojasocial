@@ -49,7 +49,7 @@ fun NavigationDrawer(
         DrawerMenuItem("products", "Produtos", Icons.Default.ShoppingBag),   // Maps to ProductsScreen
         DrawerMenuItem("types", "Categorias", Icons.Default.Category),
         DrawerMenuItem("students", "Estudantes", Icons.Default.Person),
-        DrawerMenuItem("studentsreq", "Pedidos de Estudantes", Icons.Default.Person)
+        DrawerMenuItem("studentsreq", "Meus Pedidos", Icons.Default.Person)
     )
 
     ModalDrawerSheet(
@@ -84,13 +84,13 @@ fun NavigationDrawer(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Técnico Administrativo",
+                text = "Pedro Duarte",
                 color = Text_White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
             Text(
-                text = "admin.sas@ipca.pt",
+                text = "a27990@alunos.ipca.pt",
                 color = Text_White.copy(alpha = 0.8f),
                 fontSize = 14.sp
             )
