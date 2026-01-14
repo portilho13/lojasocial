@@ -169,9 +169,9 @@ fun ProductTypeView(onMenuClick: () -> Unit) {
                             showCreateDialog = false
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = IPCA_Green_Dark)
+                    colors = ButtonDefaults.buttonColors(containerColor = IPCA_Gold)
                 ) {
-                    Text("Criar")
+                    Text("Criar", color = Text_White)
                 }
             },
             dismissButton = {

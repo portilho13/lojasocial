@@ -25,7 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
+import com.example.mobile.presentation.ui.theme.Text_Black
+import com.example.mobile.presentation.ui.theme.Text_White
 import kotlin.text.ifEmpty
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +54,7 @@ fun AddProductDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nome do Produto") },
+                    label = { Text("Nome do Produto", color = Text_Black) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -64,7 +67,7 @@ fun AddProductDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Descrição (Opcional)") },
+                    label = { Text("Descrição (Opcional)", color = Text_Black) },
                     placeholder = { Text("Ex: 1L, 500g...") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -84,11 +87,11 @@ fun AddProductDialog(
                         value = selectedType.ifEmpty { "Selecione o Tipo" },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Tipo de Produto") },
+                        label = { Text("Tipo de Produto", color = Text_Black) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = IPCA_Green_Dark,
-                            focusedLabelColor = IPCA_Green_Dark
+                            focusedLabelColor = IPCA_Green_Dark, unfocusedTextColor =Text_Black
                         ),
                         modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
@@ -117,10 +120,10 @@ fun AddProductDialog(
                         onConfirm(name, description, selectedType)
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = IPCA_Green_Dark),
+                colors = ButtonDefaults.buttonColors(containerColor = IPCA_Gold),
                 enabled = name.isNotEmpty() && selectedType.isNotEmpty()
             ) {
-                Text("Gravar")
+                Text("Gravar", color = Text_White)
             }
         },
         dismissButton = {

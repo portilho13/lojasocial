@@ -48,7 +48,8 @@ fun NavigationDrawer(
         DrawerMenuItem("stock", "Inventário", Icons.Default.Inventory),      // Maps to StockListScreen
         DrawerMenuItem("products", "Produtos", Icons.Default.ShoppingBag),   // Maps to ProductsScreen
         DrawerMenuItem("types", "Categorias", Icons.Default.Category),
-        DrawerMenuItem("students", "Estudantes", Icons.Default.Person)
+        DrawerMenuItem("students", "Estudantes", Icons.Default.Person),
+        DrawerMenuItem("studentsreq", "Pedidos de Estudantes", Icons.Default.Person)
     )
 
     ModalDrawerSheet(

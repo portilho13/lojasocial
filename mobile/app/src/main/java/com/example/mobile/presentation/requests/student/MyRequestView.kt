@@ -32,7 +32,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
+import com.example.mobile.presentation.Screen
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -70,6 +73,7 @@ data class ApiRequest(
 @Composable
 fun StudentMyRequestsScreen(
     onMenuClick: () -> Unit,
+    navController: NavController,
     onCreateRequestClick: () -> Unit, // Navigate to Create Form
     onRequestDetailClick: (String) -> Unit // View details
 ) {
@@ -99,7 +103,7 @@ fun StudentMyRequestsScreen(
         ),
         ApiRequest(
             id = "req-003",
-            date = "2025-11-20T09:30:00.000Z",
+            date = "2026-12-29T09:30:00.000Z",
             status = "CANCELADO",
             observation = "Pedido duplicado",
             studentId = "me",
@@ -125,7 +129,7 @@ fun StudentMyRequestsScreen(
         containerColor = Background_Light,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onCreateRequestClick,
+                onClick = { navController.navigate(Screen.CreateRequestScreen.route) },
                 containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 shape = RoundedCornerShape(16.dp)
@@ -361,5 +365,5 @@ fun StatusIconBox(status: String) {
 @Preview
 @Composable
 fun StudentRequestsPreview() {
-    StudentMyRequestsScreen(onMenuClick = {}, onCreateRequestClick = {}, onRequestDetailClick = {})
+    StudentMyRequestsScreen(onMenuClick = {},navController = rememberNavController(), onCreateRequestClick = {}, onRequestDetailClick = {})
 }

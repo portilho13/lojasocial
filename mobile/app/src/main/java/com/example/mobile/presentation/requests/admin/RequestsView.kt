@@ -77,11 +77,11 @@ fun RequestsView(
             id = "83dc5ece-e885-4e66-8408-78e8018ad408",
             date = "2026-01-08T18:21:31.087Z",
             status = "PENDENTE",
-            observation = "Need food for the week",
+            observation = "Preciso de ajuda com bens essenciais para esta semana.",
             studentId = "f5f101e6-6951-4270-8b0b-8d5a0c0913aa",
             items = listOf(
-                ApiRequestItem("1", "p1", "Rice 1kg", 2, 0, "Rice"),
-                ApiRequestItem("2", "p2", "Pasta 1kg", 2, 0, "Pasta")
+                ApiRequestItem("1", "p1", "Arroz Agulha 1kg", 2, 0, ""),
+                ApiRequestItem("2", "p2", "Massa Esparguete", 2, 0, "")
             )
         ),
         ApiRequest(

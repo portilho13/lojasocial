@@ -63,6 +63,7 @@ import com.example.mobile.presentation.home.components.ExpiringItemRow
 import com.example.mobile.presentation.product.ProductView
 import com.example.mobile.presentation.product.types.ProductTypeView
 import com.example.mobile.presentation.requests.admin.RequestsView
+import com.example.mobile.presentation.requests.student.StudentMyRequestsScreen
 import com.example.mobile.presentation.stock.StockView
 import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.Alert_Red
@@ -163,6 +164,10 @@ fun HomeView(navController: NavController,
             "students" -> StudentsView(
                 onMenuClick = { scope.launch { drawerState.open() } },
                 onAddStudent = {}
+            )
+            "studentsreq" -> StudentMyRequestsScreen(
+                onMenuClick = { scope.launch { drawerState.open() } },navController,
+                onCreateRequestClick = {}, onRequestDetailClick = {}
             )
 
         }
