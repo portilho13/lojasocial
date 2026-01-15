@@ -1,9 +1,9 @@
 package com.example.mobile.data.remote
 
+import com.example.mobile.data.remote.dto.LoginResponse
+import com.example.mobile.data.remote.dto.RegisterResponse
 import com.example.mobile.domain.models.LoginRequest
-import com.example.mobile.domain.models.LoginResponse
 import com.example.mobile.domain.models.RegisterRequest
-import com.example.mobile.domain.models.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -54,7 +54,6 @@ interface AuthApiService {
     suspend fun studentLogout(
         @Body request: Map<String, String> // {"refreshToken": "..."}
     ): Response<Unit>
-
 
     //Beneficiary
 
@@ -255,9 +254,4 @@ interface AuthApiService {
     suspend fun sendAppointmentConfirmation(
         @Body request: RegisterRequest
     ): Response<Unit>
-
-
-
-
-
 }

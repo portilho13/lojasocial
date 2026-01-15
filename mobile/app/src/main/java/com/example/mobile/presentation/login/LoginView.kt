@@ -76,7 +76,7 @@ fun LoginView(
     // Efeito para navegar após login bem-sucedido
     LaunchedEffect(state.isLoginSuccessful) {
         if (state.isLoginSuccessful) {
-            navController.navigate(Screen.StudentReqScreen.route) {
+            navController.navigate(Screen.HomeScreen.route) {
                 popUpTo(Screen.LoginScreen.route) { inclusive = true }
             }
             viewModel.resetLoginSuccess()

@@ -1,4 +1,4 @@
-package com.example.mobile.domain.models
+package com.example.mobile.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -9,6 +9,4 @@ data class LoginResponse(
     @SerializedName("refreshToken")
     val refreshToken: String,
 
-    @SerializedName("user")
-    val user: User? = null  // Tornar opcional
-)
+    )

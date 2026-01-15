@@ -1,4 +1,4 @@
-package com.example.mobile.domain.models
+package com.example.mobile.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 

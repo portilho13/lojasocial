@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.product.components
+package com.example.mobile.presentation.product.types.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

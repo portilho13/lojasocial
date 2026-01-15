@@ -3,10 +3,10 @@ package com.example.mobile.data.repository
 import com.example.mobile.common.Resource
 import com.example.mobile.data.local.TokenManager
 import com.example.mobile.data.remote.AuthApiService
+import com.example.mobile.data.remote.dto.LoginResponse
+import com.example.mobile.data.remote.dto.RegisterResponse
 import com.example.mobile.domain.models.LoginRequest
-import com.example.mobile.domain.models.LoginResponse
 import com.example.mobile.domain.models.RegisterRequest
-import com.example.mobile.domain.models.RegisterResponse
 import com.example.mobile.domain.repository.AuthRepository
 import retrofit2.HttpException
 import java.io.IOException
@@ -27,11 +27,6 @@ class AuthRepositoryImpl @Inject constructor(
                 // Guardar tokens
                 tokenManager.saveAccessToken(loginResponse.accessToken)
                 tokenManager.saveRefreshToken(loginResponse.refreshToken)
-
-                // Guardar user info apenas se vier na resposta
-                loginResponse.user?.let { user ->
-                    tokenManager.saveUserInfo(user)
-                }
 
                 // Guardar preferência de remember me
                 if (rememberMe) {
