@@ -65,9 +65,6 @@ class ProductViewModel @Inject constructor(
             is ProductEvent.CreateProduct -> {
                 createProduct(event.name, event.description, event.typeId)
             }
-//            is ProductEvent.DeleteProduct -> {
-//                deleteProduct(event.productId)
-//            }
             is ProductEvent.SelectProduct -> {
                 _state.update { it.copy(selectedProduct = event.product) }
             }

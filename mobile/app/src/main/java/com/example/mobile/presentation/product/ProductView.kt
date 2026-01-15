@@ -254,8 +254,7 @@ import com.example.mobile.presentation.ui.theme.Text_Grey
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductView(
-    onMenuClick: () -> Unit,
-    viewModel: ProductViewModel = hiltViewModel()
+    onMenuClick: () -> Unit, viewModel: ProductViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -264,8 +263,7 @@ fun ProductView(
     LaunchedEffect(state.error) {
         state.error?.let { error ->
             snackbarHostState.showSnackbar(
-                message = error,
-                actionLabel = "OK"
+                message = error, actionLabel = "OK"
             )
             viewModel.onEvent(ProductEvent.ClearError)
         }
@@ -275,28 +273,22 @@ fun ProductView(
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let { message ->
             snackbarHostState.showSnackbar(
-                message = message,
-                actionLabel = "OK"
+                message = message, actionLabel = "OK"
             )
             viewModel.onEvent(ProductEvent.ClearSuccess)
         }
     }
 
-    Scaffold(
-        containerColor = Background_Light,
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { viewModel.onEvent(ProductEvent.ShowAddDialog) },
-                containerColor = IPCA_Gold,
-                contentColor = Color.White,
-                icon = { Icon(Icons.Default.Add, "Adicionar Produto") },
-                text = { Text("Adicionar Produto") }
-            )
-        },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { paddingValues ->
+    Scaffold(containerColor = Background_Light, floatingActionButton = {
+        ExtendedFloatingActionButton(
+            onClick = { viewModel.onEvent(ProductEvent.ShowAddDialog) },
+            containerColor = IPCA_Gold,
+            contentColor = Color.White,
+            icon = { Icon(Icons.Default.Add, "Adicionar Produto") },
+            text = { Text("Adicionar Produto") })
+    }, snackbarHost = {
+        SnackbarHost(hostState = snackbarHostState)
+    }) { paddingValues ->
 
         Column(
             modifier = Modifier
@@ -368,16 +360,14 @@ fun ProductView(
                     state.isLoading && state.products.isEmpty() -> {
                         // Loading inicial
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 CircularProgressIndicator(
-                                    color = IPCA_Green_Dark,
-                                    modifier = Modifier.size(48.dp)
+                                    color = IPCA_Green_Dark, modifier = Modifier.size(48.dp)
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
@@ -392,8 +382,7 @@ fun ProductView(
                     state.filteredProducts.isEmpty() && !state.isLoading -> {
                         // Lista vazia
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -433,15 +422,11 @@ fun ProductView(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(
-                                items = state.filteredProducts,
-                                key = { it.id }
-                            ) { product ->
+                                items = state.filteredProducts, key = { it.id }) { product ->
                                 ProductItemCard(
-                                    product = product,
-                                    onDeleteClick = {
+                                    product = product, onDeleteClick = {
                                         //viewModel.onEvent(ProductEvent.DeleteProduct(product.id))
-                                    }
-                                )
+                                    })
                             }
                             item { Spacer(modifier = Modifier.height(80.dp)) } // Space for FAB
                         }
@@ -459,8 +444,7 @@ fun ProductView(
             onDismiss = { viewModel.onEvent(ProductEvent.HideAddDialog) },
             onConfirm = { name, description, typeId ->
                 viewModel.onEvent(ProductEvent.CreateProduct(name, description, typeId))
-            }
-        )
+            })
     }
 }
 

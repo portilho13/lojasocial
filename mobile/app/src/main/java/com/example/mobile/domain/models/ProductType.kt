@@ -2,13 +2,16 @@ package com.example.mobile.domain.models
 
 import com.google.gson.annotations.SerializedName
 
-data class CreateProductTypeRequest(
-    @SerializedName("name")
-    val name: String,
+
+data class ProductType(
+    @SerializedName("id")
+    val id: String,
 
     @SerializedName("description")
-    val description: String,
+    val description: String
+)
 
-    @SerializedName("productTypeId")
-    val productTypeId: String
+data class CreateProductTypeRequest(
+    @SerializedName("description")
+    val description: String,
 )

@@ -31,7 +31,7 @@ import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 
 @Composable
-fun ProductTypeCard(type: ProductType) {
+fun ProductTypeCard(productType: ProductType) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -64,15 +64,10 @@ fun ProductTypeCard(type: ProductType) {
 
                 Column {
                     Text(
-                        text = type.name,
+                        text = productType.name,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = Text_Black
-                    )
-                    Text(
-                        text = "${type.itemCount} produtos associados",
-                        fontSize = 12.sp,
-                        color = Color.Gray
                     )
                 }
             }

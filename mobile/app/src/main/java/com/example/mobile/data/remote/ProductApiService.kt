@@ -13,10 +13,11 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface ProductApiService {
-//    @POST("/api/v1/inventory/types")
-//    suspend fun createProductType(
-//        @Body request: CreateProductTypeRequest
-//    ): Response<ProductType>
+
+    @POST("/api/v1/inventory/types")
+    suspend fun createProductType(
+        @Body request: CreateProductTypeRequest
+    ): Response<ProductType>
 
     @GET("/api/v1/inventory/types")
     suspend fun getProductTypes(): Response<List<ProductType>>

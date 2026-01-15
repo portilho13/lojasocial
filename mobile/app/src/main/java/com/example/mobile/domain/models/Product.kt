@@ -25,14 +25,6 @@ data class Product(
     val updatedAt: String? = null
 )
 
-data class ProductType(
-    @SerializedName("id")
-    val id: String,
-
-    @SerializedName("description")
-    val description: String
-)
-
 data class CreateProductRequest(
     @SerializedName("name")
     val name: String,
