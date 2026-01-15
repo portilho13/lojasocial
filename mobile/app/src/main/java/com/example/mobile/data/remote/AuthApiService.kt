@@ -35,16 +35,38 @@ interface AuthApiService {
         @Body request: RegisterRequest
     ): Response<RegisterResponse>
 
-    //Student
+    @POST("api/v1/auth/student/sign-up")
+    suspend fun registerStudent(
+        @Body request: RegisterRequest
+    ): Response<Unit>
+
+    @POST("api/v1/auth/student/sign-in")
+    suspend fun loginStudent(
+        @Body request: LoginRequest
+    ): Response<Unit>
+
+    @POST("/api/v1/auth/student/refresh")
+    suspend fun studentRefreshToken(
+        @Body request: Map<String, String>
+    ): Response<LoginResponse>
+
+    @POST("/api/v1/auth/student/logout")
+    suspend fun studentLogout(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+
+    //Beneficiary
+
        @POST("api/v1/beneficiaries")
     suspend fun createBeneficiary(
         @Body request: LoginRequest
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @GET("api/v1/beneficiaries")
     suspend fun getAllBeneficiaries(
         @Body request: Map<String, String>
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @GET("/api/v1/beneficiaries/:id")
     suspend fun getBeneficiaryById(
@@ -54,23 +76,24 @@ interface AuthApiService {
     @PATCH("/api/v1/beneficiaries/:id")
     suspend fun updateBeneficiary(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     @DELETE("/api/v1/beneficiaries/:id")
     suspend fun deleteBeneficiary(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     //Campaigns
+
     @GET("/api/v1/campaigns/active")
     suspend fun getActiveCampaigns(
         @Body request: LoginRequest
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @POST("/api/v1/campaigns")
     suspend fun createCampaign(
         @Body request: Map<String, String>
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @GET("/api/v1/campaigns?skip=0&take=50")
     suspend fun getAllCampaigns(
@@ -80,7 +103,7 @@ interface AuthApiService {
     @GET("/api/v1/campaigns/:id")
     suspend fun getCampaignById(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     @PUT("/api/v1/campaigns/:id")
     suspend fun updateCampaign(
@@ -90,13 +113,13 @@ interface AuthApiService {
     @DELETE("/api/v1/campaigns/:id")
     suspend fun updateCampaign(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     //Donations
     @POST("/api/v1/donations")
     suspend fun createDonation(
         @Body request: Map<String, String>
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @GET("/api/v1/donations?skip=0&take=50")
     suspend fun getAllDonations(
@@ -106,7 +129,7 @@ interface AuthApiService {
      @GET("/api/v1/donations/:id")
     suspend fun getDonationById(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     @GET("/api/v1/donations/donor/:donorId")
     suspend fun getDonationsByDonor(
@@ -116,12 +139,12 @@ interface AuthApiService {
     @GET("/api/v1/donations/campaign/:campaignId")
     suspend fun getDonationsByCampaign(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     @POST("/api/v1/donations/donors")
     suspend fun createDonor(
         @Body request: Map<String, String>
-    ): Response<LoginResponse>
+    ): Response<Unit>
 
     @GET("/api/v1/donations/donors")
     suspend fun getAllDonors(
@@ -131,7 +154,7 @@ interface AuthApiService {
     @GET("/api/v1/donations/donors/:id")
     suspend fun getDonorById(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
     @PUT("/api/v1/donations/donors/:id")
     suspend fun updateDonor(
@@ -141,9 +164,100 @@ interface AuthApiService {
     @DELETE("/api/v1/donations/donors/:id")
     suspend fun deleteDonor(
         @Body request: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<Unit>
 
-    
+    //Inventory
+
+    @POST("/api/v1/inventory/types")
+    suspend fun createProductType(
+        @Body request: Map<String, String>
+    ): Response<Unit>
+
+    @GET("/api/v1/inventory/types")
+    suspend fun getAllProductTypes(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @POST("/api/v1/inventory/products")
+    suspend fun createProduct(
+        @Body request: Map<String, String>
+    ): Response<Unit>
+
+    @GET("/api/v1/inventory/products")
+    suspend fun getAllProducts(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @POST("/api/v1/inventory/stocks")
+    suspend fun createStock(
+        @Body request: Map<String, String>
+    ): Response<Unit>
+
+    @GET("/api/v1/inventory/stocks")
+    suspend fun getAllStocks(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @PATCH("/api/v1/inventory/stocks/:id")
+    suspend fun updateStock(
+        @Body request: RegisterRequest
+    ): Response<Unit>
+
+    @DELETE("/api/v1/inventory/stocks/:id")
+    suspend fun deleteStock(
+        @Body request: RegisterRequest
+    ): Response<Unit>
+
+    @GET("/api/v1/inventory/stocks/expiring?days=:days")
+    suspend fun getExpiringStocks(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @GET("/api/v1/inventory/stocks/summary")
+    suspend fun getStockSummary(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    //SupportRequests
+
+    @POST("/api/v1/support-requests")
+    suspend fun createSupportRequest(
+        @Body request: Map<String, String>
+    ): Response<Unit>
+
+    @GET("/api/v1/support-requests")
+    suspend fun getAllSupportRequests(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @GET("/api/v1/support-requests/me")
+    suspend fun getMySupportRequests(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @PATCH("/api/v1/support-requests/:id/status")
+    suspend fun updateSupportRequestStatus(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    //Apointments
+    @POST("api/v1/appointments")
+    suspend fun createAppointment(
+        @Body request: Map<String, String>
+    ): Response<Unit>
+
+    @GET("api/v1/appointments")
+    suspend fun getAllAppointments(
+        @Body request: Map<String, String> // {"refreshToken": "..."}
+    ): Response<Unit>
+
+    @POST("/api/v1/appointments/:id/send-confirmation")
+    suspend fun sendAppointmentConfirmation(
+        @Body request: RegisterRequest
+    ): Response<Unit>
+
+
+
 
 
 }
