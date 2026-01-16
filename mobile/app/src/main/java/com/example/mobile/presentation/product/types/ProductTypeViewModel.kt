@@ -30,7 +30,7 @@ data class ProductTypeState(
     val isCreating: Boolean = false,
     val isDeleting: Boolean = false,
     val successMessage: String? = null
-)++
+)
 
 
 
