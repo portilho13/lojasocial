@@ -14,6 +14,7 @@ import net.sqlcipher.database.SupportFactory
     version = 1,
     exportSchema = false
 )
+
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun credentialsDao(): CredentialsDao
@@ -24,16 +25,16 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                // Criar passphrase para SQLCipher
-                val passphrase = SQLiteDatabase.getBytes("ipca_social_services_2025".toCharArray())
-                val factory = SupportFactory(passphrase)
+//                // Criar passphrase para SQLCipher
+//                val passphrase = SQLiteDatabase.getBytes("ipca_social_services_2025".toCharArray())
+//                val factory = SupportFactory(passphrase)
 
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "ipca_app_database"
                 )
-                    .openHelperFactory(factory)
+                    //.openHelperFactory(factory)
                     .fallbackToDestructiveMigration()
                     .build()
 

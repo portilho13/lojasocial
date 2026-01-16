@@ -150,13 +150,14 @@ class AuthRepositoryImpl @Inject constructor(
             // Isto garante que o utilizador sempre consegue fazer logout
             // mesmo se a API estiver offline ou retornar erro
             tokenManager.clearTokens()
-
+            credentialsManager.clearCredentials()
             Resource.Success(Unit)
 
         } catch (e: Exception) {
             // Erro crítico ao limpar tokens localmente (muito improvável)
             try {
                 tokenManager.clearTokens()
+                credentialsManager.clearCredentials()
                 Resource.Success(Unit)
             } catch (clearError: Exception) {
                 Resource.Error(message = "Erro crítico ao fazer logout")
