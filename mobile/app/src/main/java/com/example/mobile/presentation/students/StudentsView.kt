@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mobile.R
+import com.example.mobile.presentation.students.components.AddStudentDialog
 import com.example.mobile.presentation.students.components.StudentTable
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
@@ -32,6 +36,7 @@ fun StudentsView(
     viewModel: StudentsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var showAddDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadStudents()
@@ -41,7 +46,7 @@ fun StudentsView(
         containerColor = Background_Light,
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = onAddStudent,
+                onClick = { showAddDialog = true },
                 containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.Add, "Add Student") },
@@ -170,6 +175,18 @@ fun StudentsView(
                 }
             }
         }
+    }
+
+    if (showAddDialog) {
+        AddStudentDialog(
+            onDismiss = { showAddDialog = false },
+            onConfirm = { request ->
+                viewModel.createStudent(request) {
+                    showAddDialog = false
+                }
+            },
+            isLoading = state.isLoading
+        )
     }
 }
 

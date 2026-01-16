@@ -9,9 +9,9 @@ import retrofit2.http.POST
 
 interface StudentApiService {
 
-    @GET("api/v1/auth/student")
+    @GET("api/v1/beneficiaries")
     suspend fun getStudents(): Response<List<Student>>
 
-    @POST("api/v1/auth/student/sign-up")
+    @POST("api/v1/beneficiaries")
     suspend fun createStudent(@Body request: CreateStudentRequest): Response<Student>
 }

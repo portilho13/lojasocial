@@ -16,10 +16,10 @@ data class CreateStudentRequest(
     val academicYear: Int,
 
     @SerializedName("socialSecurityNumber")
-    val socialSecurityNumber: String,
+    val socialSecurityNumber: String?,
 
     @SerializedName("contact")
-    val contact: String,
+    val contact: String?,
 
     @SerializedName("email")
     val email: String,
