@@ -22,7 +22,8 @@ data class LoginState(
     val error: String? = null,
     val isLoginSuccessful: Boolean = false,
     val emailError: String? = null,
-    val passwordError: String? = null
+    val passwordError: String? = null,
+    val isLoadingCredentials: Boolean = true // Loading inicial
 )
 
 @HiltViewModel
@@ -32,6 +33,33 @@ class LoginViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
+
+    init {
+        loadSavedCredentials()
+    }
+
+    private fun loadSavedCredentials() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingCredentials = true) }
+
+            try {
+                val savedCredentials = authRepository.getSavedCredentials()
+
+                if (savedCredentials != null && savedCredentials.rememberMe) {
+                    _state.update { it.copy(
+                        email = savedCredentials.email,
+                        password = savedCredentials.password,
+                        rememberMe = true,
+                        isLoadingCredentials = false
+                    ) }
+                } else {
+                    _state.update { it.copy(isLoadingCredentials = false) }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoadingCredentials = false) }
+            }
+        }
+    }
 
     fun onEvent(event: LoginEvent) {
         when (event) {

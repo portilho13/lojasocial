@@ -1,6 +1,7 @@
 package com.example.mobile.di
 
 import android.content.Context
+import com.example.mobile.data.local.CredentialsManager
 import com.example.mobile.data.local.TokenManager
 import com.example.mobile.data.remote.AuthApiService
 import com.example.mobile.data.repository.AuthRepositoryImpl
@@ -28,8 +29,9 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         apiService: AuthApiService,
-        tokenManager: TokenManager
+        tokenManager: TokenManager,
+        credentialsManager: CredentialsManager
     ): AuthRepository {
-        return AuthRepositoryImpl(apiService, tokenManager)
+        return AuthRepositoryImpl(apiService, tokenManager, credentialsManager)
     }
 }
