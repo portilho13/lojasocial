@@ -39,7 +39,6 @@ fun AddProductTypeDialog(
     onConfirm: ( description: String) -> Unit
 ) {
     var description by remember { mutableStateOf("") }
-    var selectedType by remember { mutableStateOf<ProductType?>(null) }
 
     AlertDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
