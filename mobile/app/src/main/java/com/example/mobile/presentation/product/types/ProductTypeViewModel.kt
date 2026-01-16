@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.mobile.domain.manager.CategoryManager
 
 data class ProductTypeState(
     val productTypes: List<ProductType> = emptyList(),
@@ -29,11 +30,14 @@ data class ProductTypeState(
     val isCreating: Boolean = false,
     val isDeleting: Boolean = false,
     val successMessage: String? = null
-)
+)++
+
+
 
 @HiltViewModel
 class ProductTypeViewModel @Inject constructor(
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val categoryManager: CategoryManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductTypeState())
@@ -163,6 +167,8 @@ class ProductTypeViewModel @Inject constructor(
                     }
                     // Recarregar lista
                     loadProductTypes()
+                    // Refresh Singleton
+                    categoryManager.refresh()
                 }
 
                 is Resource.Error -> {
