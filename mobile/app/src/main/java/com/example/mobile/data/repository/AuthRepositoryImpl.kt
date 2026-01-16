@@ -10,6 +10,8 @@ import com.example.mobile.data.remote.dto.RegisterResponse
 import com.example.mobile.domain.models.RegisterRequest
 import com.example.mobile.data.local.CredentialsManager
 import com.example.mobile.data.local.entity.SavedCredentials
+import com.example.mobile.data.remote.dto.LoginStudentResponse
+import com.example.mobile.domain.models.LoginStudentRequest
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -19,6 +21,69 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager,
     private val credentialsManager: CredentialsManager
 ) : AuthRepository {
+
+    override suspend fun loginStudent(
+        request: LoginStudentRequest,
+        rememberMe: Boolean
+    ): Resource<LoginStudentResponse> {
+        return try {
+            val response = apiService.loginStudent(request)
+
+            if (response.isSuccessful && response.body() != null) {
+                val loginResponse = response.body()!!
+
+                // Guardar tokens
+                tokenManager.saveAccessToken(loginResponse.accessToken)
+                tokenManager.saveRefreshToken(loginResponse.refreshToken)
+
+                // Guardar preferência de remember me
+                if (rememberMe) {
+                    tokenManager.setRememberMe(true)
+                }
+                // ---------------------------------------------------------
+                // 3. FIX: Save Credentials to Room Database
+                // ---------------------------------------------------------
+                if (rememberMe) {
+                    // Create the entity object
+                    // IMPORTANT: Ensure ID is 1 because your DAO queries "WHERE id = 1"
+                    val credentials = SavedCredentials(
+                        id = 1,
+                        email = request.email,
+                        password = request.password,
+                        rememberMe = true
+                    )
+                    credentialsManager.saveCredentials(credentials)
+                } else {
+                    // If user didn't check remember me, clear old data
+                    credentialsManager.clearCredentials()
+                }
+
+                Resource.Success(loginResponse)
+            } else {
+                Resource.Error(
+                    message = when (response.code()) {
+                        401 -> "Email ou senha incorretos"
+                        404 -> "Utilizador não encontrado"
+                        else -> "Erro ao fazer login: ${response.message()}"
+                    }
+                )
+            }
+        } catch (e: HttpException) {
+            Resource.Error(
+                message = when (e.code()) {
+                    401 -> "Email ou senha incorretos"
+                    403 -> "Acesso negado"
+                    404 -> "Utilizador não encontrado"
+                    500 -> "Erro no servidor. Tente novamente mais tarde"
+                    else -> "Erro de conexão: ${e.message()}"
+                }
+            )
+        } catch (e: IOException) {
+            Resource.Error(message = "Sem conexão à internet. Verifique a sua rede")
+        } catch (e: Exception) {
+            Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
+        }
+    }
 
     override suspend fun login(
         request: LoginRequest,

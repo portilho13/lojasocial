@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.home
+package com.example.mobile.presentation.home.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

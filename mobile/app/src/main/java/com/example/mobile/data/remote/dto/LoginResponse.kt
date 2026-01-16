@@ -10,3 +10,11 @@ data class LoginResponse(
     val refreshToken: String,
 
     )
+data class LoginStudentResponse(
+    @SerializedName("accessToken")
+    val accessToken: String,
+
+    @SerializedName("refreshToken")
+    val refreshToken: String,
+
+    )

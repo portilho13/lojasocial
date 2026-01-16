@@ -28,27 +28,21 @@ import com.example.mobile.presentation.ui.theme.IPCA_Green_Light
 
 
 // --- Menu Data Model ---
-data class DrawerMenuItem(
+data class DrawerStudentMenuItem(
     val id: String,
     val title: String,
     val icon: ImageVector
 )
 
 @Composable
-fun NavigationDrawer(
+fun NavigationDrawerStudent(
     currentScreen: String,
     onItemSelected: (String) -> Unit,
     onLogout: () -> Unit
 ) {
     val menuItems = listOf(
-        DrawerMenuItem("dashboard", "Visão Geral", Icons.Default.Dashboard), // Maps to AdminDashboardScreen
-        DrawerMenuItem("requests", "Pedidos de Apoio", Icons.Default.Inbox), // Maps to AdminSupportListScreen
-        DrawerMenuItem("stock", "Inventário", Icons.Default.Inventory),      // Maps to StockListScreen
-        DrawerMenuItem("products", "Produtos", Icons.Default.ShoppingBag),   // Maps to ProductsScreen
-        DrawerMenuItem("types", "Categorias", Icons.Default.Category),
-        DrawerMenuItem("students", "Estudantes", Icons.Default.Person),
-        DrawerMenuItem("studentsreq", "Meus Pedidos", Icons.Default.Person),
-        DrawerMenuItem("campaigns", "Campanhas", Icons.Default.Campaign)
+        DrawerStudentMenuItem("dashboard", "Visão Geral", Icons.Default.Dashboard), // Maps to AdminDashboardScreen
+        DrawerStudentMenuItem("studentsreq", "Meus Pedidos", Icons.Default.Person)
     )
 
     ModalDrawerSheet(
@@ -141,15 +135,15 @@ fun NavigationDrawer(
 
 @Preview(showBackground = true)
 @Composable
-fun DrawerPreview(
+fun DrawerStudentPreview(
 ) {
-    NavigationDrawer("Beneficiários", {}, {})
+    NavigationDrawerStudent("Beneficiários", {}, {})
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun HomePreview(
+fun HomeStudentPreview(
 ) {
     HomeView(navController = rememberNavController())
 }
