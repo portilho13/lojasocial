@@ -42,12 +42,14 @@ import com.example.mobile.presentation.ui.theme.Warning_Orange
 fun StockItemCard(item: StockItem) {
     // Determine color based on urgency
     val expiryColor = when {
+        item.expiryDate == null -> IPCA_Green_Dark // No expiry = Safe
         item.daysUntilExpiry <= 3 -> Alert_Red // Critical
         item.daysUntilExpiry <= 14 -> Warning_Orange // Warning
         else -> IPCA_Green_Dark // Safe
     }
 
     val expiryLabel = when {
+        item.expiryDate == null -> "S/ VALIDADE"
         item.daysUntilExpiry < 0 -> "EXPIRADO"
         item.daysUntilExpiry == 0 -> "HOJE"
         else -> "${item.daysUntilExpiry} dias"
@@ -121,8 +123,17 @@ fun StockItemCard(item: StockItem) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.CalendarToday, null, tint = expiryColor, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
+                    // Parse and Format Display Date if needed, or just show raw string
+                    // Ideally we should format "2026-12-31" to "31/12/2026", but for now showing the string from backend
+                    val displayDate = if (item.expiryDate != null) {
+                         try {
+                              // Simple heuristic to show short date if it's ISO
+                              item.expiryDate.take(10) 
+                         } catch (e:Exception) { item.expiryDate }
+                    } else "N/A"
+
                     Text(
-                        text = item.expiryDate,
+                        text = displayDate,
                         fontSize = 13.sp,
                         color = Text_Black
                     )
