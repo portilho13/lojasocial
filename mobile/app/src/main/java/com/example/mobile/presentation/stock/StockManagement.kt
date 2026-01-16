@@ -2,7 +2,6 @@ package com.example.mobile.presentation.stock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
@@ -14,70 +13,59 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.R // REPLACE with your package
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mobile.domain.models.CreateStockRequest
 import com.example.mobile.presentation.components.CustomLabel
+import com.example.mobile.presentation.product.ProductViewModel
+import com.example.mobile.presentation.ui.theme.*
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import com.example.mobile.presentation.ui.theme.Alert_Red
-import com.example.mobile.presentation.ui.theme.Background_Light
-import com.example.mobile.presentation.ui.theme.IPCA_Border
-import com.example.mobile.presentation.ui.theme.IPCA_Gold
-import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-import com.example.mobile.presentation.ui.theme.IPCA_Green_Light
-import com.example.mobile.presentation.ui.theme.Text_Grey
-import com.example.mobile.presentation.ui.theme.Text_White
-import com.example.mobile.presentation.ui.theme.ipcaInputColors
-import kotlin.text.ifEmpty
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StockManagementScreen(
     onNavigateBack: () -> Unit,
-    onSaveStock: (String, String, String, String, Long) -> Unit // ProductId, Qtd, Unit, Location, Date
+    stockViewModel: StockViewModel = hiltViewModel(),
+    productViewModel: ProductViewModel = hiltViewModel()
 ) {
-    // --- Mock Data ---
-    val productList =
-        listOf("Leite Meio Gordo", "Arroz Agulha", "Detergente", "Pão de Forma", "Iogurte Natural")
-    val locationList =
-        listOf("Armazém A", "Armazém B", "Frigorífico 1", "Frigorífico 2", "Despensa Seca")
-    val unitList = listOf("Un", "Kg", "L", "Cx")
+    val stockUiState by stockViewModel.uiState.collectAsState()
+    val productState by productViewModel.state.collectAsState()
+
+    // Load products on first composition
+    LaunchedEffect(Unit) {
+        productViewModel.onEvent(com.example.mobile.presentation.product.ProductEvent.LoadProducts)
+    }
 
     // --- State ---
-    var selectedProduct by remember { mutableStateOf("") }
+    var selectedProductId by remember { mutableStateOf("") }
+    var selectedProductName by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
-    var selectedUnit by remember { mutableStateOf("Un") }
     var selectedLocation by remember { mutableStateOf("") }
-
-    // Date Picker State
     var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
-
-    // Dropdown UI States
     var productExpanded by remember { mutableStateOf(false) }
     var locationExpanded by remember { mutableStateOf(false) }
-    var unitExpanded by remember { mutableStateOf(false) }
 
-    // Helper to format date
+    // Mock locations
+    val locationList = listOf(
+        "Armazém A", "Armazém B", "Frigorífico 1",
+        "Frigorífico 2", "Despensa Seca"
+    )
+
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val dateString = selectedDateMillis?.let { dateFormatter.format(Date(it)) } ?: ""
 
     Scaffold(
         containerColor = IPCA_Green_Dark,
         topBar = {
-            // Simple Top Bar for sub-pages
             TopAppBar(
                 title = {
                     Text(
@@ -96,16 +84,6 @@ fun StockManagementScreen(
                     titleContentColor = Text_White
                 )
             )
-        },
-        bottomBar = {
-            // Bottom Action Button
-            Surface(
-                color = IPCA_Gold,
-                shadowElevation = 8.dp,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-            }
         }
     ) { paddingValues ->
 
@@ -119,6 +97,8 @@ fun StockManagementScreen(
         ) {
 
             CustomLabel(text = "Detalhes do Produto")
+
+            // Product Dropdown
             ExposedDropdownMenuBox(
                 expanded = productExpanded,
                 onExpandedChange = { productExpanded = !productExpanded },
@@ -127,10 +107,12 @@ fun StockManagementScreen(
                     .padding(bottom = 16.dp)
             ) {
                 OutlinedTextField(
-                    value = selectedProduct.ifEmpty { "Selecione o Produto" },
+                    value = selectedProductName.ifEmpty { "Selecione o Produto" },
                     onValueChange = {},
                     readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded)
+                    },
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth(),
@@ -144,81 +126,54 @@ fun StockManagementScreen(
                         .background(IPCA_Green_Light)
                         .border(1.dp, IPCA_Border, RoundedCornerShape(4.dp))
                 ) {
-                    productList.forEach { selectionOption ->
+                    if (productState.isLoading) {
                         DropdownMenuItem(
-                            text = { Text(selectionOption, color = Text_White) },
-                            onClick = {
-                                selectedProduct = selectionOption
-                                productExpanded = false
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            colors = MenuDefaults.itemColors(
-                                textColor = Text_White,
-                                leadingIconColor = Text_White,
-                                trailingIconColor = Text_White
-                            )
+                            text = { Text("Carregando...", color = Text_White) },
+                            onClick = {},
+                            enabled = false
                         )
-                    }
-                }
-            }
-
-            // 2. Quantity and Unit Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Quantity
-                OutlinedTextField(
-                    value = quantity,
-                    onValueChange = { if (it.all { char -> char.isDigit() }) quantity = it },
-                    placeholder = {
-                        Text(
-                            "Quantidade",
-                            color = Text_White,
-                            fontSize = 14.sp
+                    } else if (productState.products.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("Nenhum produto disponível", color = Text_White) },
+                            onClick = {},
+                            enabled = false
                         )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = ipcaInputColors(),
-                    modifier = Modifier.weight(2f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-
-                // Unit
-                ExposedDropdownMenuBox(
-                    expanded = unitExpanded,
-                    onExpandedChange = { unitExpanded = !unitExpanded },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    OutlinedTextField(
-                        value = selectedUnit,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ipcaInputColors()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = unitExpanded,
-                        onDismissRequest = { unitExpanded = false },
-                        modifier = Modifier.background(Color.White)
-                    ) {
-                        unitList.forEach { unit ->
+                    } else {
+                        productState.products.forEach { product ->
                             DropdownMenuItem(
-                                text = { Text(unit) },
+                                text = { Text(product.name, color = Text_White) },
                                 onClick = {
-                                    selectedUnit = unit
-                                    unitExpanded = false
-                                }
+                                    selectedProductId = product.id
+                                    selectedProductName = product.name
+                                    productExpanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                colors = MenuDefaults.itemColors(
+                                    textColor = Text_White
+                                )
                             )
                         }
                     }
                 }
             }
-            // 3. Storage Details
+
+            // Quantity
+            OutlinedTextField(
+                value = quantity,
+                onValueChange = { if (it.all { char -> char.isDigit() }) quantity = it },
+                placeholder = {
+                    Text(
+                        "Quantidade",
+                        color = Text_White,
+                        fontSize = 14.sp
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = ipcaInputColors(),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            )
+
             Text("Armazenamento e Validade", color = Text_White, fontWeight = FontWeight.Bold)
 
             // Location Dropdown
@@ -238,7 +193,9 @@ fun StockManagementScreen(
                         )
                     },
                     placeholder = { Text("Ex: Armazém A") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded)
+                    },
                     colors = ipcaInputColors(),
                     modifier = Modifier
                         .menuAnchor()
@@ -248,21 +205,26 @@ fun StockManagementScreen(
                 ExposedDropdownMenu(
                     expanded = locationExpanded,
                     onDismissRequest = { locationExpanded = false },
-                    modifier = Modifier.background(Color.White)
+                    modifier = Modifier
+                        .background(IPCA_Green_Light)
+                        .border(1.dp, IPCA_Border, RoundedCornerShape(4.dp))
                 ) {
                     locationList.forEach { loc ->
                         DropdownMenuItem(
-                            text = { Text(loc) },
+                            text = { Text(loc, color = Text_White) },
                             onClick = {
                                 selectedLocation = loc
                                 locationExpanded = false
-                            }
+                            },
+                            colors = MenuDefaults.itemColors(
+                                textColor = Text_White
+                            )
                         )
                     }
                 }
             }
 
-            // Expiry Date Picker Field
+            // Expiry Date Picker
             Box {
                 OutlinedTextField(
                     value = dateString,
@@ -270,11 +232,12 @@ fun StockManagementScreen(
                     label = { Text("Data de Validade", color = Text_White, fontSize = 14.sp) },
                     placeholder = { Text("DD/MM/AAAA") },
                     readOnly = true,
-                    trailingIcon = { Icon(Icons.Default.CalendarToday, null, tint = Text_Grey) },
+                    trailingIcon = {
+                        Icon(Icons.Default.CalendarToday, null, tint = Text_Grey)
+                    },
                     colors = ipcaInputColors(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    // Handle Click to open dialog
                     interactionSource = remember { MutableInteractionSource() }
                         .also { interactionSource ->
                             LaunchedEffect(interactionSource) {
@@ -287,16 +250,28 @@ fun StockManagementScreen(
                         }
                 )
             }
+
+            // Submit Button
             Button(
                 onClick = {
-                    if (selectedProduct.isNotEmpty() && quantity.isNotEmpty() && selectedDateMillis != null) {
-                        onSaveStock(
-                            selectedProduct,
-                            quantity,
-                            selectedUnit,
-                            selectedLocation,
-                            selectedDateMillis!!
+                    if (selectedProductId.isNotEmpty() &&
+                        quantity.isNotEmpty() &&
+                        selectedLocation.isNotEmpty() &&
+                        selectedDateMillis != null) {
+
+                        // Convert millis to ISO 8601 format using SimpleDateFormat
+                        val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                        isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+                        val expiryDate = isoFormatter.format(Date(selectedDateMillis!!))
+
+                        val request = CreateStockRequest(
+                            id = selectedProductId,
+                            quantity = quantity.toInt(),
+                            location = selectedLocation,
+                            expiryDate = expiryDate
                         )
+
+                        stockViewModel.createStock(request)
                     }
                 },
                 modifier = Modifier
@@ -304,20 +279,39 @@ fun StockManagementScreen(
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = IPCA_Gold),
                 shape = RoundedCornerShape(8.dp),
-                // Disable if critical fields are empty
-                //enabled = selectedProduct.isNotEmpty() && quantity.isNotEmpty() && selectedLocation.isNotEmpty()
+                enabled = !stockUiState.isLoading &&
+                        selectedProductId.isNotEmpty() &&
+                        quantity.isNotEmpty() &&
+                        selectedLocation.isNotEmpty() &&
+                        selectedDateMillis != null
             ) {
+                if (stockUiState.isLoading) {
+                    CircularProgressIndicator(
+                        color = Text_White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Text(
+                        text = "Confirmar Entrada",
+                        color = Text_White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Error message
+            stockUiState.error?.let { error ->
                 Text(
-                    text = "Confirmar Entrada",
-                    color = Text_White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    text = error,
+                    color = Alert_Red,
+                    fontSize = 14.sp
                 )
             }
         }
     }
 
-    // 4. Material 3 Date Picker Dialog
+    // Date Picker Dialog
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState()
         DatePickerDialog(
@@ -332,10 +326,7 @@ fun StockManagementScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(
-                        "Cancelar",
-                        color = Color.Gray
-                    )
+                    Text("Cancelar", color = Color.Gray)
                 }
             }
         ) {
@@ -349,10 +340,13 @@ fun StockManagementScreen(
             )
         }
     }
-}
 
-@Preview
-@Composable
-fun StockManagementPreview() {
-    StockManagementScreen(onNavigateBack = {}, onSaveStock = { _, _, _, _, _ -> })
+    // Handle success
+    LaunchedEffect(stockUiState.successMessage) {
+        stockUiState.successMessage?.let {
+            // Stock created successfully, navigate back
+            stockViewModel.clearMessages()
+            onNavigateBack()
+        }
+    }
 }

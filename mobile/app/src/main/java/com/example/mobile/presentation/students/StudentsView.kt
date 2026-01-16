@@ -2,56 +2,51 @@ package com.example.mobile.presentation.students
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mobile.R
-import com.example.mobile.presentation.components.NavigationDrawer
+import com.example.mobile.presentation.students.components.AddStudentDialog
 import com.example.mobile.presentation.students.components.StudentTable
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-import com.example.mobile.presentation.ui.theme.Text_Black
-import kotlinx.coroutines.launch
-
-
-// --- Modelo de Dados ---
-data class Student(
-    val name: String,
-    val studentNumber: String,
-    val curricularYear: String
-)
 
 @Composable
-fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
-    // Dados de exemplo baseados na imagem
-    val studentsList = listOf(
-        Student("Ana Silva", "2021001", "3º Ano"),
-        Student("João Santos", "2022045", "2º Ano"),
-        Student("Maria Oliveira", "2020123", "Mestrado 1º Ano")
-    )
+fun StudentsView(
+    onMenuClick: () -> Unit,
+    onAddStudent: () -> Unit,
+    viewModel: StudentsViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+    var showAddDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadStudents()
+    }
+
     Scaffold(
         containerColor = Background_Light,
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = onAddStudent,
+                onClick = { showAddDialog = true },
                 containerColor = IPCA_Gold,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.Add, "Add Student") },
@@ -65,7 +60,7 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. Header (Standard IPCA Admin Header)
+            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,22 +88,20 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
                         )
                         Text(
                             text = "Visão Geral dos Estudantes",
-                            color = Color(0xFFA0C4B5), // Light Green text
+                            color = Color(0xFFA0C4B5),
                             fontSize = 12.sp
                         )
                     }
                 }
             }
 
-            // 2. Corpo da Página
+            // Body
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(20.dp)
-
             ) {
-
-                // Card de Resumo (Total de Estudantes)
+                // Summary Card
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -128,32 +121,78 @@ fun StudentsView(onMenuClick: () -> Unit, onAddStudent: () -> Unit) {
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
-
                         }
                         Column {
                             Text(
-                                text = "${studentsList.size}", // Dinâmico
+                                text = "${state.students.size}",
                                 color = IPCA_Green_Dark,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
-
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Tabela
-                StudentTable(studentsList)
+                // Loading, Error, or Table
+                when {
+                    state.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = IPCA_Green_Dark)
+                        }
+                    }
+                    state.error != null -> {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = state.error ?: "Erro desconhecido",
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    else -> {
+                        StudentTable(
+                            students = state.students.map { student ->
+                                StudentTableItem(
+                                    name = student.name,
+                                    studentNumber = student.studentNumber,
+                                    course = student.course,
+                                    academicYear = "${student.academicYear}º Ano"
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
     }
+
+    if (showAddDialog) {
+        AddStudentDialog(
+            onDismiss = { showAddDialog = false },
+            onConfirm = { request ->
+                viewModel.createStudent(request) {
+                    showAddDialog = false
+                }
+            },
+            isLoading = state.isLoading
+        )
+    }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun ManagementPreview() {
-    StudentsView(onMenuClick = {}, onAddStudent = {})
-}
+data class StudentTableItem(
+    val name: String,
+    val studentNumber: String,
+    val course: String,
+    val academicYear: String
+)
