@@ -38,6 +38,30 @@ class SupportRequestRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getMyRequests(): Resource<List<SupportRequest>> {
+        return try {
+            val response = apiService.getMyRequests()
+
+            if (response.isSuccessful && response.body() != null) {
+                Resource.Success(response.body()!!.map { it.toDomain() })
+            } else {
+                Resource.Error(
+                    message = when (response.code()) {
+                        401 -> "Sessão expirada. Faça login novamente"
+                        403 -> "Sem permissão"
+                        else -> "Erro ao carregar pedidos: ${response.message()}"
+                    }
+                )
+            }
+        } catch (e: HttpException) {
+            Resource.Error(message = "Erro no servidor")
+        } catch (e: IOException) {
+            Resource.Error(message = "Sem conexão à internet")
+        } catch (e: Exception) {
+            Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
+        }
+    }
+
     override suspend fun updateStatus(id: String, status: RequestStatus): Resource<SupportRequest> {
         return try {
             val response = apiService.updateStatus(id, UpdateStatusDto(status.name))

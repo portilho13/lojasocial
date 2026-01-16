@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile.common.Resource
 import com.example.mobile.domain.repository.AuthRepository
+import com.example.mobile.domain.repository.SupportRequestRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,12 +19,14 @@ data class HomeState(
     val isLoggedOut: Boolean = false,
     val userName: String = "",
     val userEmail: String = "",
-    val userType: String = ""
+    val userType: String = "",
+    val requests: List<com.example.mobile.domain.models.SupportRequest> = emptyList()
 )
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+class HomeStudentViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val supportRequestRepository: SupportRequestRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadUserInfo()
+        loadRequests()
     }
 
     fun onEvent(event: HomeEvent) {
@@ -58,6 +62,29 @@ class HomeViewModel @Inject constructor(
                 }
                 is Resource.Error -> {
                     _state.update { it.copy(error = result.message) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }
+    }
+
+    private fun loadRequests() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = supportRequestRepository.getMyRequests()) {
+                is Resource.Success -> {
+                    _state.update { it.copy(
+                        isLoading = false,
+                        requests = result.data ?: emptyList()
+                    ) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(
+                        isLoading = false,
+                        error = result.message
+                    ) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }
