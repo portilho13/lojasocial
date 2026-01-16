@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.home.components
+package com.example.mobile.presentation.home.admin.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

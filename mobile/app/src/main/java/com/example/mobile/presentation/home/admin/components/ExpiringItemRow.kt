@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.home.components
+package com.example.mobile.presentation.home.admin.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.presentation.home.ExpiringItem
+import com.example.mobile.presentation.home.admin.ExpiringItem
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Text_Black
 import com.example.mobile.presentation.ui.theme.Warning_Orange

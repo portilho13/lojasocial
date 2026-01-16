@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.home
+package com.example.mobile.presentation.home.student
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
@@ -56,22 +55,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
 import com.example.mobile.presentation.Screen
-import com.example.mobile.presentation.home.components.LogoutConfirmationDialog
-import com.example.mobile.presentation.components.NavigationDrawer
-import com.example.mobile.presentation.home.components.DashboardCard
-import com.example.mobile.presentation.home.components.ExpiringItemRow
-import com.example.mobile.presentation.product.ProductView
-import com.example.mobile.presentation.product.types.ProductTypeView
-import com.example.mobile.presentation.requests.admin.RequestsView
+import com.example.mobile.presentation.home.admin.components.LogoutConfirmationDialog
+import com.example.mobile.presentation.home.student.components.DashboardCard
 import com.example.mobile.presentation.requests.student.StudentMyRequestsScreen
-import com.example.mobile.presentation.stock.StockView
-import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Warning_Orange
-import com.example.mobile.presentation.campaigns.CampaignsView
+import com.example.mobile.presentation.components.NavigationDrawerStudent
 import kotlinx.coroutines.launch
 
 
@@ -91,8 +83,8 @@ data class ExpiringItem(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeView(navController: NavController,
-             viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeStudentView(navController: NavController,
+                    viewModel: HomeViewModel = hiltViewModel()) {
 
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -125,7 +117,7 @@ fun HomeView(navController: NavController,
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawer(
+            NavigationDrawerStudent(
                 currentScreen = currentScreen,
                 onItemSelected = { id ->
                     currentScreen = id
@@ -141,38 +133,15 @@ fun HomeView(navController: NavController,
         // Switch content based on ID
         when (currentScreen) {
 
-            "dashboard" -> Dashboard(
+            "dashboard" -> DashboardStudent(
                 onMenuClick = { scope.launch { drawerState.open() } }
             )
 
-            "requests" -> RequestsView(
-                onMenuClick = { scope.launch { drawerState.open() } },
-                onTicketClick = { id -> /* Navigate to Detail, e.g., via NavController */ }
-            )
-
-            "stock" -> StockView(
-                onMenuClick = { scope.launch { drawerState.open() } },
-                onAddStockClick = { /* Navigate to StockManagementScreen */ }
-            )
-
-            "products" -> ProductView(
-                onMenuClick = { scope.launch { drawerState.open() } }
-            )
-
-            "types" -> ProductTypeView(
-                onMenuClick = { scope.launch { drawerState.open() } }
-            )
-            "students" -> StudentsView(
-                onMenuClick = { scope.launch { drawerState.open() } },
-                onAddStudent = {}
-            )
             "studentsreq" -> StudentMyRequestsScreen(
                 onMenuClick = { scope.launch { drawerState.open() } },navController,
                 onCreateRequestClick = {}, onRequestDetailClick = {}
             )
-            "campaigns" -> CampaignsView(
-                onMenuClick = { scope.launch { drawerState.open() } }
-            )
+
 
         }
     }
@@ -198,13 +167,13 @@ fun HomeView(navController: NavController,
     )
 }
     @Composable
-    fun Dashboard(onMenuClick: () -> Unit) {
+    fun DashboardStudent(onMenuClick: () -> Unit) {
         val scrollState = rememberScrollState()
         val cardsScrollState = rememberScrollState()
 
         // Mock Data (Replace with API data later)
         val summary = StockSummary(totalItems = 1250, lowStockCount = 15, expiringSoonCount = 8)
-        val expiringList = listOf(
+        val expiringListStudent = listOf(
             ExpiringItem("Leite Meio Gordo", "Armazém A", 50, 2),
             ExpiringItem("Iogurte Natural", "Frigorífico 2", 30, 4),
             ExpiringItem("Pão de Forma", "Despensa B", 12, 1),
@@ -347,13 +316,13 @@ fun HomeView(navController: NavController,
                             )
                         }
 
-                        // Items
-                        expiringList.forEachIndexed { index, item ->
-                            ExpiringItemRow(item)
-                            if (index < expiringList.size - 1) {
-                                HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
-                            }
-                        }
+//                        // Items
+//                        expiringListStudent.forEachIndexed { index, item ->
+//                            ExpiringItemRow(item)
+//                            if (index < expiringListStudent.size - 1) {
+//                                HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
+//                            }
+//                        }
                     }
                 }
 
@@ -366,7 +335,7 @@ fun HomeView(navController: NavController,
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun HomePreview(
+fun HomeStudentPreview(
 ) {
-    HomeView(navController = rememberNavController())
+    HomeStudentView(navController = rememberNavController())
 }

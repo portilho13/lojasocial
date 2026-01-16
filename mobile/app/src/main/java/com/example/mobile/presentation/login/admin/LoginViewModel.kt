@@ -1,5 +1,6 @@
-package com.example.mobile.presentation.login
+package com.example.mobile.presentation.login.admin
 
+import android.util.Patterns
 import com.example.mobile.common.Resource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -137,7 +138,7 @@ class LoginViewModel @Inject constructor(
         if (currentState.email.isBlank()) {
             _state.update { it.copy(emailError = "Email é obrigatório") }
             isValid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
             _state.update { it.copy(emailError = "Email inválido") }
             isValid = false
         } else if (!currentState.email.endsWith("@ipca.pt") &&

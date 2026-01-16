@@ -16,8 +16,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mobile.presentation.home.HomeView
-import com.example.mobile.presentation.login.LoginView
+import com.example.mobile.presentation.home.admin.HomeView
+import com.example.mobile.presentation.home.student.HomeStudentView
+import com.example.mobile.presentation.login.admin.LoginView
+import com.example.mobile.presentation.login.student.LoginStudentView
 import com.example.mobile.presentation.register.RegisterView
 import com.example.mobile.presentation.requests.RequestDetailView
 import com.example.mobile.presentation.requests.admin.RequestsView
@@ -50,6 +52,9 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.LoginScreen.route) {
                             LoginView(navController)
                         }
+                        composable(route = Screen.LoginStudentScreen.route) {
+                            LoginStudentView(navController)
+                        }
                         composable(route = Screen.RegisterScreen.route) {
                             RegisterView(navController)
                         }
@@ -59,8 +64,9 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.HomeScreen.route) {
                             HomeView(navController)
                         }
-
-                        // --- STUDENT REQUESTS FLOW ---
+                        composable(route = Screen.HomeStudentScreen.route) {
+                            HomeStudentView(navController)
+                        }
                         composable(route = Screen.StudentReqScreen.route) {
                             StudentMyRequestsScreen(
                                 onMenuClick = {}, navController,
@@ -89,9 +95,12 @@ class MainActivity : ComponentActivity() {
                             RequestsView(onMenuClick = {}, onTicketClick = {})
                         }
                         composable(route = Screen.RequestDetailScreen.route) {
-                            RequestDetailView(requestId = "83dc5ece-e885-4e66-8408-78e8018ad408", isAdmin = true, onNavigateBack = {
-                                navController.popBackStack()
-                            })
+                            RequestDetailView(
+                                requestId = "83dc5ece-e885-4e66-8408-78e8018ad408",
+                                isAdmin = true,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                })
                         }
                     }
                 }
