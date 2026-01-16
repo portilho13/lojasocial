@@ -4,8 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Inventory
@@ -29,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.presentation.requests.admin.ApiRequest
-import com.example.mobile.presentation.requests.admin.ApiRequestItem
+import androidx.compose.foundation.layout.*
+import com.example.mobile.domain.model.RequestItem
+import com.example.mobile.domain.model.RequestStatus
+import com.example.mobile.domain.model.SupportRequest
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
@@ -41,10 +40,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// --- Reusing Models (Ensure these match your project) ---
-// data class ApiRequestItem(...)
-// data class ApiRequest(...)
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,19 +47,23 @@ fun RequestDetailView(
     requestId: String,
     isAdmin: Boolean = false, // CONTROL FLAG
     onNavigateBack: () -> Unit,
-    onAdminUpdateStatus: (String, String) -> Unit = { _, _ -> } // ID, New Status
+    onAdminUpdateStatus: (String, RequestStatus) -> Unit = { _, _ -> } // ID, New Status
 ) {
-    // --- Mock Data (Replace with API Fetch) ---
+    // --- Mock Data (Replace with API Fetch from ViewModel later if needed, currently this view seems standalone or passed data) ---
+    // Ideally this view should take the Request object or fetch it by ID from a ViewModel.
+    // For now, to fix compilation, I will construct a dummy SupportRequest. 
+    // real implementation should likely receive the object or ID+ViewModel.
+    
     val request = remember {
-        ApiRequest(
+        SupportRequest(
             id = "83dc5ece-e885-4e66-8408-78e8018ad408",
             date = "2026-01-08T18:21:31.087Z",
-            status = "PENDENTE",
+            status = RequestStatus.PENDENTE,
             observation = "Preciso de ajuda com bens essenciais para esta semana.",
             studentId = "f5f101e6",
             items = listOf(
-                ApiRequestItem("1", "p1", "Arroz Agulha 1kg", 2, 0, ""),
-                ApiRequestItem("2", "p2", "Massa Esparguete", 2, 0, "")
+                RequestItem("1", "p1", "Arroz Agulha 1kg", 2, 0, ""),
+                RequestItem("2", "p2", "Massa Esparguete", 2, 0, "")
             )
         )
     }
@@ -73,9 +72,6 @@ fun RequestDetailView(
     // --- State ---
     var currentStatus by remember { mutableStateOf(request.status) }
     var statusExpanded by remember { mutableStateOf(false) }
-
-    // Status Options for Admin
-    val statusOptions = listOf("PENDENTE", "ENTREGUE", "CANCELADO")
 
     Scaffold(
         containerColor = Background_Light,
@@ -103,7 +99,7 @@ fun RequestDetailView(
             if (isAdmin) {
                 Surface(
                     color = Color.White,
-                    shadowElevation = 16.dp, // High elevation to separate from content
+                    shadowElevation = 16.dp, 
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
@@ -118,7 +114,7 @@ fun RequestDetailView(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 OutlinedTextField(
-                                    value = currentStatus,
+                                    value = currentStatus.name,
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text("Estado") },
@@ -134,9 +130,9 @@ fun RequestDetailView(
                                     onDismissRequest = { statusExpanded = false },
                                     modifier = Modifier.background(Color.White)
                                 ) {
-                                    statusOptions.forEach { status ->
+                                    RequestStatus.values().forEach { status ->
                                         DropdownMenuItem(
-                                            text = { Text(status) },
+                                            text = { Text(status.name) },
                                             onClick = {
                                                 currentStatus = status
                                                 statusExpanded = false
@@ -150,7 +146,7 @@ fun RequestDetailView(
                             Button(
                                 onClick = { onAdminUpdateStatus(requestId, currentStatus) },
                                 modifier = Modifier
-                                    .height(56.dp) // Match TextField height
+                                    .height(56.dp) 
                                     .weight(0.6f),
                                 colors = ButtonDefaults.buttonColors(containerColor = IPCA_Green_Dark),
                                 shape = RoundedCornerShape(4.dp)
@@ -217,7 +213,7 @@ fun RequestDetailView(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Observação / Motivo:", fontSize = 12.sp, color = Color.Gray)
                     Text(
-                        text = request.observation,
+                        text = request.observation ?: "Sem observação",
                         fontSize = 14.sp,
                         color = Text_Black,
                         lineHeight = 20.sp,
@@ -258,12 +254,12 @@ fun RequestDetailView(
 }
 
 @Composable
-fun StatusBanner(status: String) {
+fun StatusBanner(status: RequestStatus) {
     val (color, icon, text) = when (status) {
-        "PENDENTE" -> Triple(Warning_Orange, Icons.Default.WarningAmber, "Aguardando Aprovação")
-        "ENTREGUE" -> Triple(IPCA_Green_Dark, Icons.Default.CheckCircle, "Pedido Entregue")
-        "CANCELADO" -> Triple(Alert_Red, Icons.Default.Block, "Pedido Cancelado")
-        else -> Triple(Color.Gray, Icons.Default.History, status)
+        RequestStatus.PENDENTE -> Triple(Warning_Orange, Icons.Default.WarningAmber, "Aguardando Aprovação")
+        RequestStatus.ENTREGUE -> Triple(IPCA_Green_Dark, Icons.Default.CheckCircle, "Pedido Entregue")
+        RequestStatus.CANCELADO -> Triple(Alert_Red, Icons.Default.Block, "Pedido Cancelado")
+        RequestStatus.APROVADO -> Triple(IPCA_Gold, Icons.Default.CheckCircle, "Aprovado")
     }
 
     Card(
@@ -280,7 +276,7 @@ fun StatusBanner(status: String) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(text, fontWeight = FontWeight.Bold, color = color, fontSize = 16.sp)
-                if (status == "PENDENTE") {
+                if (status == RequestStatus.PENDENTE) {
                     Text("Os serviços sociais estão a analisar o pedido.", fontSize = 12.sp, color = color.copy(alpha = 0.8f))
                 }
             }
@@ -289,7 +285,7 @@ fun StatusBanner(status: String) {
 }
 
 @Composable
-fun ItemRowCard(item: ApiRequestItem) {
+fun ItemRowCard(item: RequestItem) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
@@ -308,7 +304,7 @@ fun ItemRowCard(item: ApiRequestItem) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(item.productName, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Text_Black)
-                    if (item.observation.isNotEmpty()) {
+                    if (!item.observation.isNullOrEmpty()) {
                         Text(item.observation, fontSize = 11.sp, color = Color.Gray)
                     }
                 }

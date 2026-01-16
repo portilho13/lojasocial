@@ -1,4 +1,5 @@
 package com.example.mobile.presentation.requests.admin
+
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -28,12 +28,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.R // SUBSTITUA pelo seu pacote
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mobile.R
+import com.example.mobile.domain.model.RequestStatus
+import com.example.mobile.domain.model.SupportRequest
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Grey
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 // --- Cores do Tema ---
 val IPCA_Green_Dark = Color(0xFF004E36)
@@ -43,75 +46,28 @@ val Text_Black = Color(0xFF333333)
 val Warning_Orange = Color(0xFFE65100)
 val Alert_Red = Color(0xFFB00020)
 
-// --- NOVOS Modelos baseados no JSON ---
-
-data class ApiRequestItem(
-    val id: String,
-    val productId: String,
-    val productName: String,
-    val qtyRequested: Int,
-    val qtyDelivered: Int,
-    val observation: String
-)
-
-data class ApiRequest(
-    val id: String,
-    val date: String, // ISO String: "2026-01-08T18:21:31.087Z"
-    val status: String, // "PENDENTE", "CANCELADO", "ENTREGUE"
-    val observation: String,
-    val studentId: String,
-    val items: List<ApiRequestItem>
-)
 
 
 
-@RequiresApi(Build.VERSION_CODES.O) // Necessário para formatação de data
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RequestsView(
     onMenuClick: () -> Unit,
-    onTicketClick: (String) -> Unit
+    onTicketClick: (String) -> Unit,
+    viewModel: RequestsViewModel = hiltViewModel()
 ) {
-    // --- Mock Data baseado no seu JSON ---
-    val requests = listOf(
-        ApiRequest(
-            id = "83dc5ece-e885-4e66-8408-78e8018ad408",
-            date = "2026-01-08T18:21:31.087Z",
-            status = "PENDENTE",
-            observation = "Preciso de ajuda com bens essenciais para esta semana.",
-            studentId = "f5f101e6-6951-4270-8b0b-8d5a0c0913aa",
-            items = listOf(
-                ApiRequestItem("1", "p1", "Arroz Agulha 1kg", 2, 0, ""),
-                ApiRequestItem("2", "p2", "Massa Esparguete", 2, 0, "")
-            )
-        ),
-        ApiRequest(
-            id = "e0d359e1-fefc-49fb-b593-9f7e26e5fad4",
-            date = "2026-01-06T23:43:55.590Z",
-            status = "CANCELADO",
-            observation = "Need food for the week",
-            studentId = "f5f101e6-6951-4270-8b0b-8d5a0c0913aa",
-            items = listOf(
-                ApiRequestItem("3", "p1", "Rice 1kg", 2, 0, "Rice")
-            )
-        )
-    )
-
-    // Mapa simulado de StudentID -> Nome (Na API real, você faria um fetch do user)
-    val mockStudentNames = mapOf(
-        "f5f101e6-6951-4270-8b0b-8d5a0c0913aa" to "Ana Silva (2021001)"
-    )
-
-    // --- State ---
+    val state by viewModel.state.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Pendentes, 1 = Histórico
 
-    // Lógica de Filtro Atualizada
-    val filteredList = requests.filter { request ->
+    // Filter Logic
+    val filteredList = state.requests.filter { request ->
         if (selectedTab == 0) {
-            request.status == "PENDENTE"
+           request.status == RequestStatus.PENDENTE
         } else {
-            request.status == "CANCELADO" || request.status == "ENTREGUE"
+            request.status == RequestStatus.CANCELADO || request.status == RequestStatus.ENTREGUE || request.status == RequestStatus.APROVADO
         }
-    }
+    }.sortedByDescending { it.date }
 
     Scaffold(
         containerColor = Background_Light
@@ -122,7 +78,7 @@ fun RequestsView(
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. Header (Standard IPCA Admin Header)
+            // 1. Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -149,8 +105,8 @@ fun RequestsView(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Bens Alimentares",
-                            color = Color(0xFFA0C4B5), // Light Green text
+                            text = "Gestão de Pedidos",
+                            color = Color(0xFFA0C4B5),
                             fontSize = 12.sp
                         )
                     }
@@ -186,26 +142,44 @@ fun RequestsView(
                 )
             }
 
-            // 3. Lista
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (filteredList.isEmpty()) {
-                    item {
-                        Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Nenhum pedido encontrado.", color = Color.Gray)
+            // Error Message
+            if (state.error != null) {
+                Box(modifier = Modifier.fillMaxWidth().padding(8.dp).background(Color.Red.copy(alpha = 0.1f))) {
+                    Text(text = state.error ?: "", color = Color.Red, modifier = Modifier.padding(8.dp))
+                }
+            }
+
+            // 3. List
+            if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = IPCA_Green_Dark)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (filteredList.isEmpty()) {
+                        item {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = if(selectedTab == 0) "Sem pedidos pendentes" else "Sem histórico",
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(top = 32.dp)
+                                )
+                            }
                         }
-                    }
-                } else {
-                    items(filteredList) { request ->
-                        val studentName = mockStudentNames[request.studentId] ?: "Estudante Desconhecido"
-                        RequestCard(
-                            request = request,
-                            studentName = studentName,
-                            onClick = { onTicketClick(request.id) }
-                        )
+                    } else {
+                        items(filteredList) { request ->
+                            RequestCard(
+                                request = request,
+                                onStatusChange = { newStatus ->
+                                    viewModel.updateStatus(request.id, newStatus)
+                                },
+                                onClick = { onTicketClick(request.id) }
+                            )
+                        }
                     }
                 }
             }
@@ -215,23 +189,24 @@ fun RequestsView(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RequestCard(request: ApiRequest, studentName: String, onClick: () -> Unit) {
+fun RequestCard(
+    request: SupportRequest,
+    onStatusChange: (RequestStatus) -> Unit,
+    onClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
-    // Formatador de data
+    // Date Formatter
     val formattedDate = remember(request.date) {
         try {
-            val instant = Instant.parse(request.date)
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault())
-            formatter.format(instant)
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val date = inputFormat.parse(request.date)
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            if (date != null) outputFormat.format(date) else request.date
         } catch (e: Exception) {
-            request.date
+            request.date.take(16).replace("T", " ")
         }
-    }
-
-    // Resumo dos itens (Ex: "2x Rice 1kg, 1x Pasta")
-    val itemsSummary = remember(request.items) {
-        if (request.items.isEmpty()) "Sem itens especificados"
-        else request.items.joinToString(", ") { "${it.qtyRequested}x ${it.productName}" }
     }
 
     Card(
@@ -243,63 +218,59 @@ fun RequestCard(request: ApiRequest, studentName: String, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Linha 1: Status e Data
+            // Row 1: Status (Clickable to change) & Date
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                StatusBadge(status = request.status)
+                Box {
+                    StatusBadge(status = request.status, onClick = { expanded = true })
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        RequestStatus.values().forEach { status ->
+                            DropdownMenuItem(
+                                text = { Text(status.name) },
+                                onClick = {
+                                    onStatusChange(status)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
                 Text(text = formattedDate, fontSize = 12.sp, color = Color.Gray)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Linha 2: Observação (Motivo)
-            Text(
-                text = request.observation,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Text_Black,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Linha 3: Resumo dos Itens (Novo)
-            Row(verticalAlignment = Alignment.Top) {
-                Icon(Icons.Default.ShoppingBasket, null, tint = IPCA_Green_Dark, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(8.dp))
+            // Row 2: Observation
+            if (!request.observation.isNullOrBlank()) {
                 Text(
-                    text = itemsSummary,
-                    fontSize = 13.sp,
+                    text = request.observation,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
                     color = Text_Black,
-                    lineHeight = 18.sp
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Linha 4: Nome do Estudante e Seta
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = studentName,
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-
-                Icon(
+            // Row 3: Student Info (Placeholder as we only have ID)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Person, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Estudante #${request.studentId.take(8)}...",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                
+                Spacer(modifier = Modifier.weight(1f))
+                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = null,
                     tint = IPCA_Gold,
@@ -311,17 +282,18 @@ fun RequestCard(request: ApiRequest, studentName: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun StatusBadge(status: String) {
+fun StatusBadge(status: RequestStatus, onClick: () -> Unit) {
     val (color, text, icon) = when (status) {
-        "PENDENTE" -> Triple(Warning_Orange, "Pendente", Icons.Default.WarningAmber)
-        "ENTREGUE" -> Triple(IPCA_Green_Dark, "Entregue", Icons.Default.CheckCircle)
-        "CANCELADO" -> Triple(Alert_Red, "Cancelado", Icons.Default.Block)
-        else -> Triple(Color.Gray, status, Icons.Default.History)
+        RequestStatus.PENDENTE -> Triple(Warning_Orange, "Pendente", Icons.Default.WarningAmber)
+        RequestStatus.ENTREGUE -> Triple(IPCA_Green_Dark, "Entregue", Icons.Default.CheckCircle)
+        RequestStatus.CANCELADO -> Triple(Alert_Red, "Cancelado", Icons.Default.Block)
+        RequestStatus.APROVADO -> Triple(IPCA_Gold, "Aprovado", Icons.Default.CheckCircle)
     }
 
     Surface(
         color = color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(4.dp)
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier.clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
