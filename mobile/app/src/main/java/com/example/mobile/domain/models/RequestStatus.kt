@@ -1,4 +1,4 @@
-package com.example.mobile.domain.model
+package com.example.mobile.domain.models
 
 enum class RequestStatus {
     PENDENTE,

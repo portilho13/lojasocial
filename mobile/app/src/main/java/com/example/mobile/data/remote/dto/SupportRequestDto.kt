@@ -1,7 +1,7 @@
 package com.example.mobile.data.remote.dto
 
-import com.example.mobile.domain.model.RequestStatus
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 
 data class SupportRequestDto(
     val id: String,
@@ -35,8 +35,8 @@ data class RequestItemDto(
     val qtyDelivered: Int?,
     val observation: String?
 ) {
-    fun toDomain(): com.example.mobile.domain.model.RequestItem {
-        return com.example.mobile.domain.model.RequestItem(
+    fun toDomain(): com.example.mobile.domain.models.RequestItem {
+        return com.example.mobile.domain.models.RequestItem(
             id = id,
             productId = productId,
             productName = productName,

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile.common.Resource
 import com.example.mobile.data.remote.dto.CreateCampaignDto
-import com.example.mobile.domain.model.Campaign
+import com.example.mobile.domain.models.Campaign
 import com.example.mobile.domain.use_case.campaign.CreateCampaignUseCase
 import com.example.mobile.domain.use_case.campaign.DeleteCampaignUseCase
 import com.example.mobile.domain.use_case.campaign.GetCampaignsUseCase

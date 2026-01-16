@@ -1,7 +1,7 @@
 package com.example.mobile.domain.use_case.campaign
 
 import com.example.mobile.common.Resource
-import com.example.mobile.domain.model.Campaign
+import com.example.mobile.domain.models.Campaign
 import com.example.mobile.domain.repository.CampaignRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

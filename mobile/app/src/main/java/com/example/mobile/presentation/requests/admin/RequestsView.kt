@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mobile.R
-import com.example.mobile.domain.model.RequestStatus
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Grey
 import java.text.SimpleDateFormat

@@ -27,9 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.*
-import com.example.mobile.domain.model.RequestItem
-import com.example.mobile.domain.model.RequestStatus
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.RequestItem
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
