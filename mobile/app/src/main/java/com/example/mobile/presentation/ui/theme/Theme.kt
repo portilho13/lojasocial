@@ -1,9 +1,10 @@
-package com.example.mobile.ui.theme
+package com.example.mobile.presentation.ui.theme
 
-import android.app.Activity
+
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -12,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = IPCA_Green_Dark,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
@@ -34,7 +35,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun MobileTheme(
+fun SASTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -49,6 +50,7 @@ fun MobileTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    ipcaInputColors()
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -56,3 +58,15 @@ fun MobileTheme(
         content = content
     )
 }
+@Composable
+fun ipcaInputColors() = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = IPCA_Green_Light,
+    unfocusedContainerColor = IPCA_Green_Light,
+    focusedBorderColor = Text_Grey,
+    unfocusedBorderColor = IPCA_Border,
+    cursorColor = Text_White,
+    focusedTextColor = Text_White,
+    unfocusedTextColor = Text_White,
+    focusedTrailingIconColor = Text_Grey,
+    unfocusedTrailingIconColor = Text_Grey
+)
