@@ -1,22 +1,7 @@
 package com.example.mobile.presentation.stock
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,44 +10,34 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mobile.R
+import com.example.mobile.domain.models.StockDto
 import com.example.mobile.presentation.stock.components.StockItemCard
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
-
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 // --- Models ---
 data class StockItem(
     val id: String,
     val productName: String,
     val quantity: Int,
-    val unit: String, // e.g., "kg", "un"
-    val location: String, // e.g., "Armazém A"
+    val unit: String,
+    val location: String,
     val expiryDate: String,
     val daysUntilExpiry: Int
 )
@@ -71,33 +46,61 @@ data class StockItem(
 @Composable
 fun StockView(
     onMenuClick: () -> Unit,
-    onAddStockClick: () -> Unit // Navigate to Create Page
+    onAddStockClick: () -> Unit,
+    viewModel: StockViewModel = hiltViewModel()
 ) {
-    // --- Mock Data ---
-    val initialStock = listOf(
-        StockItem("101", "Leite Meio Gordo", 50, "L", "Armazém A", "2024-05-20", 3),
-        StockItem("102", "Leite Meio Gordo", 120, "L", "Armazém B", "2025-01-10", 200),
-        StockItem("103", "Iogurte Natural", 30, "un", "Frigorífico 2", "2024-05-18", 1),
-        StockItem("104", "Arroz Agulha", 200, "kg", "Despensa Seca", "2025-12-01", 500),
-        StockItem("105", "Peito de Frango", 15, "kg", "Congelador 1", "2024-06-01", 14)
-    )
+    val uiState by viewModel.uiState.collectAsState()
 
-    // --- State ---
-    var stockList by remember { mutableStateOf(initialStock) }
     var searchQuery by remember { mutableStateOf("") }
     var showExpiringOnly by remember { mutableStateOf(false) }
 
-    // Filter Logic
-    val filteredList = stockList.filter { item ->
-        val matchesSearch = item.productName.contains(searchQuery, ignoreCase = true) ||
-                item.location.contains(searchQuery, ignoreCase = true)
-
-        if (showExpiringOnly) {
-            matchesSearch && item.daysUntilExpiry <= 7 // Filter for items expiring in a week
-        } else {
-            matchesSearch
-        }
+    // Load data on first composition
+    LaunchedEffect(Unit) {
+        viewModel.getAllStock()
     }
+
+    // Convert StockDto to StockItem for UI
+    fun StockDto.toStockItem(): StockItem {
+        val daysUntilExpiry = try {
+            // Parse ISO date string using SimpleDateFormat
+            val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+            val expiryDateTime = isoFormatter.parse(expiryDate)
+
+            if (expiryDateTime != null) {
+                val diffInMillis = expiryDateTime.time - System.currentTimeMillis()
+                TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
+            } else {
+                0
+            }
+        } catch (e: Exception) {
+            0
+        }
+
+        return StockItem(
+            id = id,
+            productName = productName,
+            quantity = quantity,
+            unit = "un", // Default unit
+            location = location,
+            expiryDate = expiryDate,
+            daysUntilExpiry = daysUntilExpiry
+        )
+    }
+
+    // Filter Logic
+    val filteredList = uiState.stocks
+        .map { it.toStockItem() }
+        .filter { item ->
+            val matchesSearch = item.productName.contains(searchQuery, ignoreCase = true) ||
+                    item.location.contains(searchQuery, ignoreCase = true)
+
+            if (showExpiringOnly) {
+                matchesSearch && item.daysUntilExpiry <= 7
+            } else {
+                matchesSearch
+            }
+        }
 
     Scaffold(
         containerColor = Background_Light,
@@ -117,7 +120,6 @@ fun StockView(
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            // 1. Header (Standard IPCA Admin Header)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,16 +147,14 @@ fun StockView(
                         )
                         Text(
                             text = "Visão Geral de Stocks",
-                            color = Color(0xFFA0C4B5), // Light Green text
+                            color = Color(0xFFA0C4B5),
                             fontSize = 12.sp
                         )
                     }
                 }
             }
 
-            // 2. Filters & Search
             Column(modifier = Modifier.padding(20.dp)) {
-                // Search Bar
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
@@ -173,7 +173,6 @@ fun StockView(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Filter Chip (Expiring Soon)
                 FilterChip(
                     selected = showExpiringOnly,
                     onClick = { showExpiringOnly = !showExpiringOnly },
@@ -197,32 +196,78 @@ fun StockView(
                 )
             }
 
-            // 3. Stock List
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 1.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(filteredList) { item ->
-                    StockItemCard(item)
+            // 3. Loading & Error States
+            when {
+                uiState.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = IPCA_Green_Dark)
+                    }
                 }
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                text = uiState.error ?: "Erro desconhecido",
+                                color = Alert_Red,
+                                fontSize = 16.sp
+                            )
+                            Button(
+                                onClick = { viewModel.getAllStock() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = IPCA_Green_Dark
+                                )
+                            ) {
+                                Text("Tentar novamente")
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    // 4. Stock List
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 1.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(filteredList) { item ->
+                            StockItemCard(item)
+                        }
 
-                if (filteredList.isEmpty()) {
-                    item {
-                        Box(modifier = Modifier.fillMaxWidth().padding(top = 40.dp), contentAlignment = Alignment.Center) {
-                            Text("Nenhum item encontrado.", color = Color.Gray)
+                        if (filteredList.isEmpty() && !uiState.isLoading) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 40.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "Nenhum item encontrado.",
+                                        color = Color.Gray,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
-
-
-@Preview
-@Composable
-fun StockListPreview() {
-    StockView(onMenuClick = {}, onAddStockClick = {})
+    uiState.successMessage?.let { message ->
+        LaunchedEffect(message) {
+            // Optional: Show a Snackbar here
+            viewModel.clearMessages()
+        }
+    }
 }
