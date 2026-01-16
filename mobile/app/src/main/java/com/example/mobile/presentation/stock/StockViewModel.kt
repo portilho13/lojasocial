@@ -50,6 +50,9 @@ class StockViewModel @Inject constructor(
                         )
                     }
                 }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
             }
         }
     }
@@ -75,6 +78,9 @@ class StockViewModel @Inject constructor(
                         )
                     }
                 }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
             }
         }
     }
@@ -99,6 +105,9 @@ class StockViewModel @Inject constructor(
                             error = result.message
                         )
                     }
+                }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
                 }
             }
         }
@@ -127,6 +136,9 @@ class StockViewModel @Inject constructor(
                         )
                     }
                 }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
             }
         }
     }
@@ -153,6 +165,9 @@ class StockViewModel @Inject constructor(
                         )
                     }
                 }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
             }
         }
     }
@@ -177,6 +192,9 @@ class StockViewModel @Inject constructor(
                             error = result.message
                         )
                     }
+                }
+                is Resource.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
                 }
             }
         }

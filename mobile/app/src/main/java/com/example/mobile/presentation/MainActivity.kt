@@ -23,6 +23,7 @@ import com.example.mobile.presentation.requests.RequestDetailView
 import com.example.mobile.presentation.requests.admin.RequestsView
 import com.example.mobile.presentation.requests.student.CreateRequestView
 import com.example.mobile.presentation.requests.student.StudentMyRequestsScreen
+import com.example.mobile.presentation.stock.StockView
 import com.example.mobile.presentation.students.StudentsView
 import com.example.mobile.presentation.ui.theme.SASTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,6 +59,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.HomeScreen.route) {
                             HomeView(navController)
+                        }
+                        composable(route = Screen.StockScreen.route) {
+                            StockView(onMenuClick = {}, onAddStockClick = {})
                         }
 
                         // --- STUDENT REQUESTS FLOW ---
