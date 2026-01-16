@@ -89,6 +89,7 @@ class ProductTypeViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             productTypes = productTypes,
+                            filteredProductTypes = productTypes, // Sync filtered list
                             isLoading = false,
                             isRefreshing = false,
                             error = null
@@ -119,7 +120,8 @@ class ProductTypeViewModel @Inject constructor(
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            productTypes = result.data ?: emptyList()
+                            productTypes = result.data ?: emptyList(),
+                            filteredProductTypes = result.data ?: emptyList() // Sync filtered list
                         )
                     }
                 }
