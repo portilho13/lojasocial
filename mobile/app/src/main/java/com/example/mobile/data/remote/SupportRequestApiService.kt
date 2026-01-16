@@ -13,6 +13,9 @@ interface SupportRequestApiService {
     @GET("api/v1/support-requests")
     suspend fun getRequests(): Response<List<SupportRequestDto>>
 
+    @GET("api/v1/support-requests/me")
+    suspend fun getMyRequests(): Response<List<SupportRequestDto>>
+
     @PATCH("api/v1/support-requests/{id}/status")
     suspend fun updateStatus(
         @Path("id") id: String,

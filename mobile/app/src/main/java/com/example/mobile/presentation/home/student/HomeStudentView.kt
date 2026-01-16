@@ -3,7 +3,6 @@ package com.example.mobile.presentation.home.student
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -32,7 +28,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,9 +49,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.presentation.Screen
 import com.example.mobile.presentation.home.admin.components.LogoutConfirmationDialog
-import com.example.mobile.presentation.home.student.components.DashboardCard
 import com.example.mobile.presentation.requests.student.StudentMyRequestsScreen
 import com.example.mobile.presentation.ui.theme.Alert_Red
 import com.example.mobile.presentation.ui.theme.Background_Light
@@ -65,26 +61,13 @@ import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Warning_Orange
 import com.example.mobile.presentation.components.NavigationDrawerStudent
 import kotlinx.coroutines.launch
-
-
-// --- Mock Data Models (Matches your API structure) ---
-data class StockSummary(
-    val totalItems: Int,
-    val lowStockCount: Int,
-    val expiringSoonCount: Int
-)
-
-data class ExpiringItem(
-    val productName: String,
-    val location: String,
-    val quantity: Int,
-    val daysLeft: Int
-)
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeStudentView(navController: NavController,
-                    viewModel: HomeViewModel = hiltViewModel()) {
+                    viewModel: HomeStudentViewModel = hiltViewModel()) {
 
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -134,6 +117,7 @@ fun HomeStudentView(navController: NavController,
         when (currentScreen) {
 
             "dashboard" -> DashboardStudent(
+                requests = state.requests,
                 onMenuClick = { scope.launch { drawerState.open() } }
             )
 
@@ -166,176 +150,164 @@ fun HomeStudentView(navController: NavController,
             .padding(16.dp)
     )
 }
-    @Composable
-    fun DashboardStudent(onMenuClick: () -> Unit) {
-        val scrollState = rememberScrollState()
-        val cardsScrollState = rememberScrollState()
 
-        // Mock Data (Replace with API data later)
-        val summary = StockSummary(totalItems = 1250, lowStockCount = 15, expiringSoonCount = 8)
-        val expiringListStudent = listOf(
-            ExpiringItem("Leite Meio Gordo", "Armazém A", 50, 2),
-            ExpiringItem("Iogurte Natural", "Frigorífico 2", 30, 4),
-            ExpiringItem("Pão de Forma", "Despensa B", 12, 1),
-            ExpiringItem("Queijo Fatiado", "Frigorífico 1", 20, 5)
-        )
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DashboardStudent(
+    requests: List<SupportRequest>,
+    onMenuClick: () -> Unit
+) {
+    val scrollState = rememberScrollState()
 
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background_Light)
+            .verticalScroll(scrollState)
+    ) {
+        // 1. Header
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Background_Light)
-                .verticalScroll(scrollState)
+                .fillMaxWidth()
+                .background(IPCA_Green_Dark)
+                .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
         ) {
-            // 1. Header (Standard IPCA Admin Header)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(IPCA_Green_Dark)
-                    //.windowInsetsPadding(WindowInsets.statusBars) // Safe area
-                    .padding(top = 24.dp, bottom = 24.dp, start = 20.dp, end = 20.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onMenuClick) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_logo_ipca),
-                        contentDescription = "Logo",
-                        tint = Color.White,
-                        modifier = Modifier.size(50.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = "Dashboard",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Visão Geral de Stocks",
-                            color = Color(0xFFA0C4B5), // Light Green text
-                            fontSize = 12.sp
-                        )
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onMenuClick) {
+                    Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                 }
-            }
-
-            // 2. Summary Cards Row
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(
-                    text = "Resumo Diário",
-                    color = IPCA_Green_Dark,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo_ipca),
+                    contentDescription = "Logo",
+                    tint = Color.White,
+                    modifier = Modifier.size(50.dp)
                 )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(cardsScrollState), // Horizontal scroll for small screens
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    DashboardCard(
-                        title = "Total em Stock",
-                        value = "${summary.totalItems}",
-                        icon = Icons.Default.Inventory,
-                        iconColor = IPCA_Green_Dark
-                    )
-                    DashboardCard(
-                        title = "Stock Crítico",
-                        value = "${summary.lowStockCount}",
-                        icon = Icons.Default.Warning,
-                        iconColor = Warning_Orange
-                    )
-                    DashboardCard(
-                        title = "A Expirar",
-                        value = "${summary.expiringSoonCount}",
-                        icon = Icons.Default.WarningAmber,
-                        iconColor = Alert_Red
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                // 3. Expiring Stock Section
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
                     Text(
-                        text = "Atenção: Validade Próxima",
-                        color = IPCA_Green_Dark,
-                        fontSize = 18.sp,
+                        text = "Os Meus Pedidos",
+                        color = Color.White,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    TextButton(onClick = { /* Navigate to full list */ }) {
-                        Text("Ver Todos", color = IPCA_Gold)
-                    }
+                    Text(
+                        text = "Histórico e Estado",
+                        color = Color(0xFFA0C4B5), // Light Green text
+                        fontSize = 12.sp
+                    )
                 }
+            }
+        }
 
+        // 2. Requests List
+        Column(modifier = Modifier.padding(20.dp)) {
+            if (requests.isEmpty()) {
+                Text(
+                    text = "Ainda não tem pedidos registados.",
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+            } else {
+                requests.forEach { request ->
+                    RequestItemCard(request)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(40.dp)) // Bottom spacing
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun RequestItemCard(request: SupportRequest) {
+    val statusColor = when (request.status) {
+        RequestStatus.PENDENTE -> Warning_Orange
+        RequestStatus.APROVADO -> IPCA_Green_Dark
+        RequestStatus.ENTREGUE -> IPCA_Gold
+        RequestStatus.CANCELADO -> Color.Gray
+    }
+
+    val formattedDate = try {
+        val parsedDate = LocalDateTime.parse(request.date, DateTimeFormatter.ISO_DATE_TIME)
+        parsedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+    } catch (e: Exception) {
+        request.date
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = formattedDate,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = request.status.name,
+                    color = statusColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            if (!request.observation.isNullOrBlank()) {
+                Text(
+                    text = request.observation,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
                 Spacer(modifier = Modifier.height(8.dp))
+            }
 
-                // Expiring List Table
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column {
-                        // Table Header
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(IPCA_Green_Dark.copy(alpha = 0.05f))
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                "Produto",
-                                Modifier.weight(2f),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = IPCA_Green_Dark
-                            )
-                            Text(
-                                "Qtd.",
-                                Modifier.weight(1f),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = IPCA_Green_Dark
-                            )
-                            Text(
-                                "Expira em",
-                                Modifier.weight(1.5f),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = IPCA_Green_Dark
-                            )
-                        }
-
-//                        // Items
-//                        expiringListStudent.forEachIndexed { index, item ->
-//                            ExpiringItemRow(item)
-//                            if (index < expiringListStudent.size - 1) {
-//                                HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
-//                            }
-//                        }
+            if (request.items.isNotEmpty()) {
+                Text(
+                    text = "Itens:",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = IPCA_Green_Dark
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                request.items.forEach { item ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "- ${item.productName}",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray
+                        )
+                        Text(
+                            text = "x${item.qtyRequested}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray
+                        )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(40.dp)) // Bottom spacing
             }
         }
     }
-
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun HomeStudentPreview(
-) {
+fun HomeStudentPreview() {
     HomeStudentView(navController = rememberNavController())
 }

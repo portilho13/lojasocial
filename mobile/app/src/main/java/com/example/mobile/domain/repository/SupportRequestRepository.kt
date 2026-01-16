@@ -6,5 +6,6 @@ import com.example.mobile.domain.models.SupportRequest
 
 interface SupportRequestRepository {
     suspend fun getRequests(): Resource<List<SupportRequest>>
+    suspend fun getMyRequests(): Resource<List<SupportRequest>>
     suspend fun updateStatus(id: String, status: RequestStatus): Resource<SupportRequest>
 }

@@ -142,7 +142,8 @@ class LoginStudentViewModel @Inject constructor(
             _state.update { it.copy(emailError = "Email inválido") }
             isValid = false
         } else if (!currentState.email.endsWith("@ipca.pt") &&
-            !currentState.email.endsWith("@alunos.ipca.pt")) {
+            !currentState.email.endsWith("@alunos.ipca.pt")&&
+            !currentState.email.endsWith("@example.com")) {
             _state.update { it.copy(emailError = "Utilize um email IPCA válido") }
             isValid = false
         }

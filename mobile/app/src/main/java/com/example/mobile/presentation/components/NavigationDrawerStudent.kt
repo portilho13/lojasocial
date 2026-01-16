@@ -42,7 +42,7 @@ fun NavigationDrawerStudent(
 ) {
     val menuItems = listOf(
         DrawerStudentMenuItem("dashboard", "Visão Geral", Icons.Default.Dashboard), // Maps to AdminDashboardScreen
-        DrawerStudentMenuItem("studentsreq", "Meus Pedidos", Icons.Default.Person)
+        //DrawerStudentMenuItem("studentsreq", "Meus Pedidos", Icons.Default.Person)
     )
 
     ModalDrawerSheet(
