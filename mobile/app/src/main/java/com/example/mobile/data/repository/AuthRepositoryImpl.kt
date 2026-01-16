@@ -1,25 +1,33 @@
 package com.example.mobile.data.repository
 
-import com.example.mobile.common.Resource
 import com.example.mobile.data.local.TokenManager
 import com.example.mobile.data.remote.AuthApiService
-import com.example.mobile.data.remote.dto.LoginResponse
-import com.example.mobile.data.remote.dto.RegisterResponse
 import com.example.mobile.domain.models.LoginRequest
-import com.example.mobile.domain.models.RegisterRequest
+import com.example.mobile.data.remote.dto.LoginResponse
 import com.example.mobile.domain.repository.AuthRepository
+import com.example.mobile.common.Resource
+import com.example.mobile.data.remote.dto.RegisterResponse
+import com.example.mobile.domain.models.RegisterRequest
+import com.example.mobile.data.local.CredentialsManager
+import com.example.mobile.data.local.entity.SavedCredentials
+import com.example.mobile.data.remote.dto.LoginStudentResponse
+import com.example.mobile.domain.models.LoginStudentRequest
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val apiService: AuthApiService,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val credentialsManager: CredentialsManager
 ) : AuthRepository {
 
-    override suspend fun login(request: LoginRequest, rememberMe: Boolean): Resource<LoginResponse> {
+    override suspend fun loginStudent(
+        request: LoginStudentRequest,
+        rememberMe: Boolean
+    ): Resource<LoginStudentResponse> {
         return try {
-            val response = apiService.login(request)
+            val response = apiService.loginStudent(request)
 
             if (response.isSuccessful && response.body() != null) {
                 val loginResponse = response.body()!!
@@ -31,6 +39,23 @@ class AuthRepositoryImpl @Inject constructor(
                 // Guardar preferência de remember me
                 if (rememberMe) {
                     tokenManager.setRememberMe(true)
+                }
+                // ---------------------------------------------------------
+                // 3. FIX: Save Credentials to Room Database
+                // ---------------------------------------------------------
+                if (rememberMe) {
+                    // Create the entity object
+                    // IMPORTANT: Ensure ID is 1 because your DAO queries "WHERE id = 1"
+                    val credentials = SavedCredentials(
+                        id = 1,
+                        email = request.email,
+                        password = request.password,
+                        rememberMe = true
+                    )
+                    credentialsManager.saveCredentials(credentials)
+                } else {
+                    // If user didn't check remember me, clear old data
+                    credentialsManager.clearCredentials()
                 }
 
                 Resource.Success(loginResponse)
@@ -59,6 +84,70 @@ class AuthRepositoryImpl @Inject constructor(
             Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
         }
     }
+
+    override suspend fun login(
+        request: LoginRequest,
+        rememberMe: Boolean
+    ): Resource<LoginResponse> {
+        return try {
+            val response = apiService.login(request)
+
+            if (response.isSuccessful && response.body() != null) {
+                val loginResponse = response.body()!!
+
+                // Guardar tokens
+                tokenManager.saveAccessToken(loginResponse.accessToken)
+                tokenManager.saveRefreshToken(loginResponse.refreshToken)
+
+                // Guardar preferência de remember me
+                if (rememberMe) {
+                    tokenManager.setRememberMe(true)
+                }
+                // ---------------------------------------------------------
+                // 3. FIX: Save Credentials to Room Database
+                // ---------------------------------------------------------
+                if (rememberMe) {
+                    // Create the entity object
+                    // IMPORTANT: Ensure ID is 1 because your DAO queries "WHERE id = 1"
+                    val credentials = SavedCredentials(
+                        id = 1,
+                        email = request.email,
+                        password = request.password,
+                        rememberMe = true
+                    )
+                    credentialsManager.saveCredentials(credentials)
+                } else {
+                    // If user didn't check remember me, clear old data
+                    credentialsManager.clearCredentials()
+                }
+
+                Resource.Success(loginResponse)
+            } else {
+                Resource.Error(
+                    message = when (response.code()) {
+                        401 -> "Email ou senha incorretos"
+                        404 -> "Utilizador não encontrado"
+                        else -> "Erro ao fazer login: ${response.message()}"
+                    }
+                )
+            }
+        } catch (e: HttpException) {
+            Resource.Error(
+                message = when (e.code()) {
+                    401 -> "Email ou senha incorretos"
+                    403 -> "Acesso negado"
+                    404 -> "Utilizador não encontrado"
+                    500 -> "Erro no servidor. Tente novamente mais tarde"
+                    else -> "Erro de conexão: ${e.message()}"
+                }
+            )
+        } catch (e: IOException) {
+            Resource.Error(message = "Sem conexão à internet. Verifique a sua rede")
+        } catch (e: Exception) {
+            Resource.Error(message = "Erro inesperado: ${e.localizedMessage}")
+        }
+    }
+
     override suspend fun register(request: RegisterRequest): Resource<RegisterResponse> {
         return try {
             val response = apiService.register(request)
@@ -126,19 +215,21 @@ class AuthRepositoryImpl @Inject constructor(
             // Isto garante que o utilizador sempre consegue fazer logout
             // mesmo se a API estiver offline ou retornar erro
             tokenManager.clearTokens()
-
+            credentialsManager.clearCredentials()
             Resource.Success(Unit)
 
         } catch (e: Exception) {
             // Erro crítico ao limpar tokens localmente (muito improvável)
             try {
                 tokenManager.clearTokens()
+                credentialsManager.clearCredentials()
                 Resource.Success(Unit)
             } catch (clearError: Exception) {
                 Resource.Error(message = "Erro crítico ao fazer logout")
             }
         }
     }
+    override suspend fun getSavedCredentials() = credentialsManager.getSavedCredentials()
 
     override suspend fun refreshToken(): Resource<String> {
         return try {

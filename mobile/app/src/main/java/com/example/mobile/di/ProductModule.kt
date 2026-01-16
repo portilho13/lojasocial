@@ -2,6 +2,7 @@ package com.example.mobile.di
 
 import com.example.mobile.data.remote.ProductApiService
 import com.example.mobile.data.repository.ProductRepositoryImpl
+import com.example.mobile.domain.manager.CategoryManager
 import com.example.mobile.domain.repository.ProductRepository
 import dagger.Module
 import dagger.Provides
@@ -26,5 +27,13 @@ object ProductModule {
         apiService: ProductApiService
     ): ProductRepository {
         return ProductRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryManager(
+        repository: ProductRepository
+    ): CategoryManager {
+        return CategoryManager(repository)
     }
 }

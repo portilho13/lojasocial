@@ -3,7 +3,7 @@ package com.example.mobile.data.repository
 import com.example.mobile.common.Resource
 import com.example.mobile.data.remote.CampaignApiService
 import com.example.mobile.data.remote.dto.CreateCampaignDto
-import com.example.mobile.domain.model.Campaign
+import com.example.mobile.domain.models.Campaign
 import com.example.mobile.domain.repository.CampaignRepository
 import retrofit2.HttpException
 import java.io.IOException

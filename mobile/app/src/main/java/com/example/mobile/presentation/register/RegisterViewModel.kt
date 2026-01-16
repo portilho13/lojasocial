@@ -40,8 +40,8 @@ class RegisterViewModel @Inject constructor(
 
     // Mapeamento de tipos de utilizador UI -> Backend
     private val userTypeMap = mapOf(
-        "Estudante" to "STUDENT",
-        "Docente" to "TEACHER",
+        "Estudante" to "VOLUNTARIO",
+        "Docente" to "STAFF",
         "Técnico (Admin)" to "ADMIN"
     )
 

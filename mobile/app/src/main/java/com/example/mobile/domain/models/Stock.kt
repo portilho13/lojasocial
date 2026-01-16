@@ -25,7 +25,7 @@ data class StockDto(
     val quantity: Int,
 
     @SerializedName("expiryDate")
-    val expiryDate: String,
+    val expiryDate: String?,
 
     @SerializedName("location")
     val location: String,

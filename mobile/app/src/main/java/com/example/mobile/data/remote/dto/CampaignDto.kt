@@ -1,6 +1,6 @@
 package com.example.mobile.data.remote.dto
 
-import com.example.mobile.domain.model.Campaign
+import com.example.mobile.domain.models.Campaign
 
 data class CampaignDto(
     val id: String,

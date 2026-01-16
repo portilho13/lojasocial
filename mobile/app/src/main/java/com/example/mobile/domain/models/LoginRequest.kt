@@ -9,3 +9,11 @@ data class LoginRequest(
     @SerializedName("password")
     val password: String
 )
+
+data class LoginStudentRequest(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("password")
+    val password: String
+)

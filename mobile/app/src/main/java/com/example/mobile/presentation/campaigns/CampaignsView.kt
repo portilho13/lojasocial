@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mobile.domain.model.Campaign
+import com.example.mobile.domain.models.Campaign
 import com.example.mobile.presentation.campaigns.components.AddCampaignDialog
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import java.text.SimpleDateFormat

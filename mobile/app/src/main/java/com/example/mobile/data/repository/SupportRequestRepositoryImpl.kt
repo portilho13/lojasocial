@@ -3,8 +3,8 @@ package com.example.mobile.data.repository
 import com.example.mobile.common.Resource
 import com.example.mobile.data.remote.SupportRequestApiService
 import com.example.mobile.data.remote.dto.UpdateStatusDto
-import com.example.mobile.domain.model.RequestStatus
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.domain.repository.SupportRequestRepository
 import retrofit2.HttpException
 import java.io.IOException

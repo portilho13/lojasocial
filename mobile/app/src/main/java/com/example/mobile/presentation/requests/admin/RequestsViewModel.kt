@@ -3,8 +3,8 @@ package com.example.mobile.presentation.requests.admin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile.common.Resource
-import com.example.mobile.domain.model.RequestStatus
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.RequestStatus
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.domain.use_case.request.GetRequestsUseCase
 import com.example.mobile.domain.use_case.request.UpdateRequestStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

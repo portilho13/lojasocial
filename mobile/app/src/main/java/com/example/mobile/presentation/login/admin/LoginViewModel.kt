@@ -1,5 +1,6 @@
-package com.example.mobile.presentation.login
+package com.example.mobile.presentation.login.admin
 
+import android.util.Patterns
 import com.example.mobile.common.Resource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,7 +23,8 @@ data class LoginState(
     val error: String? = null,
     val isLoginSuccessful: Boolean = false,
     val emailError: String? = null,
-    val passwordError: String? = null
+    val passwordError: String? = null,
+    val isLoadingCredentials: Boolean = true // Loading inicial
 )
 
 @HiltViewModel
@@ -32,6 +34,33 @@ class LoginViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
+
+    init {
+        loadSavedCredentials()
+    }
+
+    private fun loadSavedCredentials() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingCredentials = true) }
+
+            try {
+                val savedCredentials = authRepository.getSavedCredentials()
+
+                if (savedCredentials != null && savedCredentials.rememberMe) {
+                    _state.update { it.copy(
+                        email = savedCredentials.email,
+                        password = savedCredentials.password,
+                        rememberMe = true,
+                        isLoadingCredentials = false
+                    ) }
+                } else {
+                    _state.update { it.copy(isLoadingCredentials = false) }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoadingCredentials = false) }
+            }
+        }
+    }
 
     fun onEvent(event: LoginEvent) {
         when (event) {
@@ -109,7 +138,7 @@ class LoginViewModel @Inject constructor(
         if (currentState.email.isBlank()) {
             _state.update { it.copy(emailError = "Email é obrigatório") }
             isValid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
             _state.update { it.copy(emailError = "Email inválido") }
             isValid = false
         } else if (!currentState.email.endsWith("@ipca.pt") &&

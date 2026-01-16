@@ -11,7 +11,3 @@ data class ProductType(
     val description: String
 )
 
-data class CreateProductTypeRequest(
-    @SerializedName("description")
-    val description: String,
-)

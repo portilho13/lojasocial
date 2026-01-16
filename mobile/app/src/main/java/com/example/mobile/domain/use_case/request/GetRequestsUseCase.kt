@@ -1,7 +1,7 @@
 package com.example.mobile.domain.use_case.request
 
 import com.example.mobile.common.Resource
-import com.example.mobile.domain.model.SupportRequest
+import com.example.mobile.domain.models.SupportRequest
 import com.example.mobile.domain.repository.SupportRequestRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

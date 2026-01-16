@@ -38,7 +38,7 @@ data class StockItem(
     val quantity: Int,
     val unit: String,
     val location: String,
-    val expiryDate: String,
+    val expiryDate: String?,
     val daysUntilExpiry: Int
 )
 
@@ -62,16 +62,20 @@ fun StockView(
     // Convert StockDto to StockItem for UI
     fun StockDto.toStockItem(): StockItem {
         val daysUntilExpiry = try {
-            // Parse ISO date string using SimpleDateFormat
-            val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-            isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
-            val expiryDateTime = isoFormatter.parse(expiryDate)
+            if (expiryDate != null) {
+                // Parse ISO date string using SimpleDateFormat
+                val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+                val expiryDateTime = isoFormatter.parse(expiryDate)
 
-            if (expiryDateTime != null) {
-                val diffInMillis = expiryDateTime.time - System.currentTimeMillis()
-                TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
+                if (expiryDateTime != null) {
+                    val diffInMillis = expiryDateTime.time - System.currentTimeMillis()
+                    TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
+                } else {
+                    999 // Fallback
+                }
             } else {
-                0
+                999 // No expiry date means not expiring soon
             }
         } catch (e: Exception) {
             0

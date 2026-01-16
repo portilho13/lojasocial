@@ -1,4 +1,4 @@
-package com.example.mobile.presentation.login
+package com.example.mobile.presentation.login.admin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,7 +57,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mobile.R
 import com.example.mobile.presentation.Screen
 import com.example.mobile.presentation.components.CustomLabel
-import com.example.mobile.presentation.components.IPCATextField
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Grey
@@ -245,11 +244,11 @@ fun LoginView(
                 }
 
                 Text(
-                    text = "Esqueceu-se da senha?",
+                    text = "Entrar como Estudante",
                     color = IPCA_Gold,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable(enabled = !state.isLoading) {
-                        // TODO: Navegar para recuperação de senha
+                    modifier = Modifier.clickable(enabled = !state.isLoading) {navController.navigate(Screen.LoginStudentScreen.route)
+
                     }
                 )
             }
