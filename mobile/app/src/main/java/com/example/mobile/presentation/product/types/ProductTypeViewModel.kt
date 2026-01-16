@@ -23,9 +23,9 @@ data class ProductTypeState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val error: String? = null,
-    val filteredProductTypes: List<Product> = emptyList(),
+    val filteredProductTypes: List<ProductType> = emptyList(),
     val showAddDialog: Boolean = false,
-    val selectedProduct: Product? = null,
+    val selectedProduct: ProductType? = null,
     val isCreating: Boolean = false,
     val isDeleting: Boolean = false,
     val successMessage: String? = null

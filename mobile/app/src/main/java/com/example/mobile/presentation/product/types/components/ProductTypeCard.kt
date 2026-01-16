@@ -1,24 +1,12 @@
 package com.example.mobile.presentation.product.types.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.presentation.product.types.ProductType
+import com.example.mobile.domain.models.ProductType
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Text_Black
 
@@ -46,7 +34,6 @@ fun ProductTypeCard(productType: ProductType) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Icon Box
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -64,7 +51,7 @@ fun ProductTypeCard(productType: ProductType) {
 
                 Column {
                     Text(
-                        text = productType.name,
+                        text = productType.description,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = Text_Black
@@ -72,10 +59,9 @@ fun ProductTypeCard(productType: ProductType) {
                 }
             }
 
-            // Edit/Action Icon
             IconButton(onClick = { /* Edit Action */ }) {
                 Icon(
-                    imageVector = Icons.Default.ChevronRight, // Or Icons.Default.Edit
+                    imageVector = Icons.Default.ChevronRight,
                     contentDescription = "Edit",
                     tint = Color.Gray
                 )

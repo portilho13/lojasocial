@@ -71,6 +71,7 @@ import com.example.mobile.presentation.ui.theme.Background_Light
 import com.example.mobile.presentation.ui.theme.IPCA_Gold
 import com.example.mobile.presentation.ui.theme.IPCA_Green_Dark
 import com.example.mobile.presentation.ui.theme.Warning_Orange
+import com.example.mobile.presentation.campaigns.CampaignsView
 import kotlinx.coroutines.launch
 
 
@@ -168,6 +169,9 @@ fun HomeView(navController: NavController,
             "studentsreq" -> StudentMyRequestsScreen(
                 onMenuClick = { scope.launch { drawerState.open() } },navController,
                 onCreateRequestClick = {}, onRequestDetailClick = {}
+            )
+            "campaigns" -> CampaignsView(
+                onMenuClick = { scope.launch { drawerState.open() } }
             )
 
         }
